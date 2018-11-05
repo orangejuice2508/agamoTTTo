@@ -6,10 +6,10 @@
 	<groupId>de.gruppe2</groupId>
 	<artifactId>time-task-tool</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>time-task-tool</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Tool for recording time records</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -61,6 +61,12 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
