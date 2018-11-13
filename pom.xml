@@ -5,11 +5,11 @@
 
 	<groupId>de.gruppe2</groupId>
 	<artifactId>time-task-tool</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>war</packaging>
 
 	<name>time-task-tool</name>
-	<description>Tool for recording time records</description>
+	<description>Tool for time recording</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
