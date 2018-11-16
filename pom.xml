@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.gruppe2</groupId>
-	<artifactId>time-task-tool</artifactId>
+	<artifactId>agamoTTTo</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
 
@@ -71,7 +71,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>${project.artifactId}</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
