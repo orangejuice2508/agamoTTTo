@@ -1,2 +1,2 @@
-# Time Task Tool
+# agamoTTTo
 Our repository for programming the main application.
