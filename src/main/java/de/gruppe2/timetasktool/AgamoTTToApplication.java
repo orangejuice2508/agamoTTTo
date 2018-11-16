@@ -17,33 +17,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @SpringBootApplication
-public class AgamoTTToApplication extends SpringBootServletInitializer implements CommandLineRunner{
+public class AgamoTTToApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AgamoTTToApplication.class, args);
-	}
-
-	@Autowired
-	JdbcTemplate jdbcTemplate;
-
-    @Value("${spring.datasource.password}")
-    String dbpassword;
-
-	@Override
-	public void run(String... strings) throws Exception{
-		log.info("Creating tables");
-        log.info(dbpassword);
-
-		jdbcTemplate.execute("DROP TABLE IF EXISTS `student`");
-		jdbcTemplate.execute("CREATE TABLE `student` (" +
-                "  `id` int(11) NOT NULL," +
-                "  `first_name` varchar(45) DEFAULT NULL," +
-                "  `last_name` varchar(45) DEFAULT NULL," +
-                "  `email` varchar(45) DEFAULT NULL," +
-                "  `time` TIMESTAMP," +
-                "  PRIMARY KEY (`id`)" +
-                ")");
-
-		jdbcTemplate.execute("INSERT INTO `student` VALUES ('1', 'Test', 'Test', 'Test@Test.de', CURRENT_TIMESTAMP)");
 	}
 }
