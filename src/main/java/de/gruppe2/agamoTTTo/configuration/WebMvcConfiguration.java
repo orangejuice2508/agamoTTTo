@@ -1,4 +1,4 @@
-package de.gruppe2.timetasktool.configuration;
+package de.gruppe2.agamoTTTo.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

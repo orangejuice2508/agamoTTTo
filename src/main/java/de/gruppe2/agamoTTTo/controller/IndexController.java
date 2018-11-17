@@ -1,4 +1,4 @@
-package de.gruppe2.timetasktool.controller;
+package de.gruppe2.agamoTTTo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

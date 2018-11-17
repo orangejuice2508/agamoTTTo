@@ -1,4 +1,4 @@
-package de.gruppe2.timetasktool;
+package de.gruppe2.agamoTTTo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
