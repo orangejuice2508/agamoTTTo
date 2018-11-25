@@ -3,19 +3,41 @@
 <head>
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet" media="screen"/>
     <link th:href="@{/material-design-icons/material-icons.css}" rel="stylesheet" media="screen"/>
+    <link th:href="@{/css/project.css}" rel="stylesheet" media="screen"/>
+
     <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/jquery/jquery.min.js}"></script>
 
     <meta charset="UTF-8">
-    <title>agamoTTTo - Übersicht</title>
+    <title th:text="#{index.title}"></title>
 </head>
 <body>
-<div class="card text-center m-2">
-    <h5 class="card-header"><img class="img-fluid" th:src="@{/images/agamoTTTo_logo_transparent.png}"/></h5>
-    <div class="card-body">
-        <h5 class="card-title">Hier entsteht das Zeiterfassungstool der Gruppe 2.</h5>
-        <p class="card-text">Wir sind erst fertig, wenn das ganze Spritzgebäck aufgegessen wurde.</p>
+<div class="card w-50 mx-auto text-center mt-5">
+
+    <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
+        <span th:text="#{index.logout.successful}"></span>
     </div>
-    <div class="card-footer"> © Gruppe2, 2018-2019 </div>
+
+    <div class="card-body">
+        <a th:href="@{/}">
+            <img class="img-fluid" th:src="@{/images/agamoTTTo_icon_transparent.png}" alt=""/>
+        </a>
+    </div>
+
+    <div th:if="${#request.getParameter('loginError') == 'true'}" class="card-body text-white bg-danger">
+        <span th:text="#{index.login.failed}"></span>
+    </div>
+
+    <div class="card-body">
+        <form class="form-signin" th:action="@{/j_spring_security_check}" method="POST">
+            <input type="email" name="email" class="form-control" th:placeholder="#{index.login.email}" required="" autofocus="">
+            <input type="password" name="password" class="form-control mb-2" th:placeholder="#{index.login.password}" required="">
+            <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{index.login.submit}"></button>
+        </form>
+    </div>
+
+    <div class="card-body" th:text="#{copyright}"></div>
+
 </div>
 </body>
 </html>
