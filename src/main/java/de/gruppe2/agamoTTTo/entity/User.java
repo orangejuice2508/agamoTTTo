@@ -21,11 +21,11 @@ public class User {
     private String email;
 
     @NotNull
-    @Column(name="FIRST_NAME")
+    @Column(name = "FIRST_NAME")
     private String firstName;
 
     @NotNull
-    @Column(name="LAST_NAME")
+    @Column(name = "LAST_NAME")
     private String lastName;
 
     @NotNull
