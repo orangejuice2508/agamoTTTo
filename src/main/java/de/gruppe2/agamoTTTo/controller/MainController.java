@@ -5,14 +5,17 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.security.Principal;
 
 @Controller
 public class MainController {
-    @RequestMapping("/")
-    public String indexPage(){
+    @GetMapping("/")
+    public String indexPage(Principal principal) {
+        // If a user is logged in, then redirect them to the "home"-page.
+        if(principal != null){
+            return "redirect:/home";
+        }
+
         return "index";
     }
 
@@ -25,14 +28,14 @@ public class MainController {
 
         User loggedInUser = (User) ((Authentication) principal).getPrincipal();
 
-        String authorities = loggedInUser.getAuthorities().toString();
-        model.addAttribute("authorities", authorities);
+        String authority = loggedInUser.getAuthorities().toString();
+        model.addAttribute("authority", authority);
 
         return "home";
     }
 
-    @GetMapping("accessDenied")
-    public String accessDenied(Model model, Principal principal) {
+    @GetMapping("/accessDenied")
+    public String accessDenied() {
         return "access_denied";
     }
 }

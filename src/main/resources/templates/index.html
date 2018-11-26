@@ -12,7 +12,7 @@
     <title th:text="#{index.title}"></title>
 </head>
 <body>
-<div class="card w-50 mx-auto text-center mt-5">
+<div class="card w-50 mx-auto text-center mt-5 bg-light">
 
     <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
         <span th:text="#{index.logout.successful}"></span>

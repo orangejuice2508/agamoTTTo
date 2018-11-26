@@ -16,7 +16,7 @@ public class Role {
     @Column(name = "ROLE_NAME")
     private String roleName;
 
-    // ToDo: Get relational mapping right or alter authorities
-/*    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();*/
+    // ToDo: Get mapping right.
+    /*@OneToMany(mappedBy = "role")
+    private Set<User> users;*/
 }

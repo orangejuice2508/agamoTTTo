@@ -1,13 +1,10 @@
-html{
+html, body{
     height: 100%;
 }
 
 body {
     /* Url to the image */
     background-image: url(/images/background.png);
-
-    /* Full height */
-    height: 100%;
 
     /* Center and scale the image */
     background-position: center;

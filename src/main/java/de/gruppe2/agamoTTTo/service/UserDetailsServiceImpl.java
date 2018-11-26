@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,10 +36,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(email);
         }
 
-        Set<GrantedAuthority> grantedAuthorities = user.getRoles()
-                                                        .stream()
-                                                        .map(role ->  new SimpleGrantedAuthority(role.getRoleName()))
-                                                        .collect(Collectors.toSet());
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getRoleName());
+
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        grantedAuthorities.add(authority);
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getEncryptedPassword(), grantedAuthorities);
     }
