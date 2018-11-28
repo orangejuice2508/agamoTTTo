@@ -14,10 +14,6 @@
 <body>
 <div class="card w-50 mx-auto text-center mt-5 bg-light">
 
-    <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
-        <span th:text="#{index.logout.successful}"></span>
-    </div>
-
     <div class="card-body">
         <a th:href="@{/}">
             <img class="img-fluid" th:src="@{/images/agamoTTTo_icon_transparent.png}" alt=""/>
@@ -26,6 +22,10 @@
 
     <div th:if="${#request.getParameter('loginError') == 'true'}" class="card-body text-white bg-danger">
         <span th:text="#{index.login.failed}"></span>
+    </div>
+
+    <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
+        <span th:text="#{index.logout.successful}"></span>
     </div>
 
     <div class="card-body">

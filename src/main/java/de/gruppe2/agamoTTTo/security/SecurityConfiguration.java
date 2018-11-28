@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.security;
 
-import de.gruppe2.agamoTTTo.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,13 +11,6 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 
 @Configuration
 public class SecurityConfiguration {
-
-    private RoleService roleService;
-
-    @Autowired
-    public SecurityConfiguration(RoleService roleService) {
-        this.roleService = roleService;
-    }
 
     /**
      * Define the bean for hashing passwords with the BCrypt algorithm.
@@ -32,14 +24,14 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Set up the Role Hierarchy as obtained from the RoleService.
+     * Set up the Role Hierarchy as obtained from the static method.
      *
      * @return roleHierarchy the created hierarchy of the roles in the system
      */
     @Bean
     public RoleHierarchyImpl roleHierarchy(){
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy(roleService.getRoleHierarchyStringRepresentation());
+        roleHierarchy.setHierarchy(Role.getRoleHierarchyStringRepresentation());
         return roleHierarchy;
     }
 

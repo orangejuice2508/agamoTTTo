@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.configuration;
+package de.gruppe2.agamoTTTo.security;
 
 import de.gruppe2.agamoTTTo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
