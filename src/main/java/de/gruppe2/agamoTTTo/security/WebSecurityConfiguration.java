@@ -59,6 +59,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
+        // ToDo: Enable CSRF-Protection
         http.csrf().disable();
 
         // Add the ExpressionHandler
