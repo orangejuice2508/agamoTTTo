@@ -79,7 +79,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .usernameParameter("email") // Define the entered e-mail as the username parameter
                 .passwordParameter("password") // Define the entered password as the password parameter
                 .and().logout() // Configuration for logout
-                .logoutUrl("/logout") // Page for logout.
+                .logoutUrl("/logout") // Page for logout (provided by Spring Security).
                 .logoutSuccessUrl("/?logout=successful"); // Redirect to this page, when logout was successful.
     }
 }
