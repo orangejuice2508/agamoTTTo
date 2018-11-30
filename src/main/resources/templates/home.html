@@ -1,26 +1,22 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
 <head>
-    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet" media="screen"/>
-    <link th:href="@{/material-design-icons/material-icons.css}" rel="stylesheet" media="screen"/>
-    <link th:href="@{/css/project.css}" rel="stylesheet" media="screen"/>
-
-    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
-    <script th:src="@{/jquery/jquery.min.js}"></script>
-
-    <meta charset="UTF-8">
     <title th:text="#{home.title}"></title>
 </head>
 <body>
-<div class="card text-center mt-5">
-    <h5 class="card-header"><img class="img-fluid" th:src="@{/images/agamoTTTo_logo_transparent.png}"/></h5>
-    <div class="card-body">
-        <h5 class="card-title">Herzlich Willkommen.</h5>
-        <p class="card-text">Deine E-Mail: <span th:text="${email}"></span></p>
-        <p class="card-text">Deine Berechtigung: <span th:text="${authority}"></span> </p>
-    </div>
-    <div class="card-footer">
-        <a th:href="@{/logout}">Logout</a>
+<div layout:fragment="content">
+    <div class="card text-center mt-5">
+        <div class="card-header"><img class="img-fluid" th:src="@{/images/agamoTTTo_logo_transparent.png}"/></div>
+        <div class="card-body">
+            <h5 class="card-title">Herzlich Willkommen.</h5>
+            <p class="card-text">Deine E-Mail: <span th:text="${email}"></span></p>
+            <p class="card-text">Deine Berechtigung: <span th:text="${authority}"></span> </p>
+        </div>
+        <div class="card-footer">
+            <h6>Danke für Ihren Besuch!</h6>
+        </div>
     </div>
 </div>
 </body>

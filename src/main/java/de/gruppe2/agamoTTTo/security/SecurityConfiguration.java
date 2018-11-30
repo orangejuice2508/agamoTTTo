@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -24,14 +23,14 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Set up the Role Hierarchy as obtained from the static method.
+     * Set up the SecurityRole Hierarchy as obtained from the static method.
      *
      * @return roleHierarchy the created hierarchy of the roles in the system
      */
     @Bean
     public RoleHierarchyImpl roleHierarchy(){
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy(Role.getRoleHierarchyStringRepresentation());
+        roleHierarchy.setHierarchy(SecurityRole.getRoleHierarchyStringRepresentation());
         return roleHierarchy;
     }
 

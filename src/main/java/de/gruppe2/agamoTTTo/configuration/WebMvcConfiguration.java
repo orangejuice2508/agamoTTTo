@@ -23,8 +23,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         //
         // /material-design-icons/material-icons.css
         //
-        registry.addResourceHandler( "/material-design-icons/**") //
-                .addResourceLocations(pathToWebjars + "/material-design-icons/3.0.1/");
+        registry.addResourceHandler( "/font-awesome/**") //
+                .addResourceLocations(pathToWebjars + "/font-awesome/5.5.0/");
 
         //
         // /resources/jquery/jquery.min.js

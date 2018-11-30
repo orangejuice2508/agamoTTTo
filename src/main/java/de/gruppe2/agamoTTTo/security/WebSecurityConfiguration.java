@@ -59,8 +59,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable();
-
         // Add the ExpressionHandler
         http.authorizeRequests().expressionHandler(webExpressionHandler);
 
@@ -81,7 +79,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .usernameParameter("email") // Define the entered e-mail as the username parameter
                 .passwordParameter("password") // Define the entered password as the password parameter
                 .and().logout() // Configuration for logout
-                .logoutUrl("/logout") // Page for logout (provided by Spring Security).
+                .logoutUrl("/logout") // Page for logout.
                 .logoutSuccessUrl("/?logout=successful"); // Redirect to this page, when logout was successful.
     }
 }
