@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.security;
 
-import de.gruppe2.agamoTTTo.service.UserDetailsServiceImpl;
+import de.gruppe2.agamoTTTo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -21,14 +21,14 @@ import org.springframework.security.web.FilterInvocation;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsServiceImpl userDetailsService;
+    private UserService userDetailsService;
 
     private BCryptPasswordEncoder passwordEncoder;
 
     private SecurityExpressionHandler<FilterInvocation> webExpressionHandler;
 
     @Autowired
-    public WebSecurityConfiguration(UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder passwordEncoder, SecurityExpressionHandler<FilterInvocation> webExpressionHandler) {
+    public WebSecurityConfiguration(UserService userDetailsService, BCryptPasswordEncoder passwordEncoder, SecurityExpressionHandler<FilterInvocation> webExpressionHandler) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.webExpressionHandler = webExpressionHandler;

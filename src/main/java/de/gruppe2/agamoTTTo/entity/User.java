@@ -3,6 +3,7 @@ package de.gruppe2.agamoTTTo.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -11,13 +12,14 @@ import javax.validation.constraints.Size;
 @Table(name = "agamottto_user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @Column(name = "user_id")
     private Long id;
 
     @Size(max = 60)
     @NotNull
-    @Column(name = "e_mail")
+    @Column(name = "e_mail", unique = true)
+    @Email
     private String email;
 
     @Size(max = 60)
