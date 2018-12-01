@@ -15,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Service which is used for dealing with the users of our application.
+ */
+
 @Slf4j
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -26,6 +30,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * This function tries to find a user from the database based on the entered email.
+     * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
+     *
+     * @param email the email as entered in the login form
+     * @return user the newly created Spring User-Object with email as username and role as granted authorities
+     * @throws UsernameNotFoundException if no user was found with the entered email
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -43,4 +55,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getEncryptedPassword(), grantedAuthorities);
     }
+
+
 }
