@@ -7,38 +7,37 @@
         <span th:text="#{navbar.item.home}"></span>
     </a>
 
-    <!-- ToDo: Get Navbar-Toggler to work -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="navbar-collapse" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Menü">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarsExample04">
+    <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item pl-5">
+            <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-plus-circle"></i>
                     <span th:text="#{navbar.item.add}"></span>
                 </a>
             </li>
-            <li class="nav-item pl-3">
+            <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-th-list"></i>
                     <span th:text="#{navbar.item.records}"></span>
                 </a>
             </li>
-            <li class="nav-item pl-3">
+            <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-folder"></i>
                     <span th:text="#{navbar.item.pools}"></span>
                 </a>
             </li>
-            <li class="nav-item pl-3">
+            <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-user-circle"></i>
                     <span th:text="#{navbar.item.employees}"></span>
                 </a>
             </li>
-            <li class="nav-item pl-3">
+            <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-cog"></i>
                     <span th:text="#{navbar.item.settings}"></span>
