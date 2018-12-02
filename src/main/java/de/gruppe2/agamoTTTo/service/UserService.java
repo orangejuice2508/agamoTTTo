@@ -1,12 +1,11 @@
 package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.entity.User;
-import de.gruppe2.agamoTTTo.repository.RoleRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
-import de.gruppe2.agamoTTTo.security.SecurityRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.HashSet;
-import java.util.Random;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -32,19 +31,22 @@ public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
 
-    private RoleRepository roleRepository;
-
     private BCryptPasswordEncoder passwordEncoder;
 
+    private EmailService emailService;
+
+    private MessageSource messageSource;
+
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, MessageSource messageSource) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.messageSource = messageSource;
     }
 
     /**
-     * This function tries to find a user from the database based on the entered email.
+     * This method tries to find a user from the database based on the entered email.
      * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
      *
      * @param email the email as entered in the login form
@@ -69,16 +71,35 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getEncryptedPassword(), grantedAuthorities);
     }
 
+    /**
+     * This method uses the userRepository to try to add a user to the database.
+     * Before saving it, a random password is generated
+     * In order to inform the new user about his credentials an email is sent to his email address.
+     *
+     * @param user the user as obtained from the controller
+     */
     @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
-        user.setEncryptedPassword(passwordEncoder.encode(generateRandomPassword(10)));
-        user.setEnabled(true);
-        user.setRole(roleRepository.findByRoleName(SecurityRole.MITARBEITER));
+        // Generate a random password
+        String randomPassword = generateRandomPassword();
+        user.setEncryptedPassword(passwordEncoder.encode(randomPassword));
 
+        /* Try to save the user to the database before sending the mail.
+           Reason: If email address is already registered an exception is
+           thrown by the repository message. Then the mail doesn't have to
+           be sent.
+        */
         userRepository.save(user);
+
+        // If the user was added successfully the email can be sent.
+        String subject = messageSource.getMessage("employees.add.email.subject", null, Locale.getDefault());
+        Object[] parameters = {user.getLastName(), user.getEmail(), randomPassword};
+        String text = messageSource.getMessage("employees.add.email.text", parameters, Locale.getDefault());
+        emailService.sendHTMLEmail(user.getEmail(), subject, text);
     }
 
-    private String generateRandomPassword(int length){
+    private String generateRandomPassword(){
+        int length = 10;
         SecureRandom secureRandom = new SecureRandom();
         String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$%&/()?!+-,.*abcdefghijklmnopqrstuvwxyz";
 

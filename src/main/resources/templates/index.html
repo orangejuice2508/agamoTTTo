@@ -23,18 +23,18 @@
         </div>
 
         <div th:if="${#request.getParameter('loginError') == 'true'}" class="card-body text-white bg-danger">
-            <span th:text="#{index.login.failed}"></span>
+            <span th:text="#{index.login.error.login_failed}"></span>
         </div>
 
         <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
-            <span th:text="#{index.logout.successful}"></span>
+            <span th:text="#{index.logout.logout_successful}"></span>
         </div>
 
         <div class="card-body">
             <form class="form-signin" th:action="@{/j_spring_security_check}" method="POST">
-                <input type="email" name="email" class="form-control" th:placeholder="#{index.login.email}" required="" autofocus="">
-                <input type="password" name="password" class="form-control mb-2" th:placeholder="#{index.login.password}" required="">
-                <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{index.login.submit}"></button>
+                <input type="email" name="email" class="form-control" th:placeholder="#{index.login.label.email}" required="" autofocus="">
+                <input type="password" name="password" class="form-control mb-2" th:placeholder="#{index.login.label.password}" required="">
+                <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{index.login.label.submit}"></button>
             </form>
         </div>
 
