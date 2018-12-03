@@ -2,12 +2,9 @@ package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.entity.User;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
-import de.gruppe2.agamoTTTo.security.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.mail.MailException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -79,7 +76,6 @@ public class UserService implements UserDetailsService {
      *
      * @param user the user as obtained from the controller
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
         // Generate a random password and hash it.
         String randomPassword = generateRandomPassword();
