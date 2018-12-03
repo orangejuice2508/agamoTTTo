@@ -15,26 +15,37 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class EmailService {
 
-    private JavaMailSender mailSender;
+    private JavaMailSender emailSender;
 
     @Autowired
     public EmailService(JavaMailSender javaMailSender) {
-        this.mailSender = javaMailSender;
+        this.emailSender = javaMailSender;
     }
+
+    /**
+     * This method sends an email in HTML format to the specified email address.
+     * Without @Async the user which initiated the sending of an email would have to wait until the
+     * email was sent.
+     *
+     * @param to recipient's email address
+     * @param subject the subject of the email
+     * @param text the text of the email
+     */
 
     @Async
     public void sendHTMLEmail(String to, String subject, String text){
-        MimeMessage email = mailSender.createMimeMessage();
+        MimeMessage email = emailSender.createMimeMessage();
 
+        // The creation of the email could throws a MessagingException which has to be caught.
         try{
             email.setSubject(subject);
             email.setRecipient(Message.RecipientType.TO, new InternetAddress(to, false));
             email.setContent(text, "text/html; charset=utf-8");
+            emailSender.send(email);
+            log.info("Mail was successfully created and sent!");
         }
         catch(MessagingException e){
-            log.info("Mail could not be created!");
+            log.error("Mail could not be created or sent!");
         }
-
-        mailSender.send(email);
     }
 }

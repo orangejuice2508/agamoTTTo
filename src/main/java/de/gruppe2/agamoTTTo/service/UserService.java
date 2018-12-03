@@ -6,6 +6,7 @@ import de.gruppe2.agamoTTTo.security.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -80,24 +81,33 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
-        // Generate a random password
+        // Generate a random password and hash it.
         String randomPassword = generateRandomPassword();
         user.setEncryptedPassword(passwordEncoder.encode(randomPassword));
 
         /* Try to save the user to the database before sending the mail.
            Reason: If email address is already registered an exception is
            thrown by the repository message. Then the mail doesn't have to
-           be sent.
+           be and won't be sent.
         */
         userRepository.save(user);
 
-        // If the user was added successfully the email can be sent.
+        /* If the user was added successfully the email can be sent.
+           Note: We obtain the subject and text of the email from "messages.properties" by using the messageSource.
+           Since the text of the email contains parameters (name, email, password),
+           we need to pass them to the messageSource.
+         */
         String subject = messageSource.getMessage("employees.add.email.subject", null, Locale.getDefault());
         Object[] parameters = {user.getLastName(), user.getEmail(), randomPassword};
         String text = messageSource.getMessage("employees.add.email.text", parameters, Locale.getDefault());
         emailService.sendHTMLEmail(user.getEmail(), subject, text);
     }
 
+    /**
+     * Used for generating a random password for a newly registered user.
+     *
+     * @return the random password
+     */
     private String generateRandomPassword(){
         int length = 10;
         SecureRandom secureRandom = new SecureRandom();
@@ -105,6 +115,7 @@ public class UserService implements UserDetailsService {
 
         StringBuilder randomPassword = new StringBuilder(length);
 
+        // Add random characters until the desired length off the password is reached.
         for (int i =0; i < length; i++){
             randomPassword.append(characters.charAt(secureRandom.nextInt(characters.length())));
         }

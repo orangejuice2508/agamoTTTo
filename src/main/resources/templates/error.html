@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/no_navbar_layout">
+<head>
+    <title th:text="#{error.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+<div class="card text-center m-3">
+    <div class="card-header"><img class="img-fluid" th:src="@{/images/agamoTTTo_logo_transparent.png}"/></div>
+    <div class="card-body">
+        <h5 class="card-title" th:text="#{error.card.title}"></h5>
+        <p class="card-text" th:text="#{error.card.text}"></p>
+    </div>
+    <div class="card-footer">
+        <a th:href="@{/}">
+            <a th:href="@{/home}" th:text="#{back_to_overview}"></a>
+        </a>
+    </div>
+</div>
+</div>
+</body>
+</html>

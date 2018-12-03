@@ -23,14 +23,14 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Set up the SecurityRole Hierarchy as obtained from the static method.
+     * Set up the Role Hierarchy as obtained from the static method.
      *
      * @return roleHierarchy the created hierarchy of the roles in the system
      */
     @Bean
     public RoleHierarchyImpl roleHierarchy(){
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy(SecurityRole.getRoleHierarchyStringRepresentation());
+        roleHierarchy.setHierarchy(Role.getRoleHierarchyStringRepresentation());
         return roleHierarchy;
     }
 

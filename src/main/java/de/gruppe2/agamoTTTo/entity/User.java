@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.entity;
 
-import de.gruppe2.agamoTTTo.security.SecurityRole;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -50,6 +49,6 @@ public class User {
     public User() {
         this.encryptedPassword = "";
         this.enabled = Boolean.TRUE;
-        this.role = new Role(3L, SecurityRole.MITARBEITER);
+        this.role = new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER);
     }
 }
