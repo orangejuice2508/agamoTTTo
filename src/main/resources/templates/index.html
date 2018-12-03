@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="fragments/no_navbar_layout">
+      layout:decorate="fragments/layout">
 <head>
     <title th:text="#{index.title}"></title>
 </head>
 <body>
 <div layout:fragment="content">
-<div class="card w-50 mx-auto text-center mt-5 bg-light">
+<div class="card w-50 mx-auto text-center m-3 bg-light">
         <div class="card-body">
             <a th:href="@{/}">
                 <img class="img-fluid" th:src="@{/images/agamoTTTo_logo_transparent.png}" alt=""/>

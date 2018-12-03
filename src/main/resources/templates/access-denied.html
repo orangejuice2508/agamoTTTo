@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="fragments/no_navbar_layout">
+      layout:decorate="fragments/layout">
 <head>
     <title th:text="#{access_denied.title}"></title>
 </head>
@@ -14,7 +14,7 @@
         <p class="card-text" th:text="#{access_denied.card.text}"></p>
     </div>
     <div class="card-footer">
-        <a th:href="@{/home}" th:text="#{back_to_overview}"></a>
+        <a th:href="@{/}" th:text="#{back_to_overview}"></a>
     </div>
 </div>
 </div>
