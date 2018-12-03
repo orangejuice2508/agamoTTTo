@@ -35,7 +35,6 @@ public class EmployeesController extends de.gruppe2.agamoTTTo.controller.Control
      * @param model the Spring Model
      * @return path to template
      */
-
     @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/add")
     public String getAddEmployeesPage(Model model){

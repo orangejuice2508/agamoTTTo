@@ -22,7 +22,6 @@ import java.util.Set;
 /**
  * Service which is used for dealing with the users of our application.
  */
-
 @Slf4j
 @Service
 public class UserService implements UserDetailsService {
@@ -62,7 +61,6 @@ public class UserService implements UserDetailsService {
         }
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getRoleName());
-
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         grantedAuthorities.add(authority);
 

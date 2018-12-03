@@ -26,18 +26,28 @@
                     <span th:text="#{navbar.item.records}"></span>
                 </a>
             </li>
-            <li class="nav-item" sec:authorize="hasRole('ROLE_VORGESETZTER')">
-                <a class="nav-link" href="#">
+            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">
+                <a class="nav-link dropdown-toggle" href="#" id="poolDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-folder"></i>
                     <span th:text="#{navbar.item.pools}"></span>
                 </a>
+                <div class="dropdown-menu" aria-labelledby="poolDropdown">
+                    <a class="dropdown-item" th:href="@{/pools/add}">
+                        <i class="fas fa-plus-circle"></i>
+                        <span th:text="#{navbar.dropdown.add}"></span>
+                    </a>
+                    <a class="dropdown-item" th:href="@{/pools/show}">
+                        <i class="fas fa-search"></i>
+                        <span th:text="#{navbar.dropdown.overview}"></span>
+                    </a>
+                </div>
             </li>
             <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" id="employeesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user-circle"></i>
                     <span th:text="#{navbar.item.employees}"></span>
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <div class="dropdown-menu" aria-labelledby="employeesDropdown">
                     <a class="dropdown-item" th:href="@{/employees/add}">
                         <i class="fas fa-plus-circle"></i>
                         <span th:text="#{navbar.dropdown.add}"></span>
