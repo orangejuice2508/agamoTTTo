@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{pools.overview.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
+        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+            <span th:text="#{pools.overview.info.successful}"></span>
+        </div>
+    </div>
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 th:text="#{pools.overview.title}" class="card-title"></h4>
+        </div>
+        <div class="card-body">
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Eigentümer</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pool: ${pools}">
+                    <td th:text="${pool.name}" />
+                    <td th:text="${pool.owner.getFirstName() + ' ' + pool.owner.getLastName() + ' (' + pool.owner.getEmail() + ')'}"/>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

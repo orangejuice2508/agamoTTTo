@@ -5,6 +5,8 @@ import de.gruppe2.agamoTTTo.repository.PoolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Service which is used for dealing with the pools("Arbeitsbereiche") of our application.
  */
@@ -26,5 +28,7 @@ public class PoolService {
     public void addPool(Pool pool){
         poolRepository.save(pool);
     }
+
+    public List<Pool> getAllPools() { return poolRepository.findAll(); }
 
 }

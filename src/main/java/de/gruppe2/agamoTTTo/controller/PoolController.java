@@ -77,4 +77,11 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
         // If the user was added successfully, reload the page with an empty form.
         return "redirect:/pools/add/?successful=true";
     }
+
+    @PreAuthorize(Permission.ADMINISTRATOR)
+    @GetMapping("/overview")
+    public String getAddPools(Model model){
+        model.addAttribute("pools", poolService.getAllPools());
+        return "pools/overview";
+    }
 }
