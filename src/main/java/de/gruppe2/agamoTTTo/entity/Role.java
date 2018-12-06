@@ -1,17 +1,16 @@
 package de.gruppe2.agamoTTTo.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name = "role")
-@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,7 +21,11 @@ public class Role {
     @Column(name = "role_name")
     private String roleName;
 
-    // ToDo: Get mapping right.
-    /*@OneToMany(mappedBy = "role")
-    private Set<User> users;*/
+    @OneToMany(mappedBy = "role")
+    private Set<User> users;
+
+    public Role(Long id, String roleName){
+        this.id = id;
+        this.roleName = roleName;
+    }
 }
