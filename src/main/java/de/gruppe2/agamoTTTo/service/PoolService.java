@@ -29,6 +29,14 @@ public class PoolService {
         poolRepository.save(pool);
     }
 
-    public List<Pool> getAllPools() { return poolRepository.findAll(); }
+    /**
+     * This method uses the poolRepository to find all pools from the database.
+     *
+     * @return all pools in the database
+     */
+
+    public List<Pool> getAllPools() {
+        return poolRepository.findAll();
+    }
 
 }

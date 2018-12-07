@@ -78,9 +78,17 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
         return "redirect:/pools/add/?successful=true";
     }
 
+    /**
+     * Method for displaying the "overview pool" page.
+     * Note: Authorization is still "ROLE_ADMINISTRATOR",
+     * because showing a user HIS pools is not implemented yet.
+     *
+     * @param model the Spring Model
+     * @return path to template
+     */
     @PreAuthorize(Permission.ADMINISTRATOR)
     @GetMapping("/overview")
-    public String getAddPools(Model model){
+    public String getOverviewPools(Model model){
         model.addAttribute("pools", poolService.getAllPools());
         return "pools/overview";
     }
