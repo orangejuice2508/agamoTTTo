@@ -34,7 +34,6 @@ public class PoolService {
      *
      * @return all pools in the database
      */
-
     public List<Pool> getAllPools() {
         return poolRepository.findAll();
     }
