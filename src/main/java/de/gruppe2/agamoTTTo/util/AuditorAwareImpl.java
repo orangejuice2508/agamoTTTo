@@ -8,14 +8,26 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * Since we use @CreatedBy and @LastModifiedBy, those annotations need to become aware
+ * about the current user, which modified or created an entity.
+ */
+
 @Component(value = "auditorAware")
 public class AuditorAwareImpl implements AuditorAware<CustomSecurityUser> {
 
+    /**
+     * This method uses the SecurityContextHolder, which is provided by Spring Security,
+     * to retrieve the current user, which is logged in. If no such authentication is found
+     * the auditor is null and an empty optional is returned. Else:
+     *
+     * @return auditor the user which created or modified an entity
+     */
     public Optional<CustomSecurityUser> getCurrentAuditor() {
         Optional<CustomSecurityUser> auditor;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             auditor = Optional.empty();
         }
         else{
