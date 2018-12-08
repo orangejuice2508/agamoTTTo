@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.entity.Pool;
+import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
-package de.gruppe2.agamoTTTo.security;
+package de.gruppe2.agamoTTTo.configuration;
 
+import de.gruppe2.agamoTTTo.security.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -16,7 +17,6 @@ public class SecurityConfiguration {
      *
      * @return bcryptPasswordEncoder Object used for hashing and comparing passwords.
      * */
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

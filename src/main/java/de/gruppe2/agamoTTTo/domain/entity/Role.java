@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.entity;
+package de.gruppe2.agamoTTTo.domain.entity;
 
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package de.gruppe2.agamoTTTo.controller;
 
+import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,7 @@ public class MainController {
 
         model.addAttribute("email", email);
 
-        User loggedInUser = (User) ((Authentication) principal).getPrincipal();
+        CustomSecurityUser loggedInUser = (CustomSecurityUser) ((Authentication) principal).getPrincipal();
 
         String authority = loggedInUser.getAuthorities().toString();
         model.addAttribute("authority", authority);

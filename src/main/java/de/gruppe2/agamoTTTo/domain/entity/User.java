@@ -1,6 +1,7 @@
-package de.gruppe2.agamoTTTo.entity;
+package de.gruppe2.agamoTTTo.domain.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -52,5 +53,15 @@ public class User {
         this.encryptedPassword = "";
         this.enabled = Boolean.TRUE;
         this.role = new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER);
+    }
+
+    public User (User user){
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.encryptedPassword = user.getEncryptedPassword();
+        this.enabled = user.getEnabled();
+        this.role = user.getRole();
     }
 }

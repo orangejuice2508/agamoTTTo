@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.entity.User;
+import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
