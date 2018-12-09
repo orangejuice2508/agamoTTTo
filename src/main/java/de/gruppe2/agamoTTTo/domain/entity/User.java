@@ -1,7 +1,6 @@
 package de.gruppe2.agamoTTTo.domain.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,12 +8,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "agamottto_user")
 public class User {
+
     @Id
     @GeneratedValue
     @Column(name = "user_id")
@@ -48,6 +49,13 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_pool",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "pool_id")})
+    private Set<Pool> pools;
 
     public User() {
         this.encryptedPassword = "";
