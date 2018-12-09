@@ -9,26 +9,33 @@
 <div layout:fragment="content">
     <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
         <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
-            <span th:text="#{pools.overview.info.successful}"></span>
+            <span th:text="#{pools.edit.info.successful}"></span>
         </div>
     </div>
     <div class="card m-3">
         <div class="card-header">
             <h4 th:text="#{pools.overview.title}" class="card-title"></h4>
+            <p th:text="#{pools.overview.subtitle}" class="card-subtitle text-muted"></p>
         </div>
         <div class="card-body">
-
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Eigentümer</th>
+                    <th scope="col" th:text="#{pools.overview.table.header.name}"></th>
+                    <th scope="col" th:text="#{pools.overview.table.header.owner}"></th>
+                    <th scope="col" th:text="#{pools.overview.table.header.actions}"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="pool: ${pools}">
-                    <td th:text="${pool.name}" />
-                    <td th:text="${pool.owner.getFirstName() + ' ' + pool.owner.getLastName() + ' (' + pool.owner.getEmail() + ')'}"/>
+                    <td th:text="${pool.name}"></td>
+                    <td th:text="${pool.owner.firstName + ' ' + pool.owner.lastName + ' (' + pool.owner.email + ')'}"></td>
+                    <td>
+                        <a th:href="@{/pools/edit/{id}(id=${pool.id})}">
+                            <i class="fas fa-edit"></i>
+                            <span th:text="#{pools.overview.table.data.actions.edit}"></span>
+                        </a>
+                    </td>
                 </tr>
                 </tbody>
             </table>

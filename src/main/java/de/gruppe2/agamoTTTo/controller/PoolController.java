@@ -3,6 +3,7 @@ package de.gruppe2.agamoTTTo.controller;
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.service.PoolService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,13 +11,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Locale;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("pools")
@@ -60,21 +59,20 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
         if(bindingResult.hasErrors()){
             return "pools/add";
         }
-        else{
-            /* Try to add the pool to the database. If the pool name exists already, a DataIntegrityViolation
-                will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
-                error message.
-             */
-            try{
-                poolService.addPool(pool);
-            }
-            catch(DataIntegrityViolationException e){
-                bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.add.error.name_not_unique", null, Locale.getDefault()));
-                return "pools/add";
-            }
+
+        /* Try to add the pool to the database. If the pool name exists already, a DataIntegrityViolation
+        will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
+        error message.
+        */
+        try{
+            poolService.addPool(pool);
+        }
+        catch(DataIntegrityViolationException e){
+            bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.error.name_not_unique", null, Locale.getDefault()));
+            return "pools/edit";
         }
 
-        // If the user was added successfully, reload the page with an empty form.
+        // If the pool was added successfully, reload the page with an empty form.
         return "redirect:/pools/add/?successful=true";
     }
 
@@ -88,8 +86,60 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      */
     @PreAuthorize(Permission.ADMINISTRATOR)
     @GetMapping("/overview")
-    public String getOverviewPools(Model model){
+    public String getOverviewPoolsPage(Model model){
         model.addAttribute("pools", poolService.getAllPools());
         return "pools/overview";
+    }
+
+    /**
+     * Method for displaying the edit form for a pool determined by its id.
+     *
+     * @param id a pool's id as specified in the path
+     * @param model the Spring Model
+     * @return path to the template
+     * @throws NotFoundException if no pool with the id can be found in the DB
+     */
+    @GetMapping("/edit/{id}")
+    public String getEditPoolPage(@PathVariable("id") Long id, Model model) throws NotFoundException {
+
+        Optional<Pool> optionalPool = poolService.findPoolById(id);
+
+        if(!optionalPool.isPresent()){
+            throw new NotFoundException("No pool found with ID: " + id);
+        }
+
+        model.addAttribute("pool", optionalPool.get());
+        return "pools/edit";
+    }
+
+    /**
+     * Method for handling the submission of the "edit pool" form.
+     *
+     * @param updatedPool the pool with updated fields
+     * @param bindingResult contains possible form errors
+     * @return path to the template
+     */
+    @PutMapping("edit/{id}")
+    public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
+        /* If the form contains errors, the pool won't be updated and the form is displayed again with
+        corresponding error messages. */
+        if(bindingResult.hasErrors()){
+            return "pools/edit";
+        }
+
+        /* Try to update the pool in the database. If the pool name exists already, a DataIntegrityViolation
+        will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
+        error message.
+        */
+        try{
+            poolService.updatePool(updatedPool);
+        }
+        catch(DataIntegrityViolationException e){
+            bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.error.name_not_unique", null, Locale.getDefault()));
+            return "pools/edit";
+        }
+
+        // If the pool was updated successfully, redirect to the pools' overview page.
+        return "redirect:/pools/overview/?successful=true";
     }
 }

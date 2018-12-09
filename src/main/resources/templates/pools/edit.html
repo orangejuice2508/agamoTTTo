@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{employees.add.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <div>
+                <a th:href="@{/pools/overview}">
+                    <i class="fas fa-arrow-circle-left"></i>
+                    <span th:text="#{back}"></span>
+                </a>
+            </div>
+            <hr>
+            <div>
+                <h4 th:text="#{pools.edit.title}" class="card-title"></h4>
+                <p th:text="#{pools.edit.subtitle}" class="card-subtitle text-muted"></p>
+            </div>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/pools/edit/{id}(id=${pool.id})}" th:object="${pool}" th:method="PUT">
+                <div class="form-group">
+                    <label th:text="#{pools.edit.label.name}" for="name"></label>
+                    <input th:field="*{name}" th:errorclass="is-invalid" type="text" class="form-control" id="name" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+                <p>
+                    <button th:text="#{button.submit}" type="submit" class="btn btn-primary mr-1"></button>
+                    <button th:text="#{button.reset}" type="reset" class="btn btn-secondary"></button>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
