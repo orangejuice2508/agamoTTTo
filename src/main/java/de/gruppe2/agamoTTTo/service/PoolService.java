@@ -31,15 +31,6 @@ public class PoolService {
     }
 
     /**
-     * This method uses the poolRepository to find all pools from the database.
-     *
-     * @return all pools in the database
-     */
-    public List<Pool> getAllPools() {
-        return poolRepository.findAll();
-    }
-
-    /**
      * This method uses the poolRepository to try to update to the database.
      *
      * @param updatedPool the updated pool as obtained from the controller
@@ -50,6 +41,15 @@ public class PoolService {
 
         poolToUpdate.setName(updatedPool.getName());
         poolRepository.save(poolToUpdate);
+    }
+
+    /**
+     * This method uses the poolRepository to find all pools from the database.
+     *
+     * @return all pools in the database
+     */
+    public List<Pool> findAllPools() {
+            return poolRepository.findAll();
     }
 
     /**
