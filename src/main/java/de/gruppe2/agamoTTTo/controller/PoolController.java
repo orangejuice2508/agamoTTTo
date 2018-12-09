@@ -1,7 +1,10 @@
 package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
+import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
+import de.gruppe2.agamoTTTo.security.Role;
+import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +42,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      */
     @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/add")
-    public String getAddPoolsPage(Model model){
+    public String getAddPoolsPage(Model model) {
         model.addAttribute("pool", new Pool());
         return "pools/add";
     }
@@ -53,10 +56,10 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      */
     @PreAuthorize(Permission.VORGESETZTER)
     @PostMapping("/add")
-    public String postAddPoolsPage(@ModelAttribute @Valid Pool pool, BindingResult bindingResult){
+    public String postAddPoolsPage(@ModelAttribute @Valid Pool pool, BindingResult bindingResult) {
         /* If the form contains errors, the new pool won't be added and the form is displayed again with
            corresponding error messages. */
-        if(bindingResult.hasErrors()){
+        if(bindingResult.hasErrors()) {
             return "pools/add";
         }
 
@@ -64,10 +67,10 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
         will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
         error message.
         */
-        try{
+        try {
             poolService.addPool(pool);
         }
-        catch(DataIntegrityViolationException e){
+        catch(DataIntegrityViolationException e) {
             bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.error.name_not_unique", null, Locale.getDefault()));
             return "pools/edit";
         }
@@ -78,16 +81,27 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
 
     /**
      * Method for displaying the "overview pool" page.
-     * Note: Authorization is still "ROLE_ADMINISTRATOR",
-     * because showing a user HIS pools is not implemented yet.
      *
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.ADMINISTRATOR)
+    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/overview")
     public String getOverviewPoolsPage(Model model){
-        model.addAttribute("pools", poolService.getAllPools());
+        // Get the logged in user to determine their role.
+        User authenticationUser = SecurityContext.getAuthenticationUser();
+
+        // The admin can see all pools, all others only the pools they're assigned to.
+        if(authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
+            model.addAttribute("pools", poolService.findAllPools());
+        }
+        else {
+            model.addAttribute("pools", poolService.findAllPoolsOfAUser(authenticationUser));
+            /* In the view we need the id of the logged in user to determine whether he is
+            entitled to edit a pool. */
+            model.addAttribute("userId", authenticationUser.getId());
+        }
+
         return "pools/overview";
     }
 
@@ -99,6 +113,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      * @return path to the template
      * @throws NotFoundException if no pool with the id can be found in the DB
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/edit/{id}")
     public String getEditPoolPage(@PathVariable("id") Long id, Model model) throws NotFoundException {
 
@@ -119,6 +134,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     @PutMapping("edit/{id}")
     public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
@@ -131,10 +147,10 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
         will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
         error message.
         */
-        try{
+        try {
             poolService.updatePool(updatedPool);
         }
-        catch(DataIntegrityViolationException e){
+        catch(DataIntegrityViolationException e) {
             bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.error.name_not_unique", null, Locale.getDefault()));
             return "pools/edit";
         }

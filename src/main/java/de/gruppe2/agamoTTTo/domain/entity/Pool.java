@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,6 +17,7 @@ import javax.validation.constraints.Size;
 @Table(name = "pool")
 @EntityListeners(AuditingEntityListener.class)
 public class Pool {
+
     @Id
     @GeneratedValue
     @Column(name = "pool_id")
@@ -30,4 +32,7 @@ public class Pool {
     @JoinColumn(name = "owner", nullable = false)
     @CreatedBy
     private User owner;
+
+    @ManyToMany(mappedBy = "pools")
+    private Set<User> users;
 }

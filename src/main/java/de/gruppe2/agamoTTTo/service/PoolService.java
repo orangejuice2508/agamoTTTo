@@ -1,12 +1,13 @@
 package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
+import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
+import de.gruppe2.agamoTTTo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service which is used for dealing with the pools("Arbeitsbereiche") of our application.
@@ -16,9 +17,12 @@ public class PoolService {
 
     private PoolRepository poolRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public PoolService(PoolRepository poolRepository) {
+    public PoolService(PoolRepository poolRepository, UserRepository userRepository) {
         this.poolRepository = poolRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -48,8 +52,20 @@ public class PoolService {
      *
      * @return all pools in the database
      */
-    public List<Pool> findAllPools() {
-            return poolRepository.findAll();
+    public Set<Pool> findAllPools() {
+        return new HashSet<>(poolRepository.findAll());
+    }
+
+    /**
+     * This method uses the userRepository to find all pools which a user is part of.
+     *
+     * @param user the user whose pools should be found
+     * @return a user's pools
+     */
+    public Set<Pool> findAllPoolsOfAUser(User user){
+        Optional<User> optionalUser = userRepository.findById(user.getId());
+
+        return optionalUser.isPresent() ? new HashSet<>(optionalUser.get().getPools()) : Collections.emptySet();
     }
 
     /**
