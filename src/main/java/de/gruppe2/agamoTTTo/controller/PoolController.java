@@ -10,6 +10,7 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -115,12 +116,18 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      */
     @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/edit/{id}")
-    public String getEditPoolPage(@PathVariable("id") Long id, Model model) throws NotFoundException {
+    public String getEditPoolPage(@PathVariable("id") Long id, Model model) throws Exception {
 
         Optional<Pool> optionalPool = poolService.findPoolById(id);
 
+        // Check whether a pool with the id could be found.
         if(!optionalPool.isPresent()){
             throw new NotFoundException("No pool found with ID: " + id);
+        }
+
+        // Check whether the current user is allowed to edit the pool.
+        if(!optionalPool.get().getOwner().getId().equals(SecurityContext.getAuthenticationUser().getId())){
+            throw new AccessDeniedException("The current user/editor and the pool owner are not identical.");
         }
 
         model.addAttribute("pool", optionalPool.get());
