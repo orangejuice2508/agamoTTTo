@@ -47,17 +47,17 @@ public class Record {
     private String descripiton;
 
     @Column(name = "version")
-    private int version;
+    private Long version;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @CreatedBy
     private User user_id;
 
-   //TO-DO @Column(name = "pool_id")
+   @Column(name = "pool_id")
 
-    /*@ManyToMany(mappedBy = "records")
-    private Set<User> users; */
+    @ManyToMany(mappedBy = "records") */
+    //private Set<User> users;
 
 
 
