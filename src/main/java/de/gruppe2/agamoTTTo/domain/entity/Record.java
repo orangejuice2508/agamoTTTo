@@ -3,6 +3,8 @@ package de.gruppe2.agamoTTTo.domain.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -20,6 +22,7 @@ import java.sql.Timestamp;
 @Setter
 @Entity
 @Table(name = "record")
+@EntityListeners(AuditingEntityListener.class)
 public class Record {
 
     @Id
@@ -31,15 +34,15 @@ public class Record {
     private Date date;
 
     @Column(name = "start_time")
-    private Timestamp startTime;
+    private Time startTime;
 
     @Column(name = "end_time")
-    private Timestamp endTime;
+    private Time endTime;
 
     @Column(name = "duration")
-    private Timestamp duration = calculateTimeDifference(startTime, endTime);
+    private Time duration = calculateTimeDifference(startTime, endTime);
 
-    @Size(max = 250)
+    @Size(min = 1, max = 250)
     @Column(name = "description")
     private String descripiton;
 
@@ -53,16 +56,16 @@ public class Record {
 
    //TO-DO @Column(name = "pool_id")
 
-    @ManyToMany(mappedBy = "records")
-    private Set<User> users;
+    /*@ManyToMany(mappedBy = "records")
+    private Set<User> users; */
 
 
 
 
-    private Timestamp calculateTimeDifference(Timestamp startTime, Timestamp endTime) {
+    private Time calculateTimeDifference(Time startTime, Time endTime) {
 
         long diff = endTime.getTime() - startTime.getTime();
-        Timestamp difference = new Timestamp(diff);
-        return null;
+        Time difference = new Time(diff);
+        return difference;
     }
 }
