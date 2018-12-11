@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.util.Locale;
 
 @Controller
-@RequestMapping("pools")
+@RequestMapping("records")
 public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller{
 
     private PoolService poolService;
