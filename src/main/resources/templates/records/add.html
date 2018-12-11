@@ -7,12 +7,16 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
+        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+            <span th:text="#{records.add.info.successful}"></span>
+        </div>
     <div class="card m-3">
         <div class="card-header">
             <h4 th:text="#{records.add.title}" class="card-title"></h4>
 
         </div>
-
+    </div>
     </div>
 </div>
 </body>
