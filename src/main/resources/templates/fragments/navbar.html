@@ -14,8 +14,8 @@
 
     <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="#">
+            <li class="nav-item" sec:authorize="hasRole('ROLE_MITARBEITER')">
+                <a class="nav-link" th:href="@{/records/add}">
                     <i class="fas fa-plus-circle"></i>
                     <span th:text="#{navbar.item.add}"></span>
                 </a>
