@@ -80,6 +80,7 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
         */
         try {
             recordService.addRecord(record);
+            recordService.getAllRecordsOfAUser(SecurityContext.getAuthenticationUser());
         }
         catch (Exception e){
             return "records/add";
@@ -87,11 +88,5 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
         return "redirect:/records/add/?successful=true";
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-        dateFormat.setLenient(false);
-        binder.registerCustomEditor(LocalDateTime.class,  new CustomDateEditor(dateFormat, true));
-    }
 
 }

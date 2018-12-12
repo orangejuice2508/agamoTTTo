@@ -39,4 +39,9 @@ public class RecordService{
            //viele if-abfragen
            recordRepository.save(record);
        }
+
+       public List<Record> getAllRecordsOfAUser(User user) {
+           System.out.println(recordRepository.findAllByUserId(user).toString());
+           return recordRepository.findAllByUserId(user);
+       }
 }
