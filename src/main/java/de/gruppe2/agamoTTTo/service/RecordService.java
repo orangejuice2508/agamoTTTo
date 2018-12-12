@@ -35,10 +35,8 @@ public class RecordService{
          * @param record the record as obtained from the controller
          */
        public void addRecord(Record record) {
+           record.setDuration(record.calculateDuration(record.getStart_time(), record.getEnd_time()));
            //viele if-abfragen
            recordRepository.save(record);
        }
-
-
-
 }

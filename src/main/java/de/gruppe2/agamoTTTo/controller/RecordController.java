@@ -12,15 +12,23 @@ import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordService;
 import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +57,6 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
      */
     @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/add")
-    //@ModelAttribute("belongingPools")
     public String getAddRecordPage(Model model) {
         // Get the logged in user to determine their role.
         User authenticationUser = SecurityContext.getAuthenticationUser();
@@ -60,6 +67,7 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
 
     @PostMapping("/add")
     public String postAddRecordPage(@ModelAttribute @Valid Record record, BindingResult bindingResult) {
+
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if(bindingResult.hasErrors()) {
@@ -70,7 +78,6 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
         will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
         error message.
         */
-
         try {
             recordService.addRecord(record);
         }
@@ -78,6 +85,13 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
             return "records/add";
         }
         return "redirect:/records/add/?successful=true";
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(LocalDateTime.class,  new CustomDateEditor(dateFormat, true));
     }
 
 }
