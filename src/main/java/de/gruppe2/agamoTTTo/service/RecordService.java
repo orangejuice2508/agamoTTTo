@@ -7,6 +7,7 @@ import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.security.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,18 @@ public class RecordService{
         this.userRepository = userRepository;
         this.recordRepository = recordRepository;
 
+    }
+
         /**
          * This method uses the recordRepository to try to add a record to the database.
          *
          * @param record the record as obtained from the controller
          */
-       // public void addRecord(Record record) { recordRepository.save(record); }
-    }
+       public void addRecord(Record record) {
+           //viele if-abfragen
+           recordRepository.save(record);
+       }
+
+
+
 }

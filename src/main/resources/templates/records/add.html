@@ -11,13 +11,52 @@
         <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
             <span th:text="#{records.add.info.successful}"></span>
         </div>
-    <div class="card m-3">
-        <div class="card-header">
-            <h4 th:text="#{records.add.title}" class="card-title"></h4>
 
-        </div>
     </div>
+<div class="card m-3">
+    <div class="card-header">
+        <h4 th:text="#{records.add.title}" class="card-title"></h4>
+        <p th:text="#{records.add.subtitle}" class="card-subtitle text-muted"></p>
     </div>
+    <div class="card-body">
+        <form action="#" th:action="@{/records/add}" th:object="${record}" method="post">
+            <div class="form-group">
+                <label th:text="#{records.add.label.date}" for="date"></label>
+                <input th:placeholder="#{records.add.label.date.format}" th:errorclass="is-invalid" th:field="*{date}" type="text" class="form-control" id="date" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+            </div>
+            <div class="form-group">
+                <label th:text="#{records.add.label.start_time}" for="start_time"></label>
+                <input th:placeholder="#{records.add.label.start_time}" th:errorclass="is-invalid" th:field="*{start_time}" type="text" class="form-control" id="start_time" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('start_time')}" th:errors="*{start_time}"></div>
+            </div>
+            <div class="form-group">
+                <label th:text="#{records.add.label.end_time}" for="end_time"></label>
+                <input th:placeholder="#{records.add.label.end_time}" th:errorclass="is-invalid" th:field="*{end_time}" type="text" class="form-control" id="end_time" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('end_time')}" th:errors="*{end_time}"></div>
+            </div>
+            <div class="form-group">
+                <label th:text="#{records.add.label.description}" for="description"></label>
+                <input th:placeholder="#{records.add.label.description}" th:errorclass="is-invalid" th:field="*{description}" type="text" class="form-control" id="description" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            </div>
+            <div class="form-group">
+                <p th:text="#{records.add.label.pool}"></p>
+            </div>
+            <div class="drop-down">
+                <select>
+                    <option th:each="pool: ${pools}"
+                            th:value="${pool.id}"
+                            th:text="${pool.name}"></option>
+                </select>
+            </div>
+            <p>
+                <button th:text="#{button.submit}" type="submit" class="btn btn-primary mr-1"></button>
+                <button th:text="#{button.reset}" type="reset" class="btn btn-secondary"></button>
+            </p>
+        </form>
+    </div>
+</div>
 </div>
 </body>
 </html>
