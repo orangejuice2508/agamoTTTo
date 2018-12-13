@@ -44,7 +44,7 @@
                 <p th:text="#{records.add.label.pool}"></p>
             </div>
             <div class="drop-down">
-                <select class="form-control" th:field="*{poolId}" id="poolId" required>
+                <select class="form-control" th:field="*{pool}" id="pool_id" required>
                     <option th:each="pool: ${pools}"
                             th:value="${pool.id}"
                             th:text="${pool.name}"></option>

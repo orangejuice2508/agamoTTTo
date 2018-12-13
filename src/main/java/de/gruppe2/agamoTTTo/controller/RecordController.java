@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,9 +69,10 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
     @PostMapping("/add")
     public String postAddRecordPage(@ModelAttribute @Valid Record record, BindingResult bindingResult) {
 
+        User authenticationUser = SecurityContext.getAuthenticationUser();
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "records/add";
         }
 
@@ -78,14 +80,31 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
         will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
         error message.
         */
-        try {
-            recordService.addRecord(record);
-            recordService.getAllRecordsOfAUser(SecurityContext.getAuthenticationUser());
+        if (recordService.checkForCorrectStartAndEndTime(record)) {
+            if (recordService.checkForExistingEntry(record, authenticationUser)) {
+                try {
+                    recordService.addRecord(record);
+                    //recordService.getAllRecordsOfAUser(SecurityContext.getAuthenticationUser()); war blos zum testen, kommt hier raus
+                } catch (Exception e) {
+                    return "records/add";
+                }
         }
-        catch (Exception e){
-            return "records/add";
+            else {
+                bindingResult.rejectValue("start_time", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
+                bindingResult.rejectValue("end_time", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
+                return "records/add"; //muss auf records/edit umgeleitet werden bei fehlerhafter ausgabe
+            }
+            return "redirect:/records/add/?successful=true";
         }
-        return "redirect:/records/add/?successful=true";
+        bindingResult.rejectValue("start_time", "error.record", messageSource.getMessage("records.error.wrong_starttime_and_wrong_endtime", null, Locale.getDefault()));
+        bindingResult.rejectValue("end_time", "error.record", messageSource.getMessage("records.error.wrong_starttime_and_wrong_endtime", null, Locale.getDefault()));
+        return "records/add"; //muss auf records/edit umgeleitet werden bei fehlerhafter ausgabe
+    }
+
+
+    @GetMapping("/edit")
+    public String getEditRecordPage() {
+        return null;
     }
 
 

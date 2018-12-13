@@ -16,6 +16,7 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -34,10 +35,10 @@ public class Record {
     private Long id;
 
     @NotNull
-    @Temporal(value = TemporalType.DATE)
+    //@Temporal(value = TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
@@ -63,11 +64,11 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @CreatedBy
-    private User userId;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
-    private Pool poolId;
+    private Pool pool;
 
     public Record() {
         version = 1L;

@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long>{
-    List<Record> findAllByUserId(User user);
+    List<Record> findAllByUser(User user);
 }
