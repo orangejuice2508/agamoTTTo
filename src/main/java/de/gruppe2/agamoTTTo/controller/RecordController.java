@@ -43,11 +43,18 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
     @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
-        model.addAttribute("pools", getAllPoolsOfAUser());
+        model.addAttribute("pools", getAllPoolsOfAuthenticationUser());
         model.addAttribute("record", new Record());
         return "records/add";
     }
 
+    /**
+     * Method for handling the submission of the "add new record" form.
+     *
+     * @param record the record as obtained from the form
+     * @param bindingResult contains possible form errors
+     * @return path to resulting template
+     */
     @PostMapping("/add")
     public String postAddRecordPage(@ModelAttribute @Valid Record record, BindingResult bindingResult, Model model) {
 
@@ -57,7 +64,7 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
-            model.addAttribute("pools", getAllPoolsOfAUser());
+            model.addAttribute("pools", getAllPoolsOfAuthenticationUser());
             return "records/add";
         }
 
@@ -71,7 +78,7 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
      *
      * @return the pools of the logged in user
      */
-    private Set<Pool> getAllPoolsOfAUser(){
+    private Set<Pool> getAllPoolsOfAuthenticationUser(){
         // Get the logged in user and determine their pools
         return poolService.findAllPoolsOfAUser(SecurityContext.getAuthenticationUser());
     }
@@ -84,7 +91,7 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
      * @param bindingResult contains possible form errors
      *
      */
-    private void checkRecord (Record record, BindingResult bindingResult) {
+    private void checkRecord(Record record, BindingResult bindingResult) {
 
         // Check if the record's times are valid
         if (!recordService.areTimesValid(record)) {
@@ -106,6 +113,5 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
     public String getEditRecordPage() {
         return null;
     }
-
-
+    
 }
