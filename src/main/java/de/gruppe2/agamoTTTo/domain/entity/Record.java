@@ -70,23 +70,7 @@ public class Record {
     private Pool poolId;
 
     public Record() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         version = 1L;
-        /*
-        try {
-            duration = dateFormat.parse("12/12/2012");
-        } catch (ParseException e) {
-            System.out.println("bullshit");
-        }
-        //duration = start_time.compareTo(end_time); */
-    }
-
-    public Time calculateDuration(LocalTime start_time, LocalTime end_time) {
-        Duration between = between(start_time, end_time);
-        long millis = between.toMillis();
-        Time time = new Time(0L);
-        time.setTime(millis);
-        return time;
     }
 
     public void setDuration(Time time, Record record) {
