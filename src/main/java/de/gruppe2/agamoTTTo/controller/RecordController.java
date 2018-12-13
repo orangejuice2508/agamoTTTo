@@ -1,39 +1,23 @@
 package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
-import de.gruppe2.agamoTTTo.domain.entity.User;
-import de.gruppe2.agamoTTTo.repository.RecordRepository;
-import de.gruppe2.agamoTTTo.repository.UserRepository;
-import de.gruppe2.agamoTTTo.repository.PoolRepository;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
+import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordService;
-import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Controller
 @RequestMapping("records")
@@ -59,48 +43,64 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
     @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
-        // Get the logged in user to determine their role.
-        User authenticationUser = SecurityContext.getAuthenticationUser();
-        model.addAttribute("pools", poolService.findAllPoolsOfAUser(authenticationUser));
+        model.addAttribute("pools", getAllPoolsOfAUser());
         model.addAttribute("record", new Record());
         return "records/add";
     }
 
     @PostMapping("/add")
-    public String postAddRecordPage(@ModelAttribute @Valid Record record, BindingResult bindingResult) {
+    public String postAddRecordPage(@ModelAttribute @Valid Record record, BindingResult bindingResult, Model model) {
 
-        User authenticationUser = SecurityContext.getAuthenticationUser();
+        // Check whether the record is valid
+        checkRecord(record, bindingResult);
+
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
+            model.addAttribute("pools", getAllPoolsOfAUser());
             return "records/add";
         }
 
-        /* Try to add the pool to the database. If the pool name exists already, a DataIntegrityViolation
-        will be thrown by the PoolService/PoolRepository. Then the form is shown again with a corresponding
-        error message.
-        */
-        if (recordService.checkForCorrectStartAndEndTime(record)) {
-            if (recordService.checkForExistingEntry(record, authenticationUser)) {
-                try {
-                    recordService.addRecord(record);
-                    //recordService.getAllRecordsOfAUser(SecurityContext.getAuthenticationUser()); war blos zum testen, kommt hier raus
-                } catch (Exception e) {
-                    return "records/add";
-                }
-        }
-            else {
-                bindingResult.rejectValue("start_time", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
-                bindingResult.rejectValue("end_time", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
-                return "records/add"; //muss auf records/edit umgeleitet werden bei fehlerhafter ausgabe
-            }
-            return "redirect:/records/add/?successful=true";
-        }
-        bindingResult.rejectValue("start_time", "error.record", messageSource.getMessage("records.error.wrong_starttime_and_wrong_endtime", null, Locale.getDefault()));
-        bindingResult.rejectValue("end_time", "error.record", messageSource.getMessage("records.error.wrong_starttime_and_wrong_endtime", null, Locale.getDefault()));
-        return "records/add"; //muss auf records/edit umgeleitet werden bei fehlerhafter ausgabe
+        // Else: add the record to the database
+        recordService.addRecord(record);
+        return "redirect:/records/add/?successful=true";
     }
 
+    /**
+     * Get all pools of the logged in user
+     *
+     * @return the pools of the logged in user
+     */
+    private Set<Pool> getAllPoolsOfAUser(){
+        // Get the logged in user and determine their pools
+        return poolService.findAllPoolsOfAUser(SecurityContext.getAuthenticationUser());
+    }
+
+    /**
+     * This method checks a record if it contains valid times. If it's not valid, the BindingResult will
+     * be manipulated so that it contains the corresponding error messages.
+     *
+     * @param record the record which should be created/edited
+     * @param bindingResult contains possible form errors
+     *
+     */
+    private void checkRecord (Record record, BindingResult bindingResult) {
+
+        // Check if the record's times are valid
+        if (!recordService.areTimesValid(record)) {
+            bindingResult.rejectValue("startTime", "error.record", messageSource.getMessage("records.error.wrong_starttime_and_wrong_endtime", null, Locale.getDefault()));
+            bindingResult.rejectValue("endTime", "error.record", messageSource.getMessage("records.error.wrong_starttime_and_wrong_endtime", null, Locale.getDefault()));
+        }
+
+        // Get the logged in user.
+        User authenticationUser = SecurityContext.getAuthenticationUser();
+
+        // Check if the user already has a record that overlaps with this one
+        if (!recordService.areTimesAllowed(record, authenticationUser)) {
+            bindingResult.rejectValue("startTime", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
+            bindingResult.rejectValue("endTime", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
+        }
+    }
 
     @GetMapping("/edit")
     public String getEditRecordPage() {

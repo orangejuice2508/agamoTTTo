@@ -27,13 +27,13 @@
             </div>
             <div class="form-group">
                 <label th:text="#{records.add.label.start_time}" for="start_time"></label>
-                <input th:placeholder="#{records.add.label.start_time}" th:errorclass="is-invalid" th:field="*{start_time}" type="time" class="form-control" id="start_time" required>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('start_time')}" th:errors="*{start_time}"></div>
+                <input th:placeholder="#{records.add.label.start_time}" th:errorclass="is-invalid" th:field="*{startTime}" type="time" class="form-control" id="start_time" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></div>
             </div>
             <div class="form-group">
                 <label th:text="#{records.add.label.end_time}" for="end_time"></label>
-                <input th:placeholder="#{records.add.label.end_time}" th:errorclass="is-invalid" th:field="*{end_time}" type="time" class="form-control" id="end_time" required>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('end_time')}" th:errors="*{end_time}"></div>
+                <input th:placeholder="#{records.add.label.end_time}" th:errorclass="is-invalid" th:field="*{endTime}" type="time" class="form-control" id="end_time" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}"></div>
             </div>
             <div class="form-group">
                 <label th:text="#{records.add.label.description}" for="description"></label>
@@ -43,7 +43,7 @@
             <div class="form-group">
                 <p th:text="#{records.add.label.pool}"></p>
             </div>
-            <div class="drop-down">
+            <div class="form-group drop-down">
                 <select class="form-control" th:field="*{pool}" id="pool_id" required>
                     <option th:each="pool: ${pools}"
                             th:value="${pool.id}"

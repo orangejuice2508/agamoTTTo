@@ -50,7 +50,7 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_pool",
             joinColumns = {@JoinColumn(name = "user_id")},

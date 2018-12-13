@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.sql.Time;
@@ -43,18 +44,19 @@ public class Record {
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Column(name = "start_time")
-    private LocalTime start_time;
+    private LocalTime startTime;
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Column(name = "end_time", nullable = false)
-    private LocalTime end_time;
+    private LocalTime endTime;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Column(name = "duration")
     private Time duration; //date
 
-    @Size(min = 1, max = 250)
+    @Size(max = 250)
+    @NotEmpty
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -73,10 +75,5 @@ public class Record {
     public Record() {
         version = 1L;
     }
-
-    public void setDuration(Time time, Record record) {
-        record.duration = time;
-    }
-
 
 }
