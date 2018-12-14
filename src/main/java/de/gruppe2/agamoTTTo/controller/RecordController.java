@@ -113,5 +113,5 @@ public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller
     public String getEditRecordPage() {
         return null;
     }
-    
+
 }
