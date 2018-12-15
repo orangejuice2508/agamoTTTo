@@ -6,7 +6,6 @@ import de.gruppe2.agamoTTTo.repository.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,13 +16,11 @@ import static java.time.Duration.between;
 @Service
 public class RecordService{
 
-
     private RecordRepository recordRepository;
 
     @Autowired
     public RecordService(RecordRepository recordRepository) {
         this.recordRepository = recordRepository;
-
     }
 
     /**
@@ -42,13 +39,15 @@ public class RecordService{
      *
      * @param startTime The start time of the task
      * @param endTime the end time of the task
-     * @return The duration
+     * @return The duration as LocalTime
      */
-    private Time calculateDuration(LocalTime startTime, LocalTime endTime) {
+    private LocalTime calculateDuration(LocalTime startTime, LocalTime endTime) {
 
         Duration duration = between(startTime, endTime);
-        long millis = duration.toMillis();
-        return new Time(millis);
+        int hours = (int) duration.toHours();
+        int minutes = (int) duration.toMinutes() - (60 * hours);
+
+        return LocalTime.of(hours,minutes);
     }
 
     /**
