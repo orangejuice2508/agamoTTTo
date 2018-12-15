@@ -36,7 +36,6 @@ public class Record {
     private Long id;
 
     @NotNull
-    //@Temporal(value = TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date")
     private LocalDate date;
@@ -53,7 +52,7 @@ public class Record {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Column(name = "duration")
-    private Time duration; //date
+    private Time duration;
 
     @Size(max = 250)
     @NotEmpty

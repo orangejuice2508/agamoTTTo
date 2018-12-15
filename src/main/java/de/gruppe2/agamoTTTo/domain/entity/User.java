@@ -57,6 +57,9 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "pool_id")})
     private Set<Pool> pools;
 
+    @OneToMany(mappedBy = "user")
+    private Set<Record> records;
+
     public User() {
         this.encryptedPassword = "";
         this.enabled = Boolean.TRUE;
