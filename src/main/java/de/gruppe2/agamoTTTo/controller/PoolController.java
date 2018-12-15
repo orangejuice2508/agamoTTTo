@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("pools")
-public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller {
+public class PoolController extends BaseController {
 
     private PoolService poolService;
 
@@ -142,7 +142,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      * @return path to the template
      */
     @PreAuthorize(Permission.VORGESETZTER)
-    @PutMapping("edit/{id}")
+    @PutMapping("/edit/{id}")
     public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */

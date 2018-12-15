@@ -58,6 +58,18 @@
                     </a>
                 </div>
             </li>
+            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">
+                <a class="nav-link dropdown-toggle" href="#" id="logDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-file-alt"></i>
+                    <span th:text="#{navbar.item.log}"></span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="employeesDropdown">
+                    <a class="dropdown-item" th:href="@{/logs/overview}">
+                        <i class="fas fa-search"></i>
+                        <span th:text="#{navbar.dropdown.overview}"></span>
+                    </a>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-cog"></i>

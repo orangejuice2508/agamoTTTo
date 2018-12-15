@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{logs.overview.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 th:text="#{logs.overview.title}" class="card-title"></h4>
+            <p th:text="#{logs.overview.subtitle}" class="card-subtitle text-muted"></p>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/logs/overview}" th:object="${filter}" method="post">
+                <div th:replace="fragments/pool_date_filter :: pool_date_filter"></div>
+            </form>
+
+            <hr>
+
+            <div th:each="recordLog: ${recordLogs}">
+                <!-- ToDo -->
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

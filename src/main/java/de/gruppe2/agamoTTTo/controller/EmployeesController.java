@@ -17,7 +17,7 @@ import java.util.Locale;
 
 @Controller
 @RequestMapping("employees")
-public class EmployeesController extends de.gruppe2.agamoTTTo.controller.Controller {
+public class EmployeesController extends BaseController {
 
     private UserService userService;
 

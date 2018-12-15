@@ -21,7 +21,7 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("records")
-public class RecordController extends de.gruppe2.agamoTTTo.controller.Controller{
+public class RecordController extends BaseController {
 
     private RecordService recordService;
     private PoolService poolService;

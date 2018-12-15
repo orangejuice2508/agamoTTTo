@@ -1,8 +1,11 @@
 package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.domain.entity.Record;
+import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
+import de.gruppe2.agamoTTTo.util.ChangeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +21,17 @@ public class RecordService{
 
     private RecordRepository recordRepository;
 
+    private RecordLogRepository recordLogRepository;
+
     @Autowired
-    public RecordService(RecordRepository recordRepository) {
+    public RecordService(RecordRepository recordRepository, RecordLogRepository recordLogRepository) {
         this.recordRepository = recordRepository;
+        this.recordLogRepository = recordLogRepository;
     }
 
     /**
      * This method uses the recordRepository to try to add a record to the database.
+     * Furthermore the new record is logged in the database.
      *
      * @param record the record as obtained from the controller
      */
@@ -32,6 +39,7 @@ public class RecordService{
 
         record.setDuration(calculateDuration(record.getStartTime(), record.getEndTime()));
         recordRepository.save(record);
+        recordLogRepository.save(new RecordLog(record, ChangeType.created));
     }
 
     /**
