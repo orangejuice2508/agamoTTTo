@@ -10,7 +10,7 @@ import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.Set;
 
 import static java.time.Duration.between;
 
@@ -38,16 +38,6 @@ public class RecordService{
     }
 
     /**
-     * This method uses the recordRepository to find all belonging Records of a User.
-     *
-     * @param user The current User as obtained from the controller
-     * @return All records of the User
-     */
-    private List<Record> getAllRecordsOfAUser(User user) {
-        return recordRepository.findAllByUser(user);
-    }
-
-    /**
      * This method calculates the duration of time a user worked.
      *
      * @param startTime The start time of the task
@@ -71,47 +61,56 @@ public class RecordService{
         return record.getEndTime().isAfter(record.getStartTime());
     }
 
+    /**
+     * This method checks if a record's time are allowed, i.e. that the times of the new record
+     * do NOT overlap with an already existing record.
+     *
+     * @param newRecord the record which should be saved
+     * @param user the user who wants to add a record
+     * @return true if the times are allowed (i.e. do NOT overlap); false if the time are not allowed
+     */
     public boolean areTimesAllowed(Record newRecord, User user) {
 
         LocalTime newStartTime = newRecord.getStartTime();
         LocalTime newEndTime = newRecord.getEndTime();
         LocalDate newDate = newRecord.getDate();
-        List<Record> currentUserRecords = getAllRecordsOfAUser(user);
+
+        // Get a user's current records of the specific day when he wants to add his new record
+        Set<Record> currentUserRecords = recordRepository.findAllByUserAndDate(user, newDate);
+
         if (!currentUserRecords.isEmpty()) {
+            for (Record currentRecord : currentUserRecords) {
+                LocalTime currentStartTime = currentRecord.getStartTime();
+                LocalTime currentEndTime = currentRecord.getEndTime();
 
-            for (Record record : currentUserRecords) {
-                LocalTime testingRecordStartTime = record.getStartTime();
-                LocalTime testingRecordEndTime = record.getEndTime();
-                LocalDate testingDate = record.getDate();
+                // Check if the new record starts between the times of a current record.
+                if (newStartTime.isBefore(currentEndTime) && newStartTime.isAfter(currentStartTime)) {
+                    return false;
+                }
 
-                if (newDate.equals(testingDate)) {
-                    if (newStartTime.isBefore(testingRecordEndTime) && newStartTime.isAfter(testingRecordStartTime)) {
-                        return false;
-                    }
+                // Check if the new record ends between the times of a current record.
+                if (newEndTime.isAfter(currentStartTime) && newEndTime.isBefore(currentEndTime)) {
+                    return false;
+                }
 
-                    if (newEndTime.isAfter(testingRecordStartTime) && newEndTime.isBefore(testingRecordEndTime)) {
-                        return false;
-                    }
+                // Check if the new record lies completely between the times of a current record.
+                if (newStartTime.isAfter(currentStartTime) && newEndTime.isBefore(currentEndTime)) {
+                    return false;
+                }
 
-                    if (newStartTime.isAfter(testingRecordStartTime) && newEndTime.isBefore(testingRecordEndTime)) {
-                        return false;
-                    }
+                // Check if the new record encompasses the times of a current record.
+                if (newStartTime.isBefore(currentStartTime) && newEndTime.isAfter(currentEndTime)) {
+                    return false;
+                }
 
-                    if (newStartTime.isBefore(testingRecordStartTime) && newEndTime.isAfter(testingRecordEndTime)) {
-                        return false;
-                    }
-
-                    if (newStartTime.equals(testingRecordStartTime)) {
-                        return false;
-                    }
-
-                    if (newEndTime.equals(testingRecordEndTime)) {
-                        return false;
-                    }
+                // Check if the new record starts or and at the start or end of a current record.
+                if (newStartTime.equals(currentStartTime) || newEndTime.equals(currentEndTime)) {
+                    return false;
                 }
             }
-            return true;
         }
+
+        // If the user doesn't have any records on that day, the times are allowed.
         return true;
     }
 }
