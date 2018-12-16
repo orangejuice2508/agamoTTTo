@@ -24,6 +24,14 @@
                         <i class="fas fa-plus-circle"></i>
                         <span th:text="#{navbar.item.add}"></span>
                     </a>
+                    <a class="dropdown-item">
+                        <i class="fas fa-search"></i>
+                        <span th:text="#{navbar.dropdown.overview}"></span>
+                    </a>
+                    <a class="dropdown-item" th:href="@{/records/analysis}">
+                        <i class="fas fa-chart-line"></i>
+                        <span th:text="#{navbar.dropdown.analysis}"></span>
+                    </a>
                 </div>
             </li>
             <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">

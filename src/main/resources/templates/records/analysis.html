@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{records.analysis.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 th:text="#{records.analysis.title}" class="card-title"></h4>
+            <p th:text="#{records.analysis.subtitle}" class="card-subtitle text-muted"></p>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/records/analysis}" th:object="${filter}" method="post">
+                <div th:replace="fragments/pool_date_filter :: pool_date_filter"></div>
+            </form>
+            <hr>
+            <div th:if="${records != null && records.isEmpty()}">
+                <p th:text="#{nothing_found}"></p>
+            </div>
+            <div th:if="${records != null && !records.isEmpty()}">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" th:text="#{records.analysis.table.header.date}"></th>
+                        <th scope="col" th:text="#{records.analysis.table.header.time}"></th>
+                        <th scope="col" th:text="#{records.analysis.table.header.description}"></th>
+                        <th scope="col" th:text="#{records.analysis.table.header.duration}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="record: ${records}">
+                        <td th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}"></td>
+                        <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
+                        <td th:text="${record.description}"></td>
+                        <td th:text="${record.duration}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

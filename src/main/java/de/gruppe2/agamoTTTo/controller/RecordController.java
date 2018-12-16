@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.domain.entity.Pool;
+import de.gruppe2.agamoTTTo.domain.base.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.Locale;
 
 @Controller
@@ -72,6 +73,28 @@ public class RecordController extends BaseController {
         return "redirect:/records/add/?successful=true";
     }
 
+    @GetMapping("/edit")
+    public String getEditRecordPage() {
+        return null;
+    }
+
+    @GetMapping("/analysis")
+    public String getAnalyseRecordPage(Model model){
+        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+
+        return "records/analysis";
+    }
+
+    @PostMapping("/analysis")
+    public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("filter", filter);
+        model.addAttribute("records", recordService.getAllRecordsByParameters(filter, SecurityContext.getAuthenticationUser()));
+
+        return "records/analysis";
+    }
+
     /**
      * This method checks a record if it contains valid times. If it's not valid, the BindingResult will
      * be manipulated so that it contains the corresponding error messages.
@@ -97,10 +120,4 @@ public class RecordController extends BaseController {
             bindingResult.rejectValue("endTime", "error.record", messageSource.getMessage("records.error.entry_already_exists", null, Locale.getDefault()));
         }
     }
-
-    @GetMapping("/edit")
-    public String getEditRecordPage() {
-        return null;
-    }
-
 }

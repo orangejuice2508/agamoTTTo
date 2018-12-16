@@ -1,5 +1,6 @@
 package de.gruppe2.agamoTTTo.service;
 
+import de.gruppe2.agamoTTTo.domain.base.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.domain.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 import static java.time.Duration.between;
@@ -42,20 +44,12 @@ public class RecordService{
         recordLogRepository.save(new RecordLog(record, ChangeType.created));
     }
 
-    /**
-     * This method calculates the duration of time a user worked.
-     *
-     * @param startTime The start time of the task
-     * @param endTime the end time of the task
-     * @return The duration as LocalTime
-     */
-    private LocalTime calculateDuration(LocalTime startTime, LocalTime endTime) {
+    public List<Record> getAllRecordsByParameters (PoolDateFilter filter, User authenticationUser){
+        // If no date is set, set it to a default date. Reason: Date is optional in the filter.
+        LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
+        LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
 
-        Duration duration = between(startTime, endTime);
-        int hours = (int) duration.toHours();
-        int minutes = (int) duration.toMinutes() - (60 * hours);
-
-        return LocalTime.of(hours,minutes);
+        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(authenticationUser, filter.getPool(), from, to);
     }
 
     /**
@@ -119,5 +113,21 @@ public class RecordService{
 
         // If the user doesn't have any records on that day, the times are allowed.
         return true;
+    }
+
+    /**
+     * This method calculates the duration of time a user worked.
+     *
+     * @param startTime The start time of the task
+     * @param endTime the end time of the task
+     * @return The duration as LocalTime
+     */
+    private LocalTime calculateDuration(LocalTime startTime, LocalTime endTime) {
+
+        Duration duration = between(startTime, endTime);
+        int hours = (int) duration.toHours();
+        int minutes = (int) duration.toMinutes() - (60 * hours);
+
+        return LocalTime.of(hours,minutes);
     }
 }
