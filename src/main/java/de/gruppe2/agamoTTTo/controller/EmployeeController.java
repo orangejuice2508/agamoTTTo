@@ -17,14 +17,14 @@ import java.util.Locale;
 
 @Controller
 @RequestMapping("employees")
-public class EmployeesController extends BaseController {
+public class EmployeeController extends BaseController {
 
     private UserService userService;
 
     private MessageSource messageSource;
 
     @Autowired
-    public EmployeesController(UserService userService, MessageSource messageSource) {
+    public EmployeeController(UserService userService, MessageSource messageSource) {
         this.userService = userService;
         this.messageSource = messageSource;
     }

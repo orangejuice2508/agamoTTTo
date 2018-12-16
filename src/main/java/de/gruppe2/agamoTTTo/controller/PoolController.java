@@ -73,7 +73,7 @@ public class PoolController extends BaseController {
         }
         catch(DataIntegrityViolationException e) {
             bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.error.name_not_unique", null, Locale.getDefault()));
-            return "pools/edit";
+            return "pools/add";
         }
 
         // If the pool was added successfully, reload the page with an empty form.
@@ -97,7 +97,7 @@ public class PoolController extends BaseController {
             model.addAttribute("pools", poolService.findAllPools());
         }
         else {
-            model.addAttribute("pools", poolService.findAllPoolsOfAUser(authenticationUser));
+            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
             /* In the view we need the id of the logged in user to determine whether he is
             entitled to edit a pool. */
             model.addAttribute("userId", authenticationUser.getId());

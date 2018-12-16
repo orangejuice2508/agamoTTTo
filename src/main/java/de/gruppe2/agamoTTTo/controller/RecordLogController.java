@@ -15,18 +15,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Set;
-
 @Controller
 @RequestMapping("logs")
-public class LogController {
+public class RecordLogController {
 
     private PoolService poolService;
 
     private RecordLogService recordLogService;
 
     @Autowired
-    public LogController(PoolService poolService, RecordLogService recordLogService) {
+    public RecordLogController(PoolService poolService, RecordLogService recordLogService) {
         this.poolService = poolService;
         this.recordLogService = recordLogService;
     }
@@ -41,7 +39,7 @@ public class LogController {
     @GetMapping("/overview")
     public String getOverviewLogsPage(Model model){
 
-        model.addAttribute("pools", getAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", new PoolDateFilter());
 
         return "logs/overview";
@@ -58,19 +56,10 @@ public class LogController {
     @PostMapping("overview")
     public String postOverviewLogsPage(@ModelAttribute PoolDateFilter filter, Model model){
         model.addAttribute("filter", filter);
-        model.addAttribute("pools", getAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("recordLogs", recordLogService.getAllRecordLogsByFilter(filter));
 
         return "logs/overview";
     }
 
-    /**
-     * Get all pools of the logged in user
-     *
-     * @return the pools of the logged in user
-     */
-    private Set<Pool> getAllPoolsOfAuthenticationUser(){
-        // Get the logged in user and determine their pools
-        return poolService.findAllPoolsOfAUser(SecurityContext.getAuthenticationUser());
-    }
 }

@@ -17,6 +17,9 @@
                 <div th:replace="fragments/pool_date_filter :: pool_date_filter"></div>
             </form>
             <hr>
+            <div th:if="${recordLogs != null && recordLogs.isEmpty()}">
+                <p th:text="#{nothing_found}"></p>
+            </div>
             <div th:each="recordLog: ${recordLogs}">
                 <div th:if="${recordLog.changeType.name() == 'created'}">
                     <div class="card bg-light border-success mb-2">

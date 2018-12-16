@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Locale;
-import java.util.Set;
 
 @Controller
 @RequestMapping("records")
@@ -43,7 +42,7 @@ public class RecordController extends BaseController {
     @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
-        model.addAttribute("pools", getAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("record", new Record());
         return "records/add";
     }
@@ -64,23 +63,13 @@ public class RecordController extends BaseController {
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
-            model.addAttribute("pools", getAllPoolsOfAuthenticationUser());
+            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
             return "records/add";
         }
 
         // Else: add the record to the database
         recordService.addRecord(record);
         return "redirect:/records/add/?successful=true";
-    }
-
-    /**
-     * Get all pools of the logged in user
-     *
-     * @return the pools of the logged in user
-     */
-    private Set<Pool> getAllPoolsOfAuthenticationUser(){
-        // Get the logged in user and determine their pools
-        return poolService.findAllPoolsOfAUser(SecurityContext.getAuthenticationUser());
     }
 
     /**
