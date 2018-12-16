@@ -5,7 +5,7 @@ import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
-import de.gruppe2.agamoTTTo.util.ChangeType;
+import de.gruppe2.agamoTTTo.domain.base.ChangeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

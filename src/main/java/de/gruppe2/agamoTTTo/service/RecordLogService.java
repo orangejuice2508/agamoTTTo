@@ -30,6 +30,10 @@ public class RecordLogService {
         LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
         LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
 
-        return recordLogRepository.findAllByPoolAndDateBetweenOrderByDateDesc(filter.getPool(), from, to);
+        return recordLogRepository.
+                findAllByPoolAndChangeAtBetweenOrderByDateDesc(
+                        filter.getPool(),
+                        from.atTime(0,0,0,0),
+                        to.atTime(23,59,59,59));
     }
 }

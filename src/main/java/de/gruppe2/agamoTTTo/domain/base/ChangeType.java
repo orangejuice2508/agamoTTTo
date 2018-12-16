@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.util;
+package de.gruppe2.agamoTTTo.domain.base;
 
 /**
  * Enum for RecordLog to set the type of change

@@ -14,17 +14,17 @@
 
     <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item" sec:authorize="hasRole('ROLE_MITARBEITER')">
-                <a class="nav-link" th:href="@{/records/add}">
-                    <i class="fas fa-plus-circle"></i>
-                    <span th:text="#{navbar.item.add}"></span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
+            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_MITARBEITER')">
+                <a class="nav-link dropdown-toggle" href="#" id="recordDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-th-list"></i>
                     <span th:text="#{navbar.item.records}"></span>
                 </a>
+                <div class="dropdown-menu" aria-labelledby="recordDropdown">
+                    <a class="dropdown-item" th:href="@{/records/add}">
+                        <i class="fas fa-plus-circle"></i>
+                        <span th:text="#{navbar.item.add}"></span>
+                    </a>
+                </div>
             </li>
             <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">
                 <a class="nav-link dropdown-toggle" href="#" id="poolDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -58,17 +58,11 @@
                     </a>
                 </div>
             </li>
-            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">
-                <a class="nav-link dropdown-toggle" href="#" id="logDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item" sec:authorize="hasRole('ROLE_VORGESETZTER')">
+                <a class="nav-link" th:href="@{/logs/overview}">
                     <i class="fas fa-file-alt"></i>
                     <span th:text="#{navbar.item.log}"></span>
                 </a>
-                <div class="dropdown-menu" aria-labelledby="employeesDropdown">
-                    <a class="dropdown-item" th:href="@{/logs/overview}">
-                        <i class="fas fa-search"></i>
-                        <span th:text="#{navbar.dropdown.overview}"></span>
-                    </a>
-                </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">
