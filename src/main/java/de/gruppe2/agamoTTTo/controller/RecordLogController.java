@@ -40,7 +40,7 @@ public class RecordLogController {
     public String getOverviewLogsPage(Model model){
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+        model.addAttribute("filter", new PoolDateFilter());
 
         return "logs/overview";
     }
