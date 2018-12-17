@@ -40,9 +40,8 @@ public class Record {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-    @Column(name = "duration")
-    private LocalTime duration;
+    @Column(name = "duration_in_minutes")
+    private Long duration;
 
     @Size(max = 250)
     @NotEmpty

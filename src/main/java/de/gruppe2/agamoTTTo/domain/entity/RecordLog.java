@@ -46,9 +46,9 @@ public class RecordLog {
     @Column(name = "end_time")
     private LocalTime endTime;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-    @Column(name = "duration")
-    private LocalTime duration;
+    @NotNull
+    @Column(name = "duration_in_minutes")
+    private Long duration;
 
     @Size(max = 250)
     @NotEmpty

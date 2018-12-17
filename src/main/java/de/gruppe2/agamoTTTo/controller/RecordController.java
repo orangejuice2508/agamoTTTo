@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 
 @Controller
@@ -43,6 +44,7 @@ public class RecordController extends BaseController {
     @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
+
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("record", new Record());
         return "records/add";
@@ -78,19 +80,42 @@ public class RecordController extends BaseController {
         return null;
     }
 
+    /**
+     * Method for displaying the "analysis" page for the records.
+     *
+     * @param model the Spring Model
+     * @return path to template
+     */
     @GetMapping("/analysis")
     public String getAnalyseRecordPage(Model model){
+
         model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
 
         return "records/analysis";
     }
 
+    /**
+     * Method for handling the submission of the filter on the "analysis" page.
+     *
+     * @param filter contains criteria set by the user on the overview page
+     * @param model the Spring Model
+     * @return path to template
+     */
     @PostMapping("/analysis")
     public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
+
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
-        model.addAttribute("records", recordService.getAllRecordsByParameters(filter, SecurityContext.getAuthenticationUser()));
+
+        List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
+
+        // Calculate total duration of the retrieved records
+        Long totalDuration = records.stream().mapToLong(Record::getDuration).sum();
+
+        model.addAttribute("records", records);
+        model.addAttribute("totalDuration", totalDuration);
+
 
         return "records/analysis";
     }

@@ -35,7 +35,11 @@
                         <td th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}"></td>
                         <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
                         <td th:text="${record.description}"></td>
-                        <td th:text="${record.duration}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td colspan="3" th:text="#{records.analysis.table.row.sum}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>
                 </table>
