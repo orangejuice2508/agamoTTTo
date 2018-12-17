@@ -10,7 +10,6 @@ import de.gruppe2.agamoTTTo.domain.base.ChangeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -44,12 +43,20 @@ public class RecordService{
         recordLogRepository.save(new RecordLog(record, ChangeType.created));
     }
 
-    public List<Record> getAllRecordsByParameters (PoolDateFilter filter, User authenticationUser){
+    /**
+     * This method returns all Records of a user which match the criteria of the filter.
+     *
+     * @param filter contains the criteria set by the user
+     * @param user the user whose records should be found
+     * @return an ordered list with Records which match the criteria of the filter
+     */
+    public List<Record> getAllRecordsByFilter(PoolDateFilter filter, User user){
+
         // If no date is set, set it to a default date. Reason: Date is optional in the filter.
         LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
         LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
 
-        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(authenticationUser, filter.getPool(), from, to);
+        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), from, to);
     }
 
     /**
@@ -120,14 +127,10 @@ public class RecordService{
      *
      * @param startTime The start time of the task
      * @param endTime the end time of the task
-     * @return The duration as LocalTime
+     * @return the duration as the time between endTime and startTime
      */
-    private LocalTime calculateDuration(LocalTime startTime, LocalTime endTime) {
+    private Long calculateDuration(LocalTime startTime, LocalTime endTime) {
 
-        Duration duration = between(startTime, endTime);
-        int hours = (int) duration.toHours();
-        int minutes = (int) duration.toMinutes() - (60 * hours);
-
-        return LocalTime.of(hours,minutes);
+        return between(startTime, endTime).toMinutes();
     }
 }
