@@ -15,6 +15,7 @@ import java.time.Period;
 @Setter
 @NoArgsConstructor
 public class DateFilter {
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate from;
 

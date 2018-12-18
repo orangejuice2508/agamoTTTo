@@ -30,7 +30,7 @@ public final class DisplayNameBuilder {
     public String display(Record record){
         return record.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " " +
                  "von " + record.getStartTime() + " bis " + record.getEndTime() + " " +
-                "(Dauer: " + record.getDuration() + "), " +
+                "(Dauer: " + this.convertMinutesToHoursAndMinutes(record.getDuration()) + "), " +
                 "Beschreibung: " + record.getDescription() + ", " +
                 "Pool: " + record.getPool().getName();
     }
@@ -38,12 +38,12 @@ public final class DisplayNameBuilder {
     public String display(RecordLog recordLog){
         return recordLog.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " " +
                 "von " + recordLog.getStartTime() + " bis " + recordLog.getEndTime() + " " +
-                "(Dauer: " + recordLog.getDuration() + "), " +
+                "(Dauer: " + this.convertMinutesToHoursAndMinutes(recordLog.getDuration()) + "), " +
                 "Beschreibung: " + recordLog.getDescription() + ", " +
                 "Pool: " + recordLog.getPool().getName();
     }
 
     public String convertMinutesToHoursAndMinutes(Long minutes){
-        return LocalTime.MIN.plus(Duration.ofMinutes(minutes)).toString();
+        return LocalTime.MIN.plus(Duration.ofMinutes(minutes)).toString() + " h";
     }
 }

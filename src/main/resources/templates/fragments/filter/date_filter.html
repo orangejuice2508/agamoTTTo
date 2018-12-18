@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--suppress ALL -->
 <html xmlns:th="http://www.thymeleaf.org">
-<body th:fragment="date_filter">
+<th:block th:fragment="date_filter">
     <div class="input-group ml-2">
         <div class="input-group-prepend">
             <label class="input-group-text" for="date_from" th:text="#{pool_date_filter.label.date_from}"></label>
@@ -16,5 +16,5 @@
     </div>
     <button th:text="#{button.submit}" type="submit" class="btn btn-primary ml-2"></button>
     <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
-</body>
+</th:block>
 </html>

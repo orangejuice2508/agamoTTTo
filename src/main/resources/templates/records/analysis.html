@@ -14,7 +14,7 @@
         </div>
         <div class="card-body">
             <form action="#" th:action="@{/records/analysis}" th:object="${filter}" method="post">
-                <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
+                <div class="form-check form-check-inline" th:insert="fragments/filter/pool_date_filter :: pool_date_filter"></div>
             </form>
             <hr>
             <div th:if="${records != null && records.isEmpty()}">

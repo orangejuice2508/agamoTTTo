@@ -1,5 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
+import de.gruppe2.agamoTTTo.domain.base.filter.DateFilter;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
@@ -116,7 +117,6 @@ public class RecordController extends BaseController {
         model.addAttribute("records", records);
         model.addAttribute("totalDuration", totalDuration);
 
-
         return "records/analysis";
     }
 
@@ -129,7 +129,7 @@ public class RecordController extends BaseController {
     @GetMapping("/overview")
     public String getOverviewRecordPage(Model model) {
 
-        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+        model.addAttribute("filter", new DateFilter(LocalDate.now()));
 
         return "records/overview";
     }
@@ -142,13 +142,10 @@ public class RecordController extends BaseController {
      * @return path to template
      */
     @PostMapping("/overview")
-    public String postOverviewRecordPage(@ModelAttribute PoolDateFilter filter, Model model) {
+    public String postOverviewRecordPage(@ModelAttribute DateFilter filter, Model model) {
 
         model.addAttribute("filter", filter);
-
-        List<Record> records = recordService.getAllRecordsByDate(filter, SecurityContext.getAuthenticationUser());
-
-        model.addAttribute("records", records);
+        model.addAttribute("records", recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser()));
 
         return "records/overview";
     }

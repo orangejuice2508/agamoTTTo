@@ -2,7 +2,7 @@
 <!--suppress ALL -->
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div class="form-check form-check-inline" th:fragment="pool_date_filter">
+<th:block th:fragment="pool_date_filter">
     <div class="input-group">
         <div class="input-group-prepend">
             <label class="input-group-text" for="poolSelect" th:text="#{pool_date_filter.label.pool}"></label>
@@ -13,7 +13,7 @@
                     th:text="${pool.name}"></option>
         </select>
     </div>
-    <body th:insert="fragments/filter/date_filter :: date_filter"></body>
-</div>
+    <th:block th:insert="fragments/filter/date_filter :: date_filter"></th:block>
+</th:block>
 </body>
 </html>

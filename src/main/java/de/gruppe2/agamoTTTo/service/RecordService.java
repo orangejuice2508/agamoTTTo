@@ -1,5 +1,6 @@
 package de.gruppe2.agamoTTTo.service;
 
+import de.gruppe2.agamoTTTo.domain.base.filter.DateFilter;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -50,21 +52,19 @@ public class RecordService{
      * @param user the user whose records should be found
      * @return an ordered list with Records which match the criteria of the filter
      */
-    public List<Record> getAllRecordsByFilter(PoolDateFilter filter, User user){
+    public List<Record> getAllRecordsByFilter(DateFilter filter, User user){
+        if(filter instanceof PoolDateFilter){
+            // Update filter so that empty dates are filled with default values
+            filter = new PoolDateFilter((PoolDateFilter) filter);
 
-        // Update filter so that empty dates are filled with default values
-        filter = new PoolDateFilter(filter);
+            return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, ((PoolDateFilter) filter).getPool(), filter.getFrom(), filter.getTo());
+        }
+        else {
+            // Update filter so that empty dates are filled with default values
+            filter = new DateFilter(filter);
 
-        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
-    }
-
-    public List<Record> getAllRecordsByDate(PoolDateFilter filter, User user) {
-
-        // If no date is set, set it to a default date. Reason: Date is optional in the filter.
-        LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
-        LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
-
-        return recordRepository.findAllByUserAndDateBetweenOrderByDateAscStartTimeAsc(user, from, to);
+            return recordRepository.findAllByUserAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getFrom(), filter.getTo());
+        }
     }
 
     /**
