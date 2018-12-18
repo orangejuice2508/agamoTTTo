@@ -1,18 +1,7 @@
 <!DOCTYPE html>
 <!--suppress ALL -->
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<div class="form-check form-check-inline" th:fragment="pool_date_filter">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text" for="poolSelect" th:text="#{pool_date_filter.label.pool}"></label>
-        </div>
-        <select class="form-control" th:field="*{pool}" id="poolSelect" required>
-            <option th:each="pool: ${pools}"
-                    th:value="${pool.id}"
-                    th:text="${pool.name}"></option>
-        </select>
-    </div>
+<body th:fragment="date_filter">
     <div class="input-group ml-2">
         <div class="input-group-prepend">
             <label class="input-group-text" for="date_from" th:text="#{pool_date_filter.label.date_from}"></label>
@@ -27,6 +16,5 @@
     </div>
     <button th:text="#{button.submit}" type="submit" class="btn btn-primary ml-2"></button>
     <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
-</div>
 </body>
 </html>

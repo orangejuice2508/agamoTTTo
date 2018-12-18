@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.service;
 
-import de.gruppe2.agamoTTTo.domain.base.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,13 @@ public class RecordLogService {
      * @return an ordered list with RecordLogs which match the criteria of the filter
      */
     public List<RecordLog> getAllRecordLogsByFilter(PoolDateFilter filter){
-        // If no date is set, set it to a default date. Reason: Date is optional in the filter.
-        LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
-        LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
+        // Update filter so that empty dates are filled with default values
+        filter = new PoolDateFilter(filter);
 
         return recordLogRepository.
-                findAllByPoolAndChangeAtBetweenOrderByDateDesc(
+                findAllByPoolAndChangeAtBetweenOrderByChangeAtDesc(
                         filter.getPool(),
-                        from.atTime(0,0,0,0),
-                        to.atTime(23,59,59,59));
+                        filter.getFrom().atTime(0,0,0,0),
+                        filter.getTo().atTime(23,59,59,59));
     }
 }

@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.domain.base.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;

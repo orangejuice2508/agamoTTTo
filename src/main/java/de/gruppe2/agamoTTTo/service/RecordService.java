@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.service;
 
-import de.gruppe2.agamoTTTo.domain.base.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.domain.entity.User;
@@ -52,11 +52,10 @@ public class RecordService{
      */
     public List<Record> getAllRecordsByFilter(PoolDateFilter filter, User user){
 
-        // If no date is set, set it to a default date. Reason: Date is optional in the filter.
-        LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
-        LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
+        // Update filter so that empty dates are filled with default values
+        filter = new PoolDateFilter(filter);
 
-        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), from, to);
+        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
     }
 
     /**
