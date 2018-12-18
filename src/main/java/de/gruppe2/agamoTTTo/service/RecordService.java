@@ -59,6 +59,15 @@ public class RecordService{
         return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), from, to);
     }
 
+    public List<Record> getAllRecordsByDate(PoolDateFilter filter, User user) {
+
+        // If no date is set, set it to a default date. Reason: Date is optional in the filter.
+        LocalDate from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000,1,1);
+        LocalDate to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999,12,31);
+
+        return recordRepository.findAllByUserAndDateBetweenOrderByDateAscStartTimeAsc(user, from, to);
+    }
+
     /**
      * This method checks if a record's times are valid.
      *

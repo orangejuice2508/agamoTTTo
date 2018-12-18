@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{records.overview.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 th:text="#{records.overview.title}" class="card-title"></h4>
+            <p th:text="#{records.overview.subtitle}" class="card-subtitle text-muted"></p>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/records/overview}" th:object="${filter}" method="post">
+                <div th:replace="fragments/date_filter :: date_filter"></div>
+            </form>
+            <hr>
+            <div th:if="${records != null && records.isEmpty()}">
+                <p th:text="#{nothing_found}"></p>
+            </div>
+            <div th:if="${records != null && !records.isEmpty()}">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" th:text="#{records.overview.table.header.pool_name}"></th>
+                        <th scope="col" th:text="#{records.overview.table.header.date}"></th>
+                        <th scope="col" th:text="#{records.overview.table.header.time}"></th>
+                        <th scope="col" th:text="#{records.overview.table.header.description}"></th>
+                        <th scope="col" th:text="#{records.analysis.table.header.duration}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="record: ${records}">
+                        <td th:text="${record.pool.getName()}"></td>
+                        <td th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}"></td>
+                        <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
+                        <td th:text="${record.description}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

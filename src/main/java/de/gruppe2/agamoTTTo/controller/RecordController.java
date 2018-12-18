@@ -121,6 +121,39 @@ public class RecordController extends BaseController {
     }
 
     /**
+     * Method for displaying the "overview" page for the records.
+     *
+     * @param model the Spring Model
+     * @return path to template
+     */
+    @GetMapping("/overview")
+    public String getOverviewRecordPage(Model model) {
+
+        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+
+        return "records/overview";
+    }
+
+    /**
+     * Method for handling the submission of the filter on the "overview" page.
+     *
+     * @param filter contains criteria set by the user on the overview page.
+     * @param model the Spring Model
+     * @return path to template
+     */
+    @PostMapping("/overview")
+    public String postOverviewRecordPage(@ModelAttribute PoolDateFilter filter, Model model) {
+
+        model.addAttribute("filter", filter);
+
+        List<Record> records = recordService.getAllRecordsByDate(filter, SecurityContext.getAuthenticationUser());
+
+        model.addAttribute("records", records);
+
+        return "records/overview";
+    }
+
+    /**
      * This method checks a record if it contains valid times. If it's not valid, the BindingResult will
      * be manipulated so that it contains the corresponding error messages.
      *
