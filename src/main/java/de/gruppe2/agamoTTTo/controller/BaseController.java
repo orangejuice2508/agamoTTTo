@@ -4,7 +4,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-public abstract class Controller {
+public abstract class BaseController {
 
     /**
      * This method removes leading and trailing spaces in form inputs.

@@ -32,7 +32,7 @@
                 <tbody>
                 <tr th:each="pool: ${pools}">
                     <td th:text="${pool.name}"></td>
-                    <td th:text="${pool.owner.firstName + ' ' + pool.owner.lastName + ' (' + pool.owner.email + ')'}"></td>
+                    <td th:text="${@displayNameBuilder.display(pool.owner)}"></td>
                     <td>
                         <a th:if="${pool.owner.id==userId || #authorization.expression('hasRole(''ROLE_ADMINISTRATOR'')')}"
                            th:href="@{/pools/edit/{id}(id=${pool.id})}">

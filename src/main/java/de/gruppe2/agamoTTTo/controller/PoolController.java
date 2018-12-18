@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("pools")
-public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller {
+public class PoolController extends BaseController {
 
     private PoolService poolService;
 
@@ -73,7 +73,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
         }
         catch(DataIntegrityViolationException e) {
             bindingResult.rejectValue("name", "error.pool", messageSource.getMessage("pools.error.name_not_unique", null, Locale.getDefault()));
-            return "pools/edit";
+            return "pools/add";
         }
 
         // If the pool was added successfully, reload the page with an empty form.
@@ -97,7 +97,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
             model.addAttribute("pools", poolService.findAllPools());
         }
         else {
-            model.addAttribute("pools", poolService.findAllPoolsOfAUser(authenticationUser));
+            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
             /* In the view we need the id of the logged in user to determine whether he is
             entitled to edit a pool. */
             model.addAttribute("userId", authenticationUser.getId());
@@ -142,7 +142,7 @@ public class PoolController  extends de.gruppe2.agamoTTTo.controller.Controller 
      * @return path to the template
      */
     @PreAuthorize(Permission.VORGESETZTER)
-    @PutMapping("edit/{id}")
+    @PutMapping("/edit/{id}")
     public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */
