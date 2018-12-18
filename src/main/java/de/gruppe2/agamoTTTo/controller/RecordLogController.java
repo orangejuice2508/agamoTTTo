@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.domain.base.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordLogService;
@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.time.LocalDate;
 
 @Controller
 @RequestMapping("logs")

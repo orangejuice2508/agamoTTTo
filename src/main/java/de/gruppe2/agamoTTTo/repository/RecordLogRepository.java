@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface RecordLogRepository extends JpaRepository<RecordLog, Long> {
-    List<RecordLog> findAllByPoolAndChangeAtBetweenOrderByDateDesc(Pool pool, LocalDateTime from, LocalDateTime to);
+    List<RecordLog> findAllByPoolAndChangeAtBetweenOrderByChangeAtDesc(Pool pool, LocalDateTime from, LocalDateTime to);
 }
