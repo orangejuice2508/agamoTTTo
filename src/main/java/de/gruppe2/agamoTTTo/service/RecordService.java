@@ -110,6 +110,7 @@ public class RecordService{
         LocalTime newStartTime = newRecord.getStartTime();
         LocalTime newEndTime = newRecord.getEndTime();
         LocalDate newDate = newRecord.getDate();
+        Long newId = newRecord.getId();
 
         // Get a user's current records of the specific day when he wants to add his new record
         Set<Record> currentUserRecords = recordRepository.findAllByUserAndDate(user, newDate);
@@ -119,29 +120,33 @@ public class RecordService{
                 LocalTime currentStartTime = currentRecord.getStartTime();
                 LocalTime currentEndTime = currentRecord.getEndTime();
 
-                // Check if the new record starts between the times of a current record.
-                if (newStartTime.isBefore(currentEndTime) && newStartTime.isAfter(currentStartTime)) {
-                    return false;
-                }
+                if (!newId.equals(currentRecord.getId())) {
 
-                // Check if the new record ends between the times of a current record.
-                if (newEndTime.isAfter(currentStartTime) && newEndTime.isBefore(currentEndTime)) {
-                    return false;
-                }
 
-                // Check if the new record lies completely between the times of a current record.
-                if (newStartTime.isAfter(currentStartTime) && newEndTime.isBefore(currentEndTime)) {
-                    return false;
-                }
+                    // Check if the new record starts between the times of a current record.
+                    if (newStartTime.isBefore(currentEndTime) && newStartTime.isAfter(currentStartTime)) {
+                        return false;
+                    }
 
-                // Check if the new record encompasses the times of a current record.
-                if (newStartTime.isBefore(currentStartTime) && newEndTime.isAfter(currentEndTime)) {
-                    return false;
-                }
+                    // Check if the new record ends between the times of a current record.
+                    if (newEndTime.isAfter(currentStartTime) && newEndTime.isBefore(currentEndTime)) {
+                        return false;
+                    }
 
-                // Check if the new record starts or and at the start or end of a current record.
-                if (newStartTime.equals(currentStartTime) || newEndTime.equals(currentEndTime)) {
-                    return false;
+                    // Check if the new record lies completely between the times of a current record.
+                    if (newStartTime.isAfter(currentStartTime) && newEndTime.isBefore(currentEndTime)) {
+                        return false;
+                    }
+
+                    // Check if the new record encompasses the times of a current record.
+                    if (newStartTime.isBefore(currentStartTime) && newEndTime.isAfter(currentEndTime)) {
+                        return false;
+                    }
+
+                    // Check if the new record starts or and at the start or end of a current record.
+                    if (newStartTime.equals(currentStartTime) || newEndTime.equals(currentEndTime)) {
+                        return false;
+                    }
                 }
             }
         }
