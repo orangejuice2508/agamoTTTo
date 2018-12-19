@@ -8,6 +8,7 @@ import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("records")
@@ -76,11 +78,6 @@ public class RecordController extends BaseController {
         return "redirect:/records/add/?successful=true";
     }
 
-    @GetMapping("/edit")
-    public String getEditRecordPage() {
-        return null;
-    }
-
     /**
      * Method for displaying the "analysis" page for the records.
      *
@@ -129,7 +126,8 @@ public class RecordController extends BaseController {
     @GetMapping("/overview")
     public String getOverviewRecordPage(Model model) {
 
-        model.addAttribute("filter", new DateFilter(LocalDate.now()));
+        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
 
         return "records/overview";
     }
@@ -142,12 +140,51 @@ public class RecordController extends BaseController {
      * @return path to template
      */
     @PostMapping("/overview")
-    public String postOverviewRecordPage(@ModelAttribute DateFilter filter, Model model) {
+    public String postOverviewRecordPage(@ModelAttribute PoolDateFilter filter, Model model) {
 
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
-        model.addAttribute("records", recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser()));
+
+        List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
+        model.addAttribute("records", records);
 
         return "records/overview";
+    }
+
+    /**
+     * Method for displaying the edit form of a record determined by its id.
+     *
+     * @param id a pool's id as specified in the path
+     * @param model The Spring model
+     * @return path to the template
+     */
+    @GetMapping("/edit/{id}")
+    public String getEditRecordPage(@PathVariable("id") Long id, Model model) {
+
+        Optional<Record> optionalRecord = recordService.findRecordById(id);
+
+        if (optionalRecord.isPresent()) { model.addAttribute("record", optionalRecord.get()); }
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+
+        return "records/edit";
+    }
+
+    @PutMapping("/edit/{id}")
+    public String postEditRecordPage(@PathVariable("id") Long id, @Valid Record updatedRecord, BindingResult bindingResult,
+                                     Model model) {
+
+        // Check whether the record is valid
+        checkRecord(updatedRecord, bindingResult);
+
+        /* If the form contains errors, the new record won't be added and the form is displayed again with
+           corresponding error messages. */
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+            return "records/edit";
+        }
+
+        recordService.updateRecord(updatedRecord);
+        return "redirect:/records/overview/?successful=true";
     }
 
     /**

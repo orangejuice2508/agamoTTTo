@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.time.Duration.between;
@@ -43,6 +44,25 @@ public class RecordService{
         record.setDuration(calculateDuration(record.getStartTime(), record.getEndTime()));
         recordRepository.save(record);
         recordLogRepository.save(new RecordLog(record, ChangeType.created));
+    }
+
+    public void updateRecord(Record updatedRecord) {
+
+        Record recordToUpdate = recordRepository.getOne(updatedRecord.getId());
+
+
+
+
+        recordToUpdate.setDate(updatedRecord.getDate());
+        recordToUpdate.setStartTime(updatedRecord.getStartTime());
+        recordToUpdate.setEndTime(updatedRecord.getEndTime());
+        recordToUpdate.setDescription(updatedRecord.getDescription());
+        recordToUpdate.setPool(updatedRecord.getPool());
+        recordToUpdate.setVersion(recordToUpdate.getVersion() + 1);
+        recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
+
+        recordRepository.save(recordToUpdate);
+        recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
     }
 
     /**
@@ -141,4 +161,6 @@ public class RecordService{
 
         return between(startTime, endTime).toMinutes();
     }
+
+    public Optional<Record> findRecordById(Long id) { return recordRepository.findById(id); }
 }

@@ -7,6 +7,11 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
+        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+            <span th:text="#{records.edit.info.successful}"></span>
+        </div>
+    </div>
     <div class="card m-3">
         <div class="card-header">
             <h4 th:text="#{records.overview.title}" class="card-title"></h4>
@@ -14,7 +19,7 @@
         </div>
         <div class="card-body">
             <form action="#" th:action="@{/records/overview}" th:object="${filter}" method="post">
-                <div class="form-check form-check-inline"  th:insert="fragments/filter/date_filter :: date_filter"></div>
+                <div class="form-check form-check-inline" th:insert="fragments/filter/pool_date_filter :: pool_date_filter"></div>
             </form>
             <hr>
             <div th:if="${records != null && records.isEmpty()}">
@@ -24,24 +29,34 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" th:text="#{records.overview.table.header.pool_name}"></th>
                         <th scope="col" th:text="#{records.overview.table.header.date}"></th>
                         <th scope="col" th:text="#{records.overview.table.header.time}"></th>
                         <th scope="col" th:text="#{records.overview.table.header.description}"></th>
                         <th scope="col" th:text="#{records.analysis.table.header.duration}"></th>
+                        <th scope="col" th:text="#{records.overview.table.header.actions}"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="record: ${records}">
-                        <td th:text="${record.pool.getName()}"></td>
                         <td th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}"></td>
                         <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
                         <td th:text="${record.description}"></td>
                         <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
+                        <td>
+                            <a th:href="@{/records/edit/{id}(id=${record.id})}">
+                                <i class="fas fa-edit"></i>
+                                <span th:text="#{records.overview.table.data.actions.edit}"></span>
+                            </a>
+                            <!--a th:href="@{/records/delete/{id}(id=${record.id})}" -->
+                                <i class="fas fa-trash-alt"></i>
+                                <span th:text="#{records.overview.table.data.actions.delete}"></span>
+                            <!--/a-->
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
+            <!--button th:text="#{button.export}" type="button" class="btn btn-primary ml-2"></button-->
         </div>
     </div>
 </div>
