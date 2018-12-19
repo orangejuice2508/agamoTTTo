@@ -46,12 +46,18 @@ public class RecordService{
         recordLogRepository.save(new RecordLog(record, ChangeType.created));
     }
 
+    /**
+     * This method uses the recordRepository to try to update to the database.
+     *
+     * @param updatedRecord the updated record as obtained from the controller
+     */
     public void updateRecord(Record updatedRecord) {
 
+        // Use the getOne method, so that no more DB fetch has to be executed
         Record recordToUpdate = recordRepository.getOne(updatedRecord.getId());
 
-
-
+        // Log the current record before updating it.
+        recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
 
         recordToUpdate.setDate(updatedRecord.getDate());
         recordToUpdate.setStartTime(updatedRecord.getStartTime());
@@ -62,7 +68,6 @@ public class RecordService{
         recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
 
         recordRepository.save(recordToUpdate);
-        recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
     }
 
     /**
@@ -120,7 +125,14 @@ public class RecordService{
                 LocalTime currentStartTime = currentRecord.getStartTime();
                 LocalTime currentEndTime = currentRecord.getEndTime();
 
-                if (!newId.equals(currentRecord.getId())) {
+                /*
+                    This if clause is very important:
+                        1. If a user ADDs a new record, then the newId is null.
+                        So it has to be checked against each and every other existing record.
+                        2. If a user EDITs an existing record, this edited record has to be checked
+                        only against the other records AND not against THIS record.
+                 */
+                if (newId == null || !newId.equals(currentRecord.getId())) {
 
 
                     // Check if the new record starts between the times of a current record.

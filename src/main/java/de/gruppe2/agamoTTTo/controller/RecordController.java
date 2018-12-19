@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.domain.base.filter.DateFilter;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
@@ -11,6 +10,7 @@ import de.gruppe2.agamoTTTo.service.RecordService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -154,21 +154,38 @@ public class RecordController extends BaseController {
     /**
      * Method for displaying the edit form of a record determined by its id.
      *
-     * @param id a pool's id as specified in the path
+     * @param id a record's id as specified in the path
      * @param model The Spring model
      * @return path to the template
      */
     @GetMapping("/edit/{id}")
-    public String getEditRecordPage(@PathVariable("id") Long id, Model model) {
+    public String getEditRecordPage(@PathVariable("id") Long id, Model model) throws Exception {
 
         Optional<Record> optionalRecord = recordService.findRecordById(id);
 
-        if (optionalRecord.isPresent()) { model.addAttribute("record", optionalRecord.get()); }
+        // Check whether a record with the id could be found.
+        if(!optionalRecord.isPresent()){
+            throw new NotFoundException("No record found with ID: " + id);
+        }
+
+        // Check whether the current user is allowed to edit this record.
+        if(!optionalRecord.get().getUser().getId().equals(SecurityContext.getAuthenticationUser().getId())){
+            throw new AccessDeniedException("The current user/editor and the record's creator are not identical.");
+        }
+
+        model.addAttribute("record", optionalRecord.get());
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
 
         return "records/edit";
     }
 
+    /**
+     * Method for handling the submission of the "edit record" form.
+     *
+     * @param updatedRecord the pool with updated fields
+     * @param bindingResult contains possible form errors
+     * @return path to the template
+     */
     @PutMapping("/edit/{id}")
     public String postEditRecordPage(@PathVariable("id") Long id, @Valid Record updatedRecord, BindingResult bindingResult,
                                      Model model) {

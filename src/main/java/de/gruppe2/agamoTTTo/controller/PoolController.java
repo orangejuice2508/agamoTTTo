@@ -125,7 +125,7 @@ public class PoolController extends BaseController {
             throw new NotFoundException("No pool found with ID: " + id);
         }
 
-        // Check whether the current user is allowed to edit the pool.
+        // Check whether the current user is allowed to edit this pool.
         if(!optionalPool.get().getOwner().getId().equals(SecurityContext.getAuthenticationUser().getId())){
             throw new AccessDeniedException("The current user/editor and the pool owner are not identical.");
         }
