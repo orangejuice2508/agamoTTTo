@@ -55,8 +55,8 @@
                     </tr>
                     </tbody>
                 </table>
-                <div>
-                    <a th:href="@{/records/{filterPool}/hours.xlsx(filterPool=${filter.pool.getId()})}">
+                <div th:if="${filter.from!=null && filter.to!=null}">
+                    <a th:href="@{/records/{filterPool}/{filterStart}/{filterEnd}/hours.xlsx(filterPool=${filter.pool.id}, filterStart=${filter.from}, filterEnd=${filter.to})}">
                         <i class="fas fa-file"></i>
                         <span th:text="#{button.export}"></span>
                     </a>

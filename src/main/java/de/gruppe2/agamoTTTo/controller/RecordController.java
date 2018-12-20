@@ -12,6 +12,7 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -214,16 +215,19 @@ public class RecordController extends BaseController {
         return "redirect:/records/overview/?successful=true";
     }
 
-    @GetMapping("/{filterPool}/hours.xlsx")
+    @GetMapping("/{filterPool}/{filterStart}/{filterEnd}/hours.xlsx")
     public /*ResponseEntity<InputStreamResource> exelRecordsReport() throws IOException  */String exelTry(
-            @PathVariable("filterPool") Long id, Model model){
+            @PathVariable ("filterPool") Long id,
+            @PathVariable("filterStart") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate filterStart,
+            @PathVariable("filterEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate filterEnd,
+            Model model){
 
+        PoolDateFilter filter = new PoolDateFilter(poolService.findPoolById(id), filterStart, filterEnd);
+        model.addAttribute("filter", filter);
         //model.addAttribute("filter", filter);
        // List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
         //model.addAttribute("records", records);
         //model.addAttribute("pool", pool);
-        System.out.println(id);
-        //System.out.println(filterStartDate);
         System.out.println("hallo, i bims");
         return "redirect:/records/overview/?successful=true";
     }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * Used for filtering entities which contain pools and dates (e.g. Records, RecordLogs)
@@ -24,5 +25,13 @@ public class PoolDateFilter extends DateFilter {
     public PoolDateFilter(PoolDateFilter filter) {
         super(filter);
         this.pool = filter.getPool();
+    }
+
+    public PoolDateFilter(Optional<Pool> pool, LocalDate start, LocalDate end) {
+        if(pool.isPresent()) {
+           this.pool = pool.get();
+        }
+        setFrom(start);
+        setTo(end);
     }
 }
