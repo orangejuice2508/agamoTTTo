@@ -1,6 +1,7 @@
 package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
@@ -10,6 +11,8 @@ import de.gruppe2.agamoTTTo.service.RecordService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -17,8 +20,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -139,6 +146,7 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
+
     @PostMapping("/overview")
     public String postOverviewRecordPage(@ModelAttribute PoolDateFilter filter, Model model) {
 
@@ -150,6 +158,8 @@ public class RecordController extends BaseController {
 
         return "records/overview";
     }
+
+
 
     /**
      * Method for displaying the edit form of a record determined by its id.
@@ -203,6 +213,21 @@ public class RecordController extends BaseController {
         recordService.updateRecord(updatedRecord);
         return "redirect:/records/overview/?successful=true";
     }
+
+    @GetMapping("/{filterPool}/hours.xlsx")
+    public /*ResponseEntity<InputStreamResource> exelRecordsReport() throws IOException  */String exelTry(
+            @PathVariable("filterPool") Long id, Model model){
+
+        //model.addAttribute("filter", filter);
+       // List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
+        //model.addAttribute("records", records);
+        //model.addAttribute("pool", pool);
+        System.out.println(id);
+        //System.out.println(filterStartDate);
+        System.out.println("hallo, i bims");
+        return "redirect:/records/overview/?successful=true";
+    }
+
 
     /**
      * This method checks a record if it contains valid times. If it's not valid, the BindingResult will
