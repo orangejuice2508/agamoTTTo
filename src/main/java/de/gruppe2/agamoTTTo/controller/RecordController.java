@@ -1,7 +1,7 @@
 package de.gruppe2.agamoTTTo.controller;
 
+import de.gruppe2.agamoTTTo.domain.base.ExcelGenerator;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
-import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,12 +22,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -38,12 +37,14 @@ public class RecordController extends BaseController {
     private RecordService recordService;
     private PoolService poolService;
     private MessageSource messageSource;
+    private ExcelGenerator excelGenerator;
 
     @Autowired
-    public RecordController(RecordService recordService, PoolService poolService, MessageSource messageSource) {
+    public RecordController(RecordService recordService, PoolService poolService, MessageSource messageSource, ExcelGenerator excelGenerator) {
         this.recordService = recordService;
         this.poolService = poolService;
         this.messageSource = messageSource;
+        this.excelGenerator = excelGenerator;
     }
 
     /**
@@ -216,20 +217,22 @@ public class RecordController extends BaseController {
     }
 
     @GetMapping("/{filterPool}/{filterStart}/{filterEnd}/hours.xlsx")
-    public /*ResponseEntity<InputStreamResource> exelRecordsReport() throws IOException  */String exelTry(
+    public ResponseEntity<InputStreamResource> exelRecordsReport(
             @PathVariable ("filterPool") Long id,
             @PathVariable("filterStart") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate filterStart,
             @PathVariable("filterEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate filterEnd,
-            Model model){
+            Model model) {
 
         PoolDateFilter filter = new PoolDateFilter(poolService.findPoolById(id), filterStart, filterEnd);
-        model.addAttribute("filter", filter);
-        //model.addAttribute("filter", filter);
-       // List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
-        //model.addAttribute("records", records);
-        //model.addAttribute("pool", pool);
-        System.out.println("hallo, i bims");
-        return "redirect:/records/overview/?successful=true";
+        List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
+        User authenticationUser = SecurityContext.getAuthenticationUser();
+
+        ByteArrayInputStream in = excelGenerator.createExcelSheet(records, filter, authenticationUser);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=hours.xlsx");
+
+        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }
 
 
