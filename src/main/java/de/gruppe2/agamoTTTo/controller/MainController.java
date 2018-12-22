@@ -1,6 +1,8 @@
 package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
+import de.gruppe2.agamoTTTo.security.Permission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +35,7 @@ public class MainController {
      * @param principal the currently logged in user, null if he is not logged in
      * @return path to template
      */
+    @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/home")
     public String userInfo(Model model, Principal principal) {
         // After user logged in successfully.

@@ -4,8 +4,10 @@ import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,21 +33,9 @@ public class PoolService {
      *
      * @param pool the pool as obtained from the controller
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     public void addPool(Pool pool){
         poolRepository.save(pool);
-    }
-
-    /**
-     * This method uses the poolRepository to try to update to the database.
-     *
-     * @param updatedPool the updated pool as obtained from the controller
-     */
-    public void updatePool(Pool updatedPool){
-        // Use the getOne method, so that no more DB fetch has to be executed
-        Pool poolToUpdate = poolRepository.getOne(updatedPool.getId());
-
-        poolToUpdate.setName(updatedPool.getName());
-        poolRepository.save(poolToUpdate);
     }
 
     /**
@@ -53,6 +43,7 @@ public class PoolService {
      *
      * @return all pools in the database
      */
+    @PreAuthorize(Permission.ADMINISTRATOR)
     public Set<Pool> findAllPools() {
         return new HashSet<>(poolRepository.findAll());
     }
@@ -62,6 +53,7 @@ public class PoolService {
      *
      * @return pools which the logged in user is part of
      */
+    @PreAuthorize(Permission.MITARBEITER)
     public Set<Pool> findAllPoolsOfAuthenticationUser(){
         Optional<User> optionalUser = userRepository.findById(SecurityContext.getAuthenticationUser().getId());
 
@@ -75,8 +67,23 @@ public class PoolService {
      * @param id the id of the pool, which should be found
      * @return the optional pool
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     public Optional<Pool> findPoolById(Long id){
         return poolRepository.findById(id);
+    }
+
+    /**
+     * This method uses the poolRepository to try to update to the database.
+     *
+     * @param updatedPool the updated pool as obtained from the controller
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public void updatePool(Pool updatedPool) {
+        // Use the getOne method, so that no more DB fetch has to be executed
+        Pool poolToUpdate = poolRepository.getOne(updatedPool.getId());
+
+        poolToUpdate.setName(updatedPool.getName());
+        poolRepository.save(poolToUpdate);
     }
 
 }

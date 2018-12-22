@@ -1,16 +1,13 @@
 package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
-import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -33,7 +30,6 @@ public class RecordLogController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/overview")
     public String getOverviewLogsPage(Model model){
 
@@ -50,12 +46,12 @@ public class RecordLogController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
-    @PostMapping("overview")
+    @GetMapping("overview/filter")
     public String postOverviewLogsPage(@ModelAttribute PoolDateFilter filter, Model model){
 
         model.addAttribute("filter", filter);
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+
         model.addAttribute("recordLogs", recordLogService.getAllRecordLogsByFilter(filter));
 
         return "logs/overview";

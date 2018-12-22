@@ -49,7 +49,6 @@ public class EmployeeController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to resulting template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @PostMapping("/add")
     public String postAddEmployeesPage(@ModelAttribute @Valid User user, BindingResult bindingResult){
         /* If the form contains errors, the new employee won't be added and the form is displayed again with
@@ -74,4 +73,6 @@ public class EmployeeController extends BaseController {
         // If the user was added successfully, reload the page with an empty form.
         return "redirect:/employees/add/?successful=true";
     }
+
+
 }
