@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Service which is used for dealing with the users of our application.
@@ -93,6 +94,11 @@ public class UserService implements UserDetailsService {
         return new CustomSecurityUser(user);
     }
 
+    @PreAuthorize(Permission.VORGESETZTER)
+    public Set<User> searchForUser(String searchTerm) {
+        return userRepository.searchForUserByFirstNameOrLastNameOrEmail(searchTerm);
+    }
+
     /**
      * Used for generating a random password for a newly registered user.
      *
@@ -112,6 +118,5 @@ public class UserService implements UserDetailsService {
 
         return randomPassword.toString();
     }
-
 
 }

@@ -74,5 +74,15 @@ public class EmployeeController extends BaseController {
         return "redirect:/employees/add/?successful=true";
     }
 
+    @GetMapping(value = "/overview")
+    public String getOverviewEmployeesPage() {
+        return "employees/overview";
+    }
+
+    @GetMapping(value = "/overview", params = "searchTerm")
+    public String getOverviewEmployeesAfterSearchPage(@RequestParam("searchTerm") String searchTerm, Model model) {
+        model.addAttribute("users", userService.searchForUser(searchTerm));
+        return "employees/overview";
+    }
 
 }
