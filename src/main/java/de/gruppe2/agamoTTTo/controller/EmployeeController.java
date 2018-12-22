@@ -74,6 +74,7 @@ public class EmployeeController extends BaseController {
         return "redirect:/employees/add/?successful=true";
     }
 
+    @PreAuthorize(Permission.ADMINISTRATOR)
     @GetMapping(value = "/overview")
     public String getOverviewEmployeesPage() {
         return "employees/overview";
