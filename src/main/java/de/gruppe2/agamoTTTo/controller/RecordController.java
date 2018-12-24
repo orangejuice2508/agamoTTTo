@@ -229,8 +229,10 @@ public class RecordController extends BaseController {
 
         ByteArrayInputStream in = excelGenerator.createExcelSheet(records, filter, authenticationUser);
 
+        String filename = "Arbeitsstunden" + filterStart.toString() + "bis" + filterEnd.toString();
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=hours.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx" + "\"");
 
         return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }

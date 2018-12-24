@@ -60,5 +60,4 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
     private Pool pool;
-
 }
