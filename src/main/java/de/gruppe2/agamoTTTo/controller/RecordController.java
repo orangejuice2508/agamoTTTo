@@ -98,7 +98,7 @@ public class RecordController extends BaseController {
      * @return path to template
      */
     @GetMapping("/analysis/filter")
-    public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
+    public String getAnalyseRecordFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
@@ -133,7 +133,7 @@ public class RecordController extends BaseController {
      * @return path to template
      */
     @GetMapping("/overview/filter")
-    public String postOverviewRecordPage(@ModelAttribute PoolDateFilter filter, Model model) {
+    public String getOverviewRecordFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
@@ -175,13 +175,13 @@ public class RecordController extends BaseController {
     /**
      * Method for handling the submission of the "edit record" form.
      *
-     * @param updatedRecord the pool with updated fields
+     * @param updatedRecord the record with updated fields
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
     @PutMapping("/edit/{id}")
-    public String postEditRecordPage(@PathVariable("id") Long id, @Valid Record updatedRecord, BindingResult bindingResult,
-                                     Model model) {
+    public String putEditRecordPage(@PathVariable("id") Long id, @Valid Record updatedRecord, BindingResult bindingResult,
+                                    Model model) {
 
         // Check whether the record is valid
         checkRecord(updatedRecord, bindingResult);

@@ -116,14 +116,15 @@ public class PoolController extends BaseController {
     public String getEditPoolPage(@PathVariable("id") Long id, Model model) throws Exception {
 
         Optional<Pool> optionalPool = poolService.findPoolById(id);
+        User authenticationUser = SecurityContext.getAuthenticationUser();
 
         // Check whether a pool with the id could be found.
         if(!optionalPool.isPresent()){
             throw new NotFoundException("No pool found with ID: " + id);
         }
 
-        // Check whether the current user is allowed to edit this pool.
-        if(!optionalPool.get().getOwner().getId().equals(SecurityContext.getAuthenticationUser().getId())){
+        // Check whether the current user is allowed to edit this pool. The admin is allowed to edit every pool.
+        if (!authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR) && !optionalPool.get().getOwner().getId().equals(authenticationUser.getId())) {
             throw new AccessDeniedException("The current user/editor and the pool owner are not identical.");
         }
 
@@ -139,7 +140,7 @@ public class PoolController extends BaseController {
      * @return path to the template
      */
     @PutMapping("/edit/{id}")
-    public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
+    public String putEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */
         if(bindingResult.hasErrors()){

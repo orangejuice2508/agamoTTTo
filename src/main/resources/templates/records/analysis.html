@@ -24,10 +24,10 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" th:text="#{records.analysis.table.header.date}"></th>
-                        <th scope="col" th:text="#{records.analysis.table.header.time}"></th>
-                        <th scope="col" th:text="#{records.analysis.table.header.description}"></th>
-                        <th scope="col" th:text="#{records.analysis.table.header.duration}"></th>
+                        <th scope="col" th:text="#{records.date}"></th>
+                        <th scope="col" th:text="#{records.time}"></th>
+                        <th scope="col" th:text="#{records.description}"></th>
+                        <th scope="col" th:text="#{records.duration}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -38,7 +38,7 @@
                         <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
                     </tr>
                     <tr class="table-success">
-                        <td colspan="3" th:text="#{records.analysis.table.row.sum}"></td>
+                        <td colspan="3" th:text="#{records.sum}"></td>
                         <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>

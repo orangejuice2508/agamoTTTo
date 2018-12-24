@@ -20,8 +20,9 @@
     <div class="card-body">
         <form action="#" th:action="@{/pools/add}" th:object="${pool}" method="post">
             <div class="form-group">
-                <label th:text="#{pools.add.label.name}" for="name"></label>
-                <input th:placeholder="#{pools.add.label.name}" th:field="*{name}" th:errorclass="is-invalid" type="text" class="form-control" id="name" required>
+                <label th:text="#{pools.name}" for="name"></label>
+                <input th:placeholder="#{pools.name}" th:field="*{name}" th:errorclass="is-invalid" type="text"
+                       class="form-control" id="name" required>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
             <p>

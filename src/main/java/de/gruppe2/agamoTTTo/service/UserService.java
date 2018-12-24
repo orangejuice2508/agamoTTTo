@@ -1,8 +1,9 @@
 package de.gruppe2.agamoTTTo.service;
 
-import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
+import de.gruppe2.agamoTTTo.domain.entity.Role;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.security.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -51,9 +53,10 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
-        // Generate a random password and hash it.
+        // Generate a random password and hash it. Set default role.
         String randomPassword = generateRandomPassword();
         user.setEncryptedPassword(passwordEncoder.encode(randomPassword));
+        user.setRole(new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER));
 
         /* Try to save the user to the database before sending the mail.
            Reason: If email address is already registered an exception is
@@ -94,9 +97,45 @@ public class UserService implements UserDetailsService {
         return new CustomSecurityUser(user);
     }
 
+    /**
+     * This method uses the userRepository to find users according to the searchTerm.
+     *
+     * @param searchTerm the entered search term by the user
+     * @return a set of users, if users were found; otherwise: an empty set
+     */
     @PreAuthorize(Permission.VORGESETZTER)
-    public Set<User> searchForUser(String searchTerm) {
+    public Set<User> findUsersBySearchTerm(String searchTerm) {
         return userRepository.searchForUserByFirstNameOrLastNameOrEmail(searchTerm);
+    }
+
+    /**
+     * This method uses the userRepository to find a certain user from the database.
+     * If no user was found, an empty optional object is returned.
+     *
+     * @param id the id of the user, which should be found
+     * @return the optional user
+     */
+    @PreAuthorize(Permission.ADMINISTRATOR)
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    /**
+     * This method uses the userRepository to try to update to the database.
+     *
+     * @param updatedUser the updated user as obtained from the controller
+     */
+    @PreAuthorize(Permission.ADMINISTRATOR)
+    public void updateUser(User updatedUser) {
+        // Use the getOne method, so that no more DB fetch has to be executed
+        User userToUpdate = userRepository.getOne(updatedUser.getId());
+
+        userToUpdate.setFirstName(updatedUser.getFirstName());
+        userToUpdate.setLastName(updatedUser.getLastName());
+        userToUpdate.setEmail(updatedUser.getEmail());
+        userToUpdate.setEnabled(updatedUser.getEnabled());
+        userToUpdate.setRole(updatedUser.getRole());
+        userRepository.save(userToUpdate);
     }
 
     /**

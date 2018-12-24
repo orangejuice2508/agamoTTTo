@@ -25,7 +25,8 @@
                     <div class="card bg-light border-success mb-2">
                         <div class="card-header" th:text="${#temporals.format(recordLog.changeAt, 'dd.MM.yyyy HH:mm')}"></div>
                         <div class="card-body">
-                            <h6 class="card-title" th:text="${@displayNameBuilder.display(recordLog.user)} + ' ' +  #{logs.overview.card.header.created}"></h6>
+                            <h6 class="card-title"
+                                th:text="${@displayNameBuilder.display(recordLog.user)} + ' ' +  #{logs.created}"></h6>
                             <p class="card-text" th:text="${@displayNameBuilder.display(recordLog.record)}"></p>
                         </div>
                     </div>
@@ -34,7 +35,8 @@
                     <div class="card bg-light border-danger mb-2">
                         <div class="card-header" th:text="${#temporals.format(recordLog.changeAt, 'dd.MM.yyyy HH:mm')}"></div>
                         <div class="card-body">
-                            <h6 class="card-title" th:text="${@displayNameBuilder.display(recordLog.user)} + ' ' +  #{logs.overview.card.header.deleted}"></h6>
+                            <h6 class="card-title"
+                                th:text="${@displayNameBuilder.display(recordLog.user)} + ' ' +  #{logs.deleted}"></h6>
                             <p class="card-text" th:text="${@displayNameBuilder.display(recordLog.record)}"></p>
                         </div>
                     </div>
@@ -43,9 +45,12 @@
                     <div class="card bg-light border-warning mb-2">
                         <div class="card-header" th:text="${#temporals.format(recordLog.changeAt, 'dd.MM.yyyy HH:mm')}"></div>
                         <div class="card-body">
-                            <h6 class="card-title" th:text="${@displayNameBuilder.display(recordLog.user)} + ' ' +  #{logs.overview.card.header.modified}"></h6>
-                            <span class="card-text" th:text="#{logs.overview.card.body.before_change} + ' ' + ${@displayNameBuilder.display(recordLog)}"></span><br>
-                            <span class="card-text" th:text="#{logs.overview.card.body.after_change} + ' ' + ${@displayNameBuilder.display(recordLog.record)}"></span>
+                            <h6 class="card-title"
+                                th:text="${@displayNameBuilder.display(recordLog.user)} + ' ' +  #{logs.modified}"></h6>
+                            <span class="card-text"
+                                  th:text="#{logs.before_change} + ' ' + ${@displayNameBuilder.display(recordLog)}"></span><br>
+                            <span class="card-text"
+                                  th:text="#{logs.after_change} + ' ' + ${@displayNameBuilder.display(recordLog.record)}"></span>
                         </div>
                     </div>
                 </div>

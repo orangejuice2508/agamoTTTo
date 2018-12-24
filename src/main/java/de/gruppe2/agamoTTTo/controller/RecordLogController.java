@@ -47,7 +47,7 @@ public class RecordLogController {
      * @return path to template
      */
     @GetMapping("overview/filter")
-    public String postOverviewLogsPage(@ModelAttribute PoolDateFilter filter, Model model){
+    public String getOverviewLogsFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
 
         model.addAttribute("filter", filter);
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());

@@ -63,7 +63,6 @@ public class User {
     public User() {
         this.encryptedPassword = "";
         this.enabled = Boolean.TRUE;
-        this.role = new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER);
     }
 
     public User (User user){

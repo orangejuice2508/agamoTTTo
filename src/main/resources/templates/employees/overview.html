@@ -3,24 +3,30 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="fragments/layout">
 <head>
-    <title th:text="#{employess.overview.title}"></title>
+    <title th:text="#{employees.overview.title}"></title>
 </head>
 <body>
 <div layout:fragment="content">
+    <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
+        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+            <span th:text="#{employees.edit.info.successful}"></span>
+        </div>
+    </div>
     <div class="card m-3">
         <div class="card-header">
-            <h4 th:text="#{employess.overview.title}" class="card-title"></h4>
-            <p th:text="#{employess.overview.subtitle}" class="card-subtitle text-muted"></p>
+            <h4 th:text="#{employees.overview.title}" class="card-title"></h4>
+            <p th:text="#{employees.overview.subtitle}" class="card-subtitle text-muted"></p>
         </div>
         <div class="card-body">
             <form action="#" th:action="@{/employees/overview}" method="get">
                 <div class="form-check form-check-inline">
                     <div class="input-group">
-                        <input th:placeholder="#{employees.overview.search}" type="text" name="searchTerm"/>
+                        <input th:placeholder="#{employees.overview.search}" type="text" th:value="${serchTerm}"
+                               name="searchTerm"/>
                     </div>
+                    <button th:text="#{button.submit}" type="submit" class="btn btn-primary ml-2"></button>
+                    <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
                 </div>
-                <button th:text="#{button.submit}" type="submit" class="btn btn-primary ml-2"></button>
-                <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
             </form>
             <hr>
             <div th:if="${users != null && users.isEmpty()}">
@@ -30,10 +36,12 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" th:text="#{employees.overview.table.header.first_name}"></th>
-                        <th scope="col" th:text="#{employees.overview.table.header.last_name}"></th>
-                        <th scope="col" th:text="#{employees.overview.table.header.email}"></th>
-                        <th scope="col" th:text="#{employees.overview.table.header.locked}"></th>
+                        <th scope="col" th:text="#{employees.first_name}"></th>
+                        <th scope="col" th:text="#{employees.last_name}"></th>
+                        <th scope="col" th:text="#{employees.email}"></th>
+                        <th scope="col" th:text="#{employees.status}"></th>
+                        <th scope="col" th:text="#{roles.name}"></th>
+                        <th scope="col" th:text="#{actions}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,9 +49,20 @@
                         <td th:text="${user.firstName}"></td>
                         <td th:text="${user.lastName}"></td>
                         <td th:text="${user.email}"></td>
+                        <td th:if="${user.enabled}">
+                            <i class="fas fa-lock-open"></i>
+                            <span th:text="#{employees.status.enabled}"></span>
+                        </td>
+                        <td th:unless="${user.enabled}">
+                            <i class="fas fa-lock"></i>
+                            <span th:text="#{employees.status.disabled}"></span>
+                        </td>
+                        <td th:text="${@displayNameBuilder.display(user.role)}"></td>
                         <td>
-                            <i class="fas fa-lock-open" th:if="${user.enabled}"></i>
-                            <i class="fas fa-lock" th:unless="${user.enabled}"></i>
+                            <a th:href="@{/employees/edit/{id}(id=${user.id})}">
+                                <i class="fas fa-edit"></i>
+                                <span th:text="#{actions.edit}"></span>
+                            </a>
                         </td>
                     </tr>
                     </tbody>

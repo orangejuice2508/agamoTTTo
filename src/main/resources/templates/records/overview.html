@@ -29,11 +29,11 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" th:text="#{records.overview.table.header.date}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.time}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.description}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.duration}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.actions}"></th>
+                        <th scope="col" th:text="#{records.date}"></th>
+                        <th scope="col" th:text="#{records.time}"></th>
+                        <th scope="col" th:text="#{records.description}"></th>
+                        <th scope="col" th:text="#{records.duration}"></th>
+                        <th scope="col" th:text="#{actions}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -45,11 +45,11 @@
                         <td>
                             <a th:href="@{/records/edit/{id}(id=${record.id})}">
                                 <i class="fas fa-edit"></i>
-                                <span th:text="#{records.overview.table.data.actions.edit}"></span>
+                                <span th:text="#{actions.edit}"></span>
                             </a>
                             <!--a th:href="@{/records/delete/{id}(id=${record.id})}" -->
                                 <i class="fas fa-trash-alt"></i>
-                                <span th:text="#{records.overview.table.data.actions.delete}"></span>
+                            <span th:text="#{actions.delete}"></span>
                             <!--/a-->
                         </td>
                     </tr>
