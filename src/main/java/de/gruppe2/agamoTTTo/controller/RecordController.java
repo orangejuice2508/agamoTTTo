@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.domain.base.ExcelGenerator;
+import de.gruppe2.agamoTTTo.util.ExcelGenerator;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;

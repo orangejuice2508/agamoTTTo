@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.domain.base;
+package de.gruppe2.agamoTTTo.util;
 
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
@@ -8,13 +8,13 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
-@Service
+@Component
 public class ExcelGenerator {
 
     public ByteArrayInputStream createExcelSheet(List<Record> records, PoolDateFilter filter, User user) {
@@ -33,6 +33,7 @@ public class ExcelGenerator {
         String minute = "mm";
         String colon = ":";
         String hyphen = "-";
+        String datePattern = "dd.MM.yyyy";
 
         //Creating first row of the sheet
         Row firstHeaderRow = sheet.createRow(0);
@@ -46,7 +47,7 @@ public class ExcelGenerator {
         Cell secondRowFirstCell = secondHeaderRow.createCell(0);
         Cell secondRowSecondCell = secondHeaderRow.createCell(1);
         secondRowFirstCell.setCellValue("Aufzeichnung für den Zeitraum");
-        secondRowSecondCell.setCellValue(filter.getFrom().toString() + colon + filter.getTo().toString());
+        secondRowSecondCell.setCellValue(filter.getFrom().format(DateTimeFormatter.ofPattern(datePattern)) + hyphen + filter.getTo().format(DateTimeFormatter.ofPattern(datePattern)));
 
         //Creating third row of the sheet
         Row thirdHeaderRow = sheet.createRow(2);
@@ -89,7 +90,7 @@ public class ExcelGenerator {
         for (Record record : records) {
             Row row = sheet.createRow(rowIndex++);
 
-            row.createCell(0).setCellValue(record.getDate().toString());
+            row.createCell(0).setCellValue(record.getDate().format(DateTimeFormatter.ofPattern(datePattern)));
             row.createCell(1).setCellValue(record.getStartTime().toString());
             row.createCell(2).setCellValue(clock);
             row.createCell(3).setCellValue(hyphen);
