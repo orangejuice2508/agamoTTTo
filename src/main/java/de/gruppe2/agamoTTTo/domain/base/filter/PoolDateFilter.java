@@ -39,12 +39,4 @@ public class PoolDateFilter {
 
         this.pool = filter.getPool();
     }
-
-    public PoolDateFilter(Optional<Pool> pool, LocalDate start, LocalDate end) {
-        if(pool.isPresent()) {
-           this.pool = pool.get();
-        }
-        setFrom(start);
-        setTo(end);
-    }
 }

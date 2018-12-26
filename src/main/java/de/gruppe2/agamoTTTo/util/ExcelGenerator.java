@@ -3,6 +3,7 @@ package de.gruppe2.agamoTTTo.util;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.service.RecordService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -10,14 +11,25 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
 public class ExcelGenerator {
 
-    public ByteArrayInputStream createExcelSheet(List<Record> records, PoolDateFilter filter, User user) {
+    private RecordService recordService;
+
+    @Autowired
+    public ExcelGenerator(RecordService recordService) {
+        this.recordService = recordService;
+    }
+
+    public ByteArrayInputStream createExcelSheet(PoolDateFilter filter, User user) {
+
+        List<Record> records = recordService.getAllRecordsByFilter(filter, user);
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("workhours");
@@ -129,10 +141,6 @@ public class ExcelGenerator {
             e.printStackTrace();
         }
         return new ByteArrayInputStream(output.toByteArray());
-    }
-
-    @Autowired
-    public ExcelGenerator() {
     }
 
     /**

@@ -105,7 +105,7 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-    @GetMapping("/analysis/filter")
+    @GetMapping(params = "send", value = "/analysis/filter")
     public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
@@ -116,6 +116,25 @@ public class RecordController extends BaseController {
         model.addAttribute("totalDuration", recordService.calculateTotalDuration(records));
 
         return "records/analysis";
+    }
+
+    /**
+     * Method for handling the submission of the export button on the "analysis" page.
+     *
+     * @param filter contains criteria set by the user on the overview page.
+     * @return path to template
+     */
+    @GetMapping(params = "export", value = "/analysis/filter")
+    public ResponseEntity<InputStreamResource> excelRecordsReport(@ModelAttribute PoolDateFilter filter) {
+
+        ByteArrayInputStream in = excelGenerator.createExcelSheet(filter, SecurityContext.getAuthenticationUser());
+
+        String filename = "Arbeitsstunden" + filter.getFrom().toString() + "bis" + filter.getTo().toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx" + "\"");
+
+        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }
 
     /**
@@ -204,28 +223,6 @@ public class RecordController extends BaseController {
         recordService.updateRecord(updatedRecord);
         return "redirect:/records/overview/?successful=true";
     }
-
-    @GetMapping("/{filterPool}/{filterStart}/{filterEnd}/hours.xlsx")
-    public ResponseEntity<InputStreamResource> exelRecordsReport(
-            @PathVariable ("filterPool") Long id,
-            @PathVariable("filterStart") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate filterStart,
-            @PathVariable("filterEnd") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate filterEnd,
-            Model model) {
-
-        PoolDateFilter filter = new PoolDateFilter(poolService.findPoolById(id), filterStart, filterEnd);
-        List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
-        User authenticationUser = SecurityContext.getAuthenticationUser();
-
-        ByteArrayInputStream in = excelGenerator.createExcelSheet(records, filter, authenticationUser);
-
-        String filename = "Arbeitsstunden" + filterStart.toString() + "bis" + filterEnd.toString();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx" + "\"");
-
-        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
-    }
-
 
     /**
      * This method checks a record if it contains valid times. If it's not valid, the BindingResult will

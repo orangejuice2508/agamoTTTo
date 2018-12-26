@@ -15,6 +15,11 @@
         <div class="card-body">
             <form action="#" th:action="@{/records/analysis/filter}" th:object="${filter}" method="get">
                 <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
+                <button th:text="#{button.submit}" type="submit" name="send" value="true"
+                        class="btn btn-primary ml-2"></button>
+                <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
+                <button th:text="#{button.export}" type="submit" name="export" value="true"
+                        class="btn btn-success ml-1"></button>
             </form>
             <hr>
             <div th:if="${records != null && records.isEmpty()}">
