@@ -4,7 +4,6 @@ import de.gruppe2.agamoTTTo.util.ExcelGenerator;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
-import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordService;
@@ -16,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -52,7 +50,6 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.MITARBEITER)
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
 
@@ -108,19 +105,15 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PostMapping("/analysis")
+    @GetMapping("/analysis/filter")
     public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
 
         List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
-
-        // Calculate total duration of the retrieved records
-        Long totalDuration = records.stream().mapToLong(Record::getDuration).sum();
-
         model.addAttribute("records", records);
-        model.addAttribute("totalDuration", totalDuration);
+        model.addAttribute("totalDuration", recordService.calculateTotalDuration(records));
 
         return "records/analysis";
     }
@@ -147,8 +140,7 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-
-    @PostMapping("/overview")
+    @GetMapping("/overview/filter")
     public String postOverviewRecordPage(@ModelAttribute PoolDateFilter filter, Model model) {
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
@@ -159,8 +151,6 @@ public class RecordController extends BaseController {
 
         return "records/overview";
     }
-
-
 
     /**
      * Method for displaying the edit form of a record determined by its id.

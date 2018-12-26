@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.service;
 
-import de.gruppe2.agamoTTTo.domain.base.filter.DateFilter;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
@@ -8,12 +7,13 @@ import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
 import de.gruppe2.agamoTTTo.domain.base.ChangeType;
+import de.gruppe2.agamoTTTo.security.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +39,7 @@ public class RecordService{
      *
      * @param record the record as obtained from the controller
      */
+    @PreAuthorize(Permission.MITARBEITER)
     public void addRecord(Record record) {
 
         record.setDuration(calculateDuration(record.getStartTime(), record.getEndTime()));
@@ -47,10 +48,38 @@ public class RecordService{
     }
 
     /**
+     * This method uses the recordRepository to find a certain record from the database.
+     * If no record was found, an empty optional object is returned.
+     *
+     * @param id the id of the record, which should be found
+     * @return the optional record
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    public Optional<Record> findRecordById(Long id) {
+        return recordRepository.findById(id);
+    }
+
+    /**
+     * This method returns all records of a user which match the criteria of the filter.
+     *
+     * @param filter contains the criteria set by the user
+     * @param user   the user whose records should be found
+     * @return an ordered list with Records which match the criteria of the filter
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    public List<Record> getAllRecordsByFilter(PoolDateFilter filter, User user) {
+        // Update filter so that empty dates are filled with default values
+        filter = new PoolDateFilter(filter);
+
+        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
+    }
+
+    /**
      * This method uses the recordRepository to try to update to the database.
      *
      * @param updatedRecord the updated record as obtained from the controller
      */
+    @PreAuthorize(Permission.MITARBEITER)
     public void updateRecord(Record updatedRecord) {
 
         // Use the getOne method, so that no more DB fetch has to be executed
@@ -71,33 +100,12 @@ public class RecordService{
     }
 
     /**
-     * This method returns all Records of a user which match the criteria of the filter.
-     *
-     * @param filter contains the criteria set by the user
-     * @param user the user whose records should be found
-     * @return an ordered list with Records which match the criteria of the filter
-     */
-    public List<Record> getAllRecordsByFilter(DateFilter filter, User user){
-        if(filter instanceof PoolDateFilter){
-            // Update filter so that empty dates are filled with default values
-            filter = new PoolDateFilter((PoolDateFilter) filter);
-
-            return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, ((PoolDateFilter) filter).getPool(), filter.getFrom(), filter.getTo());
-        }
-        else {
-            // Update filter so that empty dates are filled with default values
-            filter = new DateFilter(filter);
-
-            return recordRepository.findAllByUserAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getFrom(), filter.getTo());
-        }
-    }
-
-    /**
      * This method checks if a record's times are valid.
      *
      * @param record the new record
      * @return true if endTime is after startTime
      */
+    @PreAuthorize(Permission.MITARBEITER)
     public boolean areTimesValid(Record record) {
         return record.getEndTime().isAfter(record.getStartTime());
     }
@@ -110,6 +118,7 @@ public class RecordService{
      * @param user the user who wants to add a record
      * @return true if the times are allowed (i.e. do NOT overlap); false if the time are not allowed
      */
+    @PreAuthorize(Permission.MITARBEITER)
     public boolean areTimesAllowed(Record newRecord, User user) {
 
         LocalTime newStartTime = newRecord.getStartTime();
@@ -168,16 +177,26 @@ public class RecordService{
     }
 
     /**
+     * This method calculates the total duration of the lists of records.
+     *
+     * @param records the list with the records of which the total duration should be calculated
+     * @return the total duration in minutes
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    public Long calculateTotalDuration(List<Record> records) {
+        return records.stream().mapToLong(Record::getDuration).sum();
+    }
+
+    /**
      * This method calculates the duration of time a user worked.
      *
      * @param startTime The start time of the task
      * @param endTime the end time of the task
      * @return the duration as the time between endTime and startTime
      */
+    @PreAuthorize(Permission.MITARBEITER)
     private Long calculateDuration(LocalTime startTime, LocalTime endTime) {
 
         return between(startTime, endTime).toMinutes();
     }
-
-    public Optional<Record> findRecordById(Long id) { return recordRepository.findById(id); }
 }

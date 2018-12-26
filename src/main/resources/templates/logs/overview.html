@@ -13,8 +13,8 @@
             <p th:text="#{logs.overview.subtitle}" class="card-subtitle text-muted"></p>
         </div>
         <div class="card-body">
-            <form action="#" th:action="@{/logs/overview}" th:object="${filter}" method="post">
-                <div class="form-check form-check-inline" th:insert="fragments/filter/pool_date_filter :: pool_date_filter"></div>
+            <form action="#" th:action="@{/logs/overview/filter}" th:object="${filter}" method="get">
+                <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
             </form>
             <hr>
             <div th:if="${recordLogs != null && recordLogs.isEmpty()}">

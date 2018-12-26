@@ -3,9 +3,11 @@ package de.gruppe2.agamoTTTo.service;
 import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.security.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,33 +42,13 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * This method tries to find a user from the database based on the entered email.
-     * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
-     *
-     * @param email the email as entered in the login form
-     * @return user the newly created CustomSecurityUser object with "email" as username and "role" as granted authorities
-     * @throws UsernameNotFoundException if no user was found with the entered email
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-
-        if(user == null){
-            log.info("No such user found");
-            throw new UsernameNotFoundException(email);
-        }
-
-        return new CustomSecurityUser(user);
-    }
-
-    /**
      * This method uses the userRepository to try to add a user to the database.
      * Before saving it, a random password is generated
      * In order to inform the new user about his credentials an email is sent to his email address.
      *
      * @param user the user as obtained from the controller
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
         // Generate a random password and hash it.
         String randomPassword = generateRandomPassword();
@@ -88,6 +70,27 @@ public class UserService implements UserDetailsService {
         Object[] parameters = {user.getLastName(), user.getEmail(), randomPassword};
         String text = messageSource.getMessage("employees.add.email.text", parameters, Locale.getDefault());
         emailService.sendHTMLEmail(user.getEmail(), subject, text);
+    }
+
+    /**
+     * This method tries to find a user from the database based on the entered email.
+     * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
+     *
+     * @param email the email as entered in the login form
+     * @return user the newly created CustomSecurityUser object with "email" as username and "role" as granted authorities
+     * @throws UsernameNotFoundException if no user was found with the entered email
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            log.info("No such user found");
+            throw new UsernameNotFoundException(email);
+        }
+
+        return new CustomSecurityUser(user);
     }
 
     /**
