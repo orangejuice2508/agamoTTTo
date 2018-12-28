@@ -1,11 +1,13 @@
 package de.gruppe2.agamoTTTo.controller;
 
+import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.Role;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
+import de.gruppe2.agamoTTTo.service.RecordService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -18,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -25,12 +28,15 @@ import java.util.Optional;
 @RequestMapping("pools")
 public class PoolController extends BaseController {
 
+    private RecordService recordService;
+
     private PoolService poolService;
 
     private MessageSource messageSource;
 
     @Autowired
-    public PoolController(PoolService poolService, MessageSource messageSource) {
+    public PoolController(RecordService recordService, PoolService poolService, MessageSource messageSource) {
+        this.recordService = recordService;
         this.poolService = poolService;
         this.messageSource = messageSource;
     }
@@ -160,5 +166,16 @@ public class PoolController extends BaseController {
 
         // If the pool was updated successfully, redirect to the pools' overview page.
         return "redirect:/pools/overview/?successful=true";
+    }
+
+    @GetMapping(params = "send", value = "/analysis/filter")
+    public String postAnalysisPoolPage(@ModelAttribute PoolDateFilter filter, Model model){
+
+        HashMap<User, Long> result = recordService.test(filter);
+        model.addAttribute("result", result);
+        Long totalDuration = result.values().stream().mapToLong(Long::longValue).sum();
+        model.addAttribute("totalDuration", totalDuration);
+
+        return "pools/analysis";
     }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{pools.analysis.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 th:text="#{pools.analysis.title}" class="card-title"></h4>
+            <p th:text="#{pools.analysis.subtitle}" class="card-subtitle text-muted"></p>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/records/analysis/filter}" th:object="${filter}" method="get">
+                <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
+                <button th:text="#{button.submit}" type="submit" name="send" value="true"
+                        class="btn btn-primary ml-2"></button>
+                <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
+                <button th:text="#{button.export}" type="submit" name="export" value="true"
+                        class="btn btn-success ml-1"></button>
+            </form>
+            <hr>
+            <div th:if="${records != null && records.isEmpty()}">
+                <p th:text="#{nothing_found}"></p>
+            </div>
+            <div th:if="${records != null && !records.isEmpty()}">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" th:text="#{pools.analysis.table.header.user}"></th>
+                        <th scope="col" th:text="#{pools.analysis.table.header.date}"></th>
+                        <th scope="col" th:text="#{pools.analysis.table.header.time}"></th>
+                        <th scope="col" th:text="#{pools.analysis.table.header.duration}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="result: ${result}">
+                        <td th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}"></td>
+                        <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
+                        <td th:text="${record.description}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td colspan="3" th:text="#{records.analysis.table.row.sum}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

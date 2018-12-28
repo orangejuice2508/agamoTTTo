@@ -7,6 +7,7 @@ import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
 import de.gruppe2.agamoTTTo.domain.base.ChangeType;
+import de.gruppe2.agamoTTTo.repository.UserRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.time.Duration.between;
 
@@ -27,10 +26,13 @@ public class RecordService{
 
     private RecordLogRepository recordLogRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public RecordService(RecordRepository recordRepository, RecordLogRepository recordLogRepository) {
+    public RecordService(RecordRepository recordRepository, RecordLogRepository recordLogRepository, UserRepository userRepository) {
         this.recordRepository = recordRepository;
         this.recordLogRepository = recordLogRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -185,6 +187,26 @@ public class RecordService{
     @PreAuthorize(Permission.MITARBEITER)
     public Long calculateTotalDuration(List<Record> records) {
         return records.stream().mapToLong(Record::getDuration).sum();
+    }
+
+    /**
+     * This method calculates the total sum of the lists of records for every member of a pool.
+     *
+     * @param
+     * @return the total sum in minutes for every member in an hashmap
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public HashMap<User, Long> test (PoolDateFilter filter){
+        Set<User> usersInPool = userRepository.findAllByPools(Collections.singleton(filter.getPool()));
+        HashMap<User, Long> result = new HashMap<>();
+
+        for (User currentUser : usersInPool){
+            List<Record> records = recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(currentUser, filter.getPool(), filter.getFrom(), filter.getTo());
+            Long totalDurationInPeriod = calculateTotalDuration(records);
+            result.put(currentUser, totalDurationInPeriod);
+        }
+
+        return result;
     }
 
     /**
