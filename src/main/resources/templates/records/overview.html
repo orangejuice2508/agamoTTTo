@@ -49,10 +49,10 @@
                                 <i class="fas fa-edit"></i>
                                 <span th:text="#{records.overview.table.data.actions.edit}"></span>
                             </a>
-                            <!--a th:href="@{/records/delete/{id}(id=${record.id})}"-->
+                            <a th:href="@{/records/delete/{id}(id=${record.id})}">
                                 <i class="fas fa-trash-alt"></i>
                                 <span th:text="#{records.overview.table.data.actions.delete}"></span>
-                            <!--/a-->
+                            </a>
                         </td>
                     </tr>
                     </tbody>

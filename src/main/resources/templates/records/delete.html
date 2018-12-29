@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{records.delete.title}"></title>
+</head>
+<body>
+<div layout:fragment="content" class="card m-3">
+    <div class="card-header">
+        <div>
+            <a th:href="@{/records/overview}">
+                <i class="fas fa-arrow-circle-left"></i>
+                <span th:text="#{back}"></span>
+            </a>
+        </div>
+        <hr>
+        <div>
+            <h4 th:text="#{records.delete.title}" class="card-title"></h4>
+            <p th:text="#{records.delete.subtitle}" class="card-subtitle text-muted"></p>
+        </div>
+    </div>
+    <div class="card-body">
+        <div th:text="#{records.delete.label.date}"></div>
+        <div th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}" class="form-control" id="date"></div>
+        <div th:text="#{records.delete.label.start_time}"></div>
+        <div th:text="${#temporals.format(record.startTime, 'HH:mm')}" class="form-control" id="start_time"></div>
+        <div th:text="#{records.delete.label.end_time}"></div>
+        <div th:text="${#temporals.format(record.endTime, 'HH:mm')}" class="form-control" id="end_time"></div>
+        <div th:text="#{records.delete.label.duration}"></div>
+        <div th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}" class="form-control" id="duration"></div>
+        <div th:text="#{records.delete.label.description}"></div>
+        <div th:text="${record.description}" class="form-control" id="description"></div>
+        <div th:text="#{records.delete.label.pool}"></div>
+        <div th:text="${record.pool.name}" class="form-control" id="pool"></div>
+        <form action="#" th:action="@{/records/delete/{id}(id=${record.id})}" th:object="${record}" th:method="get">
+            <button th:text="#{button.delete}" name="delete" type="submit" value="true" class="btn btn-primary mr-1"></button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

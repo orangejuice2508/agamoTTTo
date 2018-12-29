@@ -99,6 +99,15 @@ public class RecordService{
         recordRepository.save(recordToUpdate);
     }
 
+    @PreAuthorize(Permission.MITARBEITER)
+    public void deleteRecord(Record record) {
+
+        // Log the current record before deleting it
+        recordLogRepository.save(new RecordLog(record, ChangeType.deleted));
+
+        recordRepository.delete(record);
+    }
+
     /**
      * This method checks if a record's times are valid.
      *

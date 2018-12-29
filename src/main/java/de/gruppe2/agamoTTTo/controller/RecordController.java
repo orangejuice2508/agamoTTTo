@@ -202,7 +202,7 @@ public class RecordController extends BaseController {
     /**
      * Method for handling the submission of the "edit record" form.
      *
-     * @param updatedRecord the pool with updated fields
+     * @param updatedRecord the record with updated fields
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
@@ -223,6 +223,44 @@ public class RecordController extends BaseController {
         recordService.updateRecord(updatedRecord);
         return "redirect:/records/overview/?successful=true";
     }
+
+    /**
+     * Method for displaying the delete form of a record determined by its id.
+     *
+     * @param id a record's id as specified in the path
+     * @param model The Spring model
+     * @return path to the template
+     * @throws Exception throws exception
+     */
+    @GetMapping("/delete/{id}")
+    public String getDeleteRecordPage(@PathVariable("id") Long id, Model model) throws Exception{
+
+        Optional<Record> optionalRecord = recordService.findRecordById(id);
+
+        // Check whether a record with the id could be found.
+        if(!optionalRecord.isPresent()){
+            throw new NotFoundException("No record found with ID: " + id);
+        }
+
+        // Check whether the current user is allowed to edit this record.
+        if(!optionalRecord.get().getUser().getId().equals(SecurityContext.getAuthenticationUser().getId())){
+            throw new AccessDeniedException("The current user/editor and the record's creator are not identical.");
+        }
+
+        model.addAttribute("record", optionalRecord.get());
+
+        return "records/delete";
+    }
+
+    @GetMapping(params = "delete", value = "/delete/{id}")
+    public String postDeleteRecordPage(@PathVariable Long id) {
+
+        Record record = recordService.findRecordById(id).get();
+        recordService.deleteRecord(record);
+        return "redirect:/records/overview/?successful=true";
+    }
+
+
 
     /**
      * This method checks a record if it contains valid times. If it's not valid, the BindingResult will
