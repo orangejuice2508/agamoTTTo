@@ -27,12 +27,12 @@ public class User {
     @Email
     private String email;
 
-    @Size(min=1, max = 60)
+    @Size(min = 1, max = 60)
     @NotEmpty
     @Column(name = "first_name")
     private String firstName;
 
-    @Size(min=1, max = 60)
+    @Size(min = 1, max = 60)
     @NotEmpty
     @Column(name = "last_name")
     private String lastName;

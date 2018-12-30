@@ -8,8 +8,11 @@
 <body>
 <div layout:fragment="content">
     <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
-        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+        <div th:if="${#request.getParameter('mode') == 'edit'}" class="card-body text-white bg-success">
             <span th:text="#{records.edit.info.successful}"></span>
+        </div>
+        <div th:if="${#request.getParameter('mode') == 'delete'}" class="card-body text-white bg-success">
+            <span th:text="#{records.delete.info.successful}"></span>
         </div>
     </div>
     <div class="card m-3">

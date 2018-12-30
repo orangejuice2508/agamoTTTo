@@ -12,6 +12,7 @@ import java.util.Set;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long>{
-    Set<Record> findAllByUserAndDate(User user, LocalDate date);
-    List<Record> findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(User user, Pool pool, LocalDate from, LocalDate to);
+    Set<Record> findAllByUserAndDateAndIsDeletedIsFalse(User user, LocalDate date);
+
+    List<Record> findAllByUserAndPoolAndDateBetweenAndIsDeletedIsFalseOrderByDateAscStartTimeAsc(User user, Pool pool, LocalDate from, LocalDate to);
 }

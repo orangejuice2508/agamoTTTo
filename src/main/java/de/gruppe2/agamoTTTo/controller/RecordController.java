@@ -207,13 +207,13 @@ public class RecordController extends BaseController {
      * @return path to the template
      */
     @PutMapping("/edit/{id}")
-    public String postEditRecordPage(@PathVariable("id") Long id, @Valid Record updatedRecord, BindingResult bindingResult,
-                                     Model model) {
+    public String putEditRecordPage(@Valid Record updatedRecord, BindingResult bindingResult,
+                                    Model model) {
 
         // Check whether the record is valid
         checkRecord(updatedRecord, bindingResult);
 
-        /* If the form contains errors, the new record won't be added and the form is displayed again with
+        /* If the form contains errors, the record won't be edited and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
             model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
@@ -221,7 +221,7 @@ public class RecordController extends BaseController {
         }
 
         recordService.updateRecord(updatedRecord);
-        return "redirect:/records/overview/?successful=true";
+        return "redirect:/records/overview/?successful=true&mode=edit";
     }
 
     /**
@@ -242,7 +242,7 @@ public class RecordController extends BaseController {
             throw new NotFoundException("No record found with ID: " + id);
         }
 
-        // Check whether the current user is allowed to edit this record.
+        // Check whether the current user is allowed to delete this record.
         if(!optionalRecord.get().getUser().getId().equals(SecurityContext.getAuthenticationUser().getId())){
             throw new AccessDeniedException("The current user/editor and the record's creator are not identical.");
         }
@@ -252,14 +252,17 @@ public class RecordController extends BaseController {
         return "records/delete";
     }
 
-    @GetMapping(params = "delete", value = "/delete/{id}")
-    public String postDeleteRecordPage(@PathVariable Long id) {
-
-        Record record = recordService.findRecordById(id).get();
+    /**
+     * Method for handling the submission of the "delete record" form.
+     *
+     * @param record the record which should be deleted
+     * @return path to the template
+     */
+    @DeleteMapping(value = "/delete/{id}")
+    public String deleteRecordPage(@ModelAttribute Record record) {
         recordService.deleteRecord(record);
-        return "redirect:/records/overview/?successful=true";
+        return "redirect:/records/overview/?successful=true&mode=delete";
     }
-
 
 
     /**

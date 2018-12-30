@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns="http://www.w3.org/1999/html"
       layout:decorate="fragments/layout">
 <head>
     <title th:text="#{records.delete.title}"></title>
@@ -21,20 +21,31 @@
         </div>
     </div>
     <div class="card-body">
-        <div th:text="#{records.delete.label.date}"></div>
-        <div th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}" class="form-control" id="date"></div>
-        <div th:text="#{records.delete.label.start_time}"></div>
-        <div th:text="${#temporals.format(record.startTime, 'HH:mm')}" class="form-control" id="start_time"></div>
-        <div th:text="#{records.delete.label.end_time}"></div>
-        <div th:text="${#temporals.format(record.endTime, 'HH:mm')}" class="form-control" id="end_time"></div>
-        <div th:text="#{records.delete.label.duration}"></div>
-        <div th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}" class="form-control" id="duration"></div>
-        <div th:text="#{records.delete.label.description}"></div>
-        <div th:text="${record.description}" class="form-control" id="description"></div>
-        <div th:text="#{records.delete.label.pool}"></div>
-        <div th:text="${record.pool.name}" class="form-control" id="pool"></div>
-        <form action="#" th:action="@{/records/delete/{id}(id=${record.id})}" th:object="${record}" th:method="get">
-            <button th:text="#{button.delete}" name="delete" type="submit" value="true" class="btn btn-primary mr-1"></button>
+        <form action="#" th:action="@{/records/delete/{id}(id=${record.id})}" th:object="${record}" th:method="DELETE">
+            <div class="form-group">
+                <label th:text="#{records.delete.label.date}" for="date"></label>
+                <input readonly th:field="*{date}" type="date" class="form-control" id="date" required>
+            </div>
+            <div class="form-group">
+                <label th:text="#{records.delete.label.start_time}" for="start_time"></label>
+                <input readonly th:field="*{startTime}" type="time" class="form-control" id="start_time" required>
+            </div>
+            <div class="form-group">
+                <label th:text="#{records.delete.label.end_time}" for="end_time"></label>
+                <input readonly th:field="*{endTime}" type="time" class="form-control" id="end_time" required>
+            </div>
+            <div class="form-group">
+                <label th:text="#{records.delete.label.description}" for="description"></label>
+                <input readonly th:field="*{description}" type="text" class="form-control" id="description" required>
+            </div>
+            <div class="form-group drop-down">
+                <label th:text="#{records.delete.label.pool}" for="pool"></label>
+                <input readonly th:field="*{pool.name}" type="text" class="form-control" id="pool" required>
+            </div>
+            <p>
+                <button th:text="#{button.delete}" name="delete" type="submit" value="true"
+                        class="btn btn-primary mr-1"></button>
+            </p>
         </form>
     </div>
 </div>

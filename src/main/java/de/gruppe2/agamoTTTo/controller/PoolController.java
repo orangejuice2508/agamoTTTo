@@ -139,7 +139,7 @@ public class PoolController extends BaseController {
      * @return path to the template
      */
     @PutMapping("/edit/{id}")
-    public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
+    public String putEditPoolPage(@Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */
         if(bindingResult.hasErrors()){

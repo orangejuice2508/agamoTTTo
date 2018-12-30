@@ -37,7 +37,7 @@ public class Record {
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private LocalTime endTime;
 
     @Column(name = "duration_in_minutes")
@@ -45,7 +45,7 @@ public class Record {
 
     @Size(max = 250)
     @NotEmpty
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 
     @Column(name = "version")
@@ -60,4 +60,8 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
     private Pool pool;
+
+    @NotNull
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = Boolean.FALSE;
 }
