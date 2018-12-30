@@ -5,7 +5,7 @@ import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
-import de.gruppe2.agamoTTTo.security.SecurityContext;
+import de.gruppe2.agamoTTTo.security.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -39,23 +39,21 @@ public class PoolService {
     }
 
     /**
-     * This method uses the poolRepository to find all pools from the database.
-     *
-     * @return all pools in the database
-     */
-    @PreAuthorize(Permission.ADMINISTRATOR)
-    public Set<Pool> findAllPools() {
-        return new HashSet<>(poolRepository.findAll());
-    }
-
-    /**
      * This method uses the userRepository to find all pools which the logged in user is part of.
      *
+     * @param user the user whose pools should be found
+     * @param findAllExistingPools is only true on sites where the admin should see all pools (e.g. log/pool overview)
      * @return pools which the logged in user is part of
      */
     @PreAuthorize(Permission.MITARBEITER)
-    public Set<Pool> findAllPoolsOfAuthenticationUser(){
-        Optional<User> optionalUser = userRepository.findById(SecurityContext.getAuthenticationUser().getId());
+    public Set<Pool> findAllPoolsOfUser(User user, Boolean findAllExistingPools) {
+
+        // If the user is an admin and all pools should found, then return all existing pools
+        if (user.getRole().getRoleName().equals(Role.ADMINISTRATOR) && findAllExistingPools) {
+            return new HashSet<>(poolRepository.findAll());
+        }
+
+        Optional<User> optionalUser = userRepository.findById(user.getId());
 
         return optionalUser.isPresent() ? new HashSet<>(optionalUser.get().getPools()) : Collections.emptySet();
     }
