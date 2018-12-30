@@ -71,11 +71,11 @@ public class RecordService{
         // Update filter so that empty dates are filled with default values
         filter = new PoolDateFilter(filter);
 
-        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
+        return recordRepository.findAllByUserAndPoolAndDateBetweenAndIsDeletedIsFalseOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
     }
 
     /**
-     * This method uses the recordRepository to try to update to the database.
+     * This method uses the recordRepository to try to update the record in the database.
      *
      * @param updatedRecord the updated record as obtained from the controller
      */
@@ -93,10 +93,29 @@ public class RecordService{
         recordToUpdate.setEndTime(updatedRecord.getEndTime());
         recordToUpdate.setDescription(updatedRecord.getDescription());
         recordToUpdate.setPool(updatedRecord.getPool());
-        recordToUpdate.setVersion(recordToUpdate.getVersion() + 1);
         recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
+        recordToUpdate.setIsDeleted(updatedRecord.getIsDeleted());
 
         recordRepository.save(recordToUpdate);
+    }
+
+    /**
+     * This method uses the recordRepository to try to "delete" the record from the database.
+     *
+     * @param record the record that should be "deleted"
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    public void deleteRecord(Record record) {
+
+        // Use the getOne method, so that no more DB fetch has to be executed
+        Record recordToDelete = recordRepository.getOne(record.getId());
+
+        // Log the current record before "deleting" it
+        recordLogRepository.save(new RecordLog(recordToDelete, ChangeType.deleted));
+
+        // "Delete" the record by setting the isDeleted field to true
+        recordToDelete.setIsDeleted(Boolean.TRUE);
+        recordRepository.save(recordToDelete);
     }
 
     /**
@@ -127,7 +146,7 @@ public class RecordService{
         Long newId = newRecord.getId();
 
         // Get a user's current records of the specific day when he wants to add his new record
-        Set<Record> currentUserRecords = recordRepository.findAllByUserAndDate(user, newDate);
+        Set<Record> currentUserRecords = recordRepository.findAllByUserAndDateAndIsDeletedIsFalse(user, newDate);
 
         if (!currentUserRecords.isEmpty()) {
             for (Record currentRecord : currentUserRecords) {

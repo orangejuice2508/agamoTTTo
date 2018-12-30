@@ -1,5 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
+import de.gruppe2.agamoTTTo.util.ExcelGenerator;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
@@ -9,6 +10,10 @@ import de.gruppe2.agamoTTTo.service.RecordService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -28,12 +34,14 @@ public class RecordController extends BaseController {
     private RecordService recordService;
     private PoolService poolService;
     private MessageSource messageSource;
+    private ExcelGenerator excelGenerator;
 
     @Autowired
-    public RecordController(RecordService recordService, PoolService poolService, MessageSource messageSource) {
+    public RecordController(RecordService recordService, PoolService poolService, MessageSource messageSource, ExcelGenerator excelGenerator) {
         this.recordService = recordService;
         this.poolService = poolService;
         this.messageSource = messageSource;
+        this.excelGenerator = excelGenerator;
     }
 
     /**
@@ -97,8 +105,8 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-    @GetMapping("/analysis/filter")
-    public String getAnalyseRecordFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
+    @GetMapping(params = "send", value = "/analysis/filter")
+    public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
 
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
@@ -108,6 +116,25 @@ public class RecordController extends BaseController {
         model.addAttribute("totalDuration", recordService.calculateTotalDuration(records));
 
         return "records/analysis";
+    }
+
+    /**
+     * Method for handling the submission of the export button on the "analysis" page.
+     *
+     * @param filter contains criteria set by the user on the overview page.
+     * @return path to template
+     */
+    @GetMapping(params = "export", value = "/analysis/filter")
+    public ResponseEntity<InputStreamResource> excelRecordsReport(@ModelAttribute PoolDateFilter filter) {
+
+        ByteArrayInputStream in = excelGenerator.createExcelSheet(filter, SecurityContext.getAuthenticationUser());
+
+        String filename = "Arbeitsstunden" + filter.getFrom().toString() + "bis" + filter.getTo().toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx" + "\"");
+
+        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }
 
     /**
@@ -180,13 +207,13 @@ public class RecordController extends BaseController {
      * @return path to the template
      */
     @PutMapping("/edit/{id}")
-    public String putEditRecordPage(@PathVariable("id") Long id, @Valid Record updatedRecord, BindingResult bindingResult,
+    public String putEditRecordPage(@Valid Record updatedRecord, BindingResult bindingResult,
                                     Model model) {
 
         // Check whether the record is valid
         checkRecord(updatedRecord, bindingResult);
 
-        /* If the form contains errors, the new record won't be added and the form is displayed again with
+        /* If the form contains errors, the record won't be edited and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
             model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
@@ -194,8 +221,49 @@ public class RecordController extends BaseController {
         }
 
         recordService.updateRecord(updatedRecord);
-        return "redirect:/records/overview/?successful=true";
+        return "redirect:/records/overview/?successful=true&mode=edit";
     }
+
+    /**
+     * Method for displaying the delete form of a record determined by its id.
+     *
+     * @param id a record's id as specified in the path
+     * @param model The Spring model
+     * @return path to the template
+     * @throws Exception throws exception
+     */
+    @GetMapping("/delete/{id}")
+    public String getDeleteRecordPage(@PathVariable("id") Long id, Model model) throws Exception{
+
+        Optional<Record> optionalRecord = recordService.findRecordById(id);
+
+        // Check whether a record with the id could be found.
+        if(!optionalRecord.isPresent()){
+            throw new NotFoundException("No record found with ID: " + id);
+        }
+
+        // Check whether the current user is allowed to delete this record.
+        if(!optionalRecord.get().getUser().getId().equals(SecurityContext.getAuthenticationUser().getId())){
+            throw new AccessDeniedException("The current user/editor and the record's creator are not identical.");
+        }
+
+        model.addAttribute("record", optionalRecord.get());
+
+        return "records/delete";
+    }
+
+    /**
+     * Method for handling the submission of the "delete record" form.
+     *
+     * @param record the record which should be deleted
+     * @return path to the template
+     */
+    @DeleteMapping(value = "/delete/{id}")
+    public String deleteRecordPage(@ModelAttribute Record record) {
+        recordService.deleteRecord(record);
+        return "redirect:/records/overview/?successful=true&mode=delete";
+    }
+
 
     /**
      * This method checks a record if it contains valid times. If it's not valid, the BindingResult will
