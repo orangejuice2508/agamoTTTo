@@ -21,24 +21,24 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Size(max = 60)
     @NotEmpty
+    @Size(max = 60)
     @Column(name = "e_mail", unique = true)
     @Email
     private String email;
 
-    @Size(min = 1, max = 60)
     @NotEmpty
+    @Size(min = 1, max = 60)
     @Column(name = "first_name")
     private String firstName;
 
-    @Size(min = 1, max = 60)
     @NotEmpty
+    @Size(min = 1, max = 60)
     @Column(name = "last_name")
     private String lastName;
 
-    @Size(max = 120)
     @NotNull
+    @Size(max = 120)
     @Column(name = "encrypted_password")
     private String encryptedPassword;
 

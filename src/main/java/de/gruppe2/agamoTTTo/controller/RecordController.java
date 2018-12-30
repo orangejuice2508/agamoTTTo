@@ -53,7 +53,7 @@ public class RecordController extends BaseController {
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
 
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
         model.addAttribute("record", new Record());
         return "records/add";
     }
@@ -74,67 +74,13 @@ public class RecordController extends BaseController {
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
-            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+            model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
             return "records/add";
         }
 
         // Else: add the record to the database
         recordService.addRecord(record);
         return "redirect:/records/add/?successful=true";
-    }
-
-    /**
-     * Method for displaying the "analysis" page for the records.
-     *
-     * @param model the Spring Model
-     * @return path to template
-     */
-    @GetMapping("/analysis")
-    public String getAnalyseRecordPage(Model model){
-
-        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-
-        return "records/analysis";
-    }
-
-    /**
-     * Method for handling the submission of the filter on the "analysis" page.
-     *
-     * @param filter contains criteria set by the user on the overview page
-     * @param model the Spring Model
-     * @return path to template
-     */
-    @GetMapping(params = "send", value = "/analysis/filter")
-    public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
-
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-        model.addAttribute("filter", filter);
-
-        List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
-        model.addAttribute("records", records);
-        model.addAttribute("totalDuration", recordService.calculateTotalDuration(records));
-
-        return "records/analysis";
-    }
-
-    /**
-     * Method for handling the submission of the export button on the "analysis" page.
-     *
-     * @param filter contains criteria set by the user on the overview page.
-     * @return path to template
-     */
-    @GetMapping(params = "export", value = "/analysis/filter")
-    public ResponseEntity<InputStreamResource> excelRecordsReport(@ModelAttribute PoolDateFilter filter) {
-
-        ByteArrayInputStream in = excelGenerator.createExcelSheet(filter, SecurityContext.getAuthenticationUser());
-
-        String filename = "Arbeitsstunden" + filter.getFrom().toString() + "bis" + filter.getTo().toString();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx" + "\"");
-
-        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
     }
 
     /**
@@ -147,29 +93,50 @@ public class RecordController extends BaseController {
     public String getOverviewRecordPage(Model model) {
 
         model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
 
         return "records/overview";
     }
 
     /**
-     * Method for handling the submission of the filter on the "overview" page.
+     * Method for handling the submission of the filter on the "analysis" page.
      *
-     * @param filter contains criteria set by the user on the overview page.
+     * @param filter contains criteria set by the user on the overview page
      * @param model the Spring Model
      * @return path to template
      */
-    @GetMapping("/overview/filter")
-    public String getOverviewRecordFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
+    @GetMapping(params = "send", value = "/overview/filter")
+    public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
 
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
         model.addAttribute("filter", filter);
 
         List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
         model.addAttribute("records", records);
+        model.addAttribute("totalDuration", recordService.calculateTotalDuration(records));
 
         return "records/overview";
     }
+
+    /**
+     * Method for handling the submission of the export button on the "analysis" page.
+     *
+     * @param filter contains criteria set by the user on the overview page.
+     * @return path to template
+     */
+    @GetMapping(params = "export", value = "/overview/filter")
+    public ResponseEntity<InputStreamResource> excelRecordsReport(@ModelAttribute PoolDateFilter filter) {
+
+        ByteArrayInputStream in = excelGenerator.createExcelSheet(filter, SecurityContext.getAuthenticationUser());
+
+        String filename = "Arbeitsstunden" + filter.getFrom().toString() + "bis" + filter.getTo().toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx" + "\"");
+
+        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(in));
+    }
+
 
     /**
      * Method for displaying the edit form of a record determined by its id.
@@ -194,7 +161,7 @@ public class RecordController extends BaseController {
         }
 
         model.addAttribute("record", optionalRecord.get());
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
 
         return "records/edit";
     }
@@ -216,7 +183,7 @@ public class RecordController extends BaseController {
         /* If the form contains errors, the record won't be edited and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
-            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+            model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
             return "records/edit";
         }
 

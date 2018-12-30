@@ -134,7 +134,7 @@ public class EmployeeController extends BaseController {
      * @return path to the template
      */
     @PutMapping("/edit/{id}")
-    public String putEditEmployeePage(@PathVariable("id") Long id, @Valid User updatedUser, BindingResult bindingResult) {
+    public String putEditEmployeePage(@Valid User updatedUser, BindingResult bindingResult, Model model) {
 
         /* If the form contains errors, the user won't be updated and the form is displayed again with
         corresponding error messages. */
@@ -149,6 +149,7 @@ public class EmployeeController extends BaseController {
         try {
             userService.updateUser(updatedUser);
         } catch (DataIntegrityViolationException e) {
+            model.addAttribute("roles", roleService.findAllRoles());
             bindingResult.rejectValue("email", "error.user", messageSource.getMessage("employees.error.email_not_unique", null, Locale.getDefault()));
             return "employees/edit";
         }

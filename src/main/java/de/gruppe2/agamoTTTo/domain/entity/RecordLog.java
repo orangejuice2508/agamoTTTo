@@ -28,7 +28,7 @@ public class RecordLog {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "record_id", nullable = true)
+    @JoinColumn(name = "record_id")
     private Record record;
 
     @NotNull
@@ -50,8 +50,8 @@ public class RecordLog {
     @Column(name = "duration_in_minutes")
     private Long duration;
 
-    @Size(max = 250)
     @NotEmpty
+    @Size(max = 250)
     @Column(name = "description")
     private String description;
 

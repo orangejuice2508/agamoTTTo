@@ -23,8 +23,11 @@
         <div class="card-body">
             <form action="#" th:action="@{/records/overview/filter}" th:object="${filter}" method="get">
                 <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
-                <button th:text="#{button.submit}" type="submit" class="btn btn-primary ml-2"></button>
+                <button th:text="#{button.submit}" type="submit" name="send" value="true"
+                        class="btn btn-primary ml-2"></button>
                 <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
+                <button th:text="#{button.export}" type="submit" name="export" value="true"
+                        class="btn btn-success ml-1"></button>
             </form>
             <hr>
             <div th:if="${records != null && records.isEmpty()}">
@@ -55,7 +58,13 @@
                             <a th:href="@{/records/delete/{id}(id=${record.id})}">
                                 <i class="fas fa-trash-alt"></i>
                             <span th:text="#{actions.delete}"></span>
+                            </a>
                         </td>
+                    </tr>
+                    <tr class="table-success">
+                        <td colspan="3" th:text="#{records.sum}"></td>
+                        <td colspan="2"
+                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>
                 </table>

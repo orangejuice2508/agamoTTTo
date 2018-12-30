@@ -90,14 +90,13 @@ public class PoolController extends BaseController {
         // Get the logged in user to determine their role.
         User authenticationUser = SecurityContext.getAuthenticationUser();
 
+
         // The admin can see all pools, all others only the pools they're assigned to.
-        if(authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
-            model.addAttribute("pools", poolService.findAllPools());
-        }
-        else {
-            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-            /* In the view we need the id of the logged in user to determine whether he is
-            entitled to edit a pool. */
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(authenticationUser, true));
+
+        /* In the view we need the id of the logged in user to determine whether he is
+        entitled to edit a pool, unless he is the admin */
+        if (!authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
             model.addAttribute("userId", authenticationUser.getId());
         }
 

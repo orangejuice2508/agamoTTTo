@@ -23,8 +23,8 @@ public class Pool {
     @Column(name = "pool_id")
     private Long id;
 
-    @Size(max = 100)
     @NotEmpty
+    @Size(max = 100)
     @Column(name = "pool_name", unique = true)
     private String name;
 
