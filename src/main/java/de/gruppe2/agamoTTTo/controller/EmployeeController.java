@@ -121,7 +121,7 @@ public class EmployeeController extends BaseController {
         }
 
         model.addAttribute("user", optionalUser.get());
-        model.addAttribute("roles", roleService.findAllRoles());
+        model.addAttribute("roles", roleService.findPossibleRoles(optionalUser.get()));
 
         return "employees/edit";
     }
@@ -149,7 +149,7 @@ public class EmployeeController extends BaseController {
         try {
             userService.updateUser(updatedUser);
         } catch (DataIntegrityViolationException e) {
-            model.addAttribute("roles", roleService.findAllRoles());
+            model.addAttribute("roles", roleService.findPossibleRoles(updatedUser));
             bindingResult.rejectValue("email", "error.user", messageSource.getMessage("employees.error.email_not_unique", null, Locale.getDefault()));
             return "employees/edit";
         }
