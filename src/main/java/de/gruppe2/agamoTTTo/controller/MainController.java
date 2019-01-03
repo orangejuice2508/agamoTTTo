@@ -35,7 +35,7 @@ public class MainController {
      * @param principal the currently logged in user, null if he is not logged in
      * @return path to template
      */
-    @PreAuthorize(Permission.MITARBEITER)
+    @PreAuthorize(Permission.IS_AUTHENTICATED)
     @GetMapping("/home")
     public String userInfo(Model model, Principal principal) {
         // After user logged in successfully.

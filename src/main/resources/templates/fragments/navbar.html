@@ -14,7 +14,7 @@
 
     <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_MITARBEITER')">
+            <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="recordDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-th-list"></i>
                     <span th:text="#{navbar.item.records}"></span>
@@ -30,7 +30,7 @@
                     </a>
                 </div>
             </li>
-            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_MITARBEITER')">
+            <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="poolDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-folder"></i>
                     <span th:text="#{navbar.item.pools}"></span>
@@ -69,11 +69,18 @@
                     <span th:text="#{navbar.item.log}"></span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-cog"></i>
                     <span th:text="#{navbar.item.settings}"></span>
                 </a>
+                <div class="dropdown-menu" aria-labelledby="settingsDropdown">
+                    <a class="dropdown-item" th:href="@{/settings/changePassword}">
+                        <i class="fas fa-key"></i>
+                        <span th:text="#{navbar.item.settings.dropdown.change_password}"></span>
+                    </a>
+                </div>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">

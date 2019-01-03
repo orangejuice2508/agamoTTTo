@@ -22,7 +22,11 @@
             <span th:text="#{index.logout.logout_successful}"></span>
         </div>
 
-        <div class="card-body">
+    <div th:if="${#request.getParameter('changePassword') == 'successful'}" class="card-body text-white bg-success">
+        <span th:text="#{index.logout.change_password_successful}"></span>
+    </div>
+
+    <div class="card-body">
             <form class="form-signin" th:action="@{/j_spring_security_check}" method="POST">
                 <input type="email" name="email" class="form-control" th:placeholder="#{index.login.label.email}" required="" autofocus="">
                 <input type="password" name="password" class="form-control mb-2" th:placeholder="#{index.login.label.password}" required="">
