@@ -208,7 +208,7 @@ public class UserService implements UserDetailsService {
                 .map(UserPool::getUser)
                 .collect(Collectors.toList());
 
-        // Remove all currently ACTIVE users from the result set
+        // Remove all currently ACTIVE users in the specified pool from the result set
         result.removeAll(currentUsersInPool);
 
         return result;
