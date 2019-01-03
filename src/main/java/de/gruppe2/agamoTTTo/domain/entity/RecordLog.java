@@ -50,8 +50,8 @@ public class RecordLog {
     @Column(name = "duration_in_minutes")
     private Long duration;
 
-    @Size(max = 250)
     @NotEmpty
+    @Size(max = 250)
     @Column(name = "description")
     private String description;
 

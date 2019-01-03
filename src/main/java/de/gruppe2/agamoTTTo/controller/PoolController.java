@@ -64,7 +64,6 @@ public class PoolController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to resulting template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @PostMapping("/add")
     public String postAddPoolsPage(@ModelAttribute @Valid Pool pool, BindingResult bindingResult) {
         /* If the form contains errors, the new pool won't be added and the form is displayed again with
@@ -95,20 +94,18 @@ public class PoolController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/overview")
     public String getOverviewPoolsPage(Model model){
         // Get the logged in user to determine their role.
         User authenticationUser = SecurityContext.getAuthenticationUser();
 
+
         // The admin can see all pools, all others only the pools they're assigned to.
-        if(authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
-            model.addAttribute("pools", poolService.findAllPools());
-        }
-        else {
-            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-            /* In the view we need the id of the logged in user to determine whether he is
-            entitled to edit a pool. */
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(authenticationUser, true));
+
+        /* In the view we need the id of the logged in user to determine whether he is
+        entitled to edit a pool, unless he is the admin */
+        if (!authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
             model.addAttribute("userId", authenticationUser.getId());
         }
 
@@ -123,19 +120,19 @@ public class PoolController extends BaseController {
      * @return path to the template
      * @throws NotFoundException if no pool with the id can be found in the DB
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/edit/{id}")
     public String getEditPoolPage(@PathVariable("id") Long id, Model model) throws Exception {
 
         Optional<Pool> optionalPool = poolService.findPoolById(id);
+        User authenticationUser = SecurityContext.getAuthenticationUser();
 
         // Check whether a pool with the id could be found.
         if(!optionalPool.isPresent()){
             throw new NotFoundException("No pool found with ID: " + id);
         }
 
-        // Check whether the current user is allowed to edit this pool.
-        if(!optionalPool.get().getOwner().getId().equals(SecurityContext.getAuthenticationUser().getId())){
+        // Check whether the current user is allowed to edit this pool. The admin is allowed to edit every pool.
+        if (!authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR) && !optionalPool.get().getOwner().getId().equals(authenticationUser.getId())) {
             throw new AccessDeniedException("The current user/editor and the pool owner are not identical.");
         }
 
@@ -150,9 +147,8 @@ public class PoolController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @PutMapping("/edit/{id}")
-    public String postEditPoolPage(@PathVariable Long id, @Valid Pool updatedPool, BindingResult bindingResult) {
+    public String putEditPoolPage(@Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */
         if(bindingResult.hasErrors()){

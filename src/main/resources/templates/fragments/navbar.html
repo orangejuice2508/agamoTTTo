@@ -28,19 +28,15 @@
                         <i class="fas fa-search"></i>
                         <span th:text="#{navbar.dropdown.overview}"></span>
                     </a>
-                    <a class="dropdown-item" th:href="@{/records/analysis}">
-                        <i class="fas fa-chart-line"></i>
-                        <span th:text="#{navbar.dropdown.analysis}"></span>
-                    </a>
                 </div>
             </li>
-            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_VORGESETZTER')">
+            <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_MITARBEITER')">
                 <a class="nav-link dropdown-toggle" href="#" id="poolDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-folder"></i>
                     <span th:text="#{navbar.item.pools}"></span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="poolDropdown">
-                    <a class="dropdown-item" th:href="@{/pools/add}">
+                    <a class="dropdown-item" th:href="@{/pools/add}" sec:authorize="hasRole('ROLE_VORGESETZTER')">
                         <i class="fas fa-plus-circle"></i>
                         <span th:text="#{navbar.dropdown.add}"></span>
                     </a>
@@ -64,7 +60,8 @@
                         <i class="fas fa-plus-circle"></i>
                         <span th:text="#{navbar.dropdown.add}"></span>
                     </a>
-                    <a class="dropdown-item" th:href="@{/employees/overview}">
+                    <a class="dropdown-item" th:href="@{/employees/overview}"
+                       sec:authorize="hasRole('ROLE_ADMINISTRATOR')">
                         <i class="fas fa-search"></i>
                         <span th:text="#{navbar.dropdown.overview}"></span>
                     </a>
@@ -85,7 +82,7 @@
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item d-inline">
-                <a class="nav-link" href="javascript: document.logoutForm.submit()" role="menuitem">
+                <a class="nav-link" href="javascript: document.logoutForm.submit()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span th:text="#{navbar.item.logout}"></span>
                 </a>

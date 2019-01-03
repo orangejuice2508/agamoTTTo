@@ -24,9 +24,9 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col" th:text="#{pools.overview.table.header.name}"></th>
-                    <th scope="col" th:text="#{pools.overview.table.header.owner}"></th>
-                    <th scope="col" th:text="#{pools.overview.table.header.actions}"></th>
+                    <th scope="col" th:text="#{pools.name}"></th>
+                    <th scope="col" th:text="#{pools.owner}"></th>
+                    <th scope="col" th:text="#{actions}"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -37,7 +37,7 @@
                         <a th:if="${pool.owner.id==userId || #authorization.expression('hasRole(''ROLE_ADMINISTRATOR'')')}"
                            th:href="@{/pools/edit/{id}(id=${pool.id})}">
                             <i class="fas fa-edit"></i>
-                            <span th:text="#{pools.overview.table.data.actions.edit}"></span>
+                            <span th:text="#{actions.edit}"></span>
                         </a>
                     </td>
                 </tr>

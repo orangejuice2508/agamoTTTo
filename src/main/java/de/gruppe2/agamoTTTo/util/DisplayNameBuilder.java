@@ -3,6 +3,7 @@ package de.gruppe2.agamoTTTo.util;
 
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
+import de.gruppe2.agamoTTTo.domain.entity.Role;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +42,12 @@ public final class DisplayNameBuilder {
                 "(Dauer: " + this.convertMinutesToHoursAndMinutes(recordLog.getDuration()) + "), " +
                 "Beschreibung: " + recordLog.getDescription() + ", " +
                 "Pool: " + recordLog.getPool().getName();
+    }
+
+    public String display(Role role) {
+        String roleName = role.getRoleName().substring(5).toLowerCase();
+
+        return roleName.substring(0, 1).toUpperCase() + roleName.substring(1);
     }
 
     public String convertMinutesToHoursAndMinutes(Long minutes){

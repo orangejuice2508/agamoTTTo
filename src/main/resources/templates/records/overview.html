@@ -8,8 +8,11 @@
 <body>
 <div layout:fragment="content">
     <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
-        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+        <div th:if="${#request.getParameter('mode') == 'edit'}" class="card-body text-white bg-success">
             <span th:text="#{records.edit.info.successful}"></span>
+        </div>
+        <div th:if="${#request.getParameter('mode') == 'delete'}" class="card-body text-white bg-success">
+            <span th:text="#{records.delete.info.successful}"></span>
         </div>
     </div>
     <div class="card m-3">
@@ -18,8 +21,13 @@
             <p th:text="#{records.overview.subtitle}" class="card-subtitle text-muted"></p>
         </div>
         <div class="card-body">
-            <form action="#" th:action="@{/records/overview}" th:object="${filter}" method="post">
-                <div class="form-check form-check-inline" th:insert="fragments/filter/pool_date_filter :: pool_date_filter"></div>
+            <form action="#" th:action="@{/records/overview/filter}" th:object="${filter}" method="get">
+                <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
+                <button th:text="#{button.submit}" type="submit" name="send" value="true"
+                        class="btn btn-primary ml-2"></button>
+                <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
+                <button th:text="#{button.export}" type="submit" name="export" value="true"
+                        class="btn btn-success ml-1"></button>
             </form>
             <hr>
             <div th:if="${records != null && records.isEmpty()}">
@@ -29,11 +37,11 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" th:text="#{records.overview.table.header.date}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.time}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.description}"></th>
-                        <th scope="col" th:text="#{records.analysis.table.header.duration}"></th>
-                        <th scope="col" th:text="#{records.overview.table.header.actions}"></th>
+                        <th scope="col" th:text="#{records.date}"></th>
+                        <th scope="col" th:text="#{records.time}"></th>
+                        <th scope="col" th:text="#{records.description}"></th>
+                        <th scope="col" th:text="#{records.duration}"></th>
+                        <th scope="col" th:text="#{actions}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -45,18 +53,22 @@
                         <td>
                             <a th:href="@{/records/edit/{id}(id=${record.id})}">
                                 <i class="fas fa-edit"></i>
-                                <span th:text="#{records.overview.table.data.actions.edit}"></span>
+                                <span th:text="#{actions.edit}"></span>
                             </a>
-                            <!--a th:href="@{/records/delete/{id}(id=${record.id})}" -->
+                            <a th:href="@{/records/delete/{id}(id=${record.id})}">
                                 <i class="fas fa-trash-alt"></i>
-                                <span th:text="#{records.overview.table.data.actions.delete}"></span>
-                            <!--/a-->
+                            <span th:text="#{actions.delete}"></span>
+                            </a>
                         </td>
+                    </tr>
+                    <tr class="table-success">
+                        <td colspan="3" th:text="#{records.sum}"></td>
+                        <td colspan="2"
+                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <!--button th:text="#{button.export}" type="button" class="btn btn-primary ml-2"></button-->
         </div>
     </div>
 </div>

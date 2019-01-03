@@ -3,6 +3,7 @@ package de.gruppe2.agamoTTTo.domain.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ public class Role {
     @Column(name = "role_id")
     private Long id;
 
+    @NotNull
     @Size(max = 60)
     @Column(name = "role_name")
     private String roleName;

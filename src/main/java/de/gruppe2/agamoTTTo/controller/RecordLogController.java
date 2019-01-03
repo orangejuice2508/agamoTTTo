@@ -1,16 +1,14 @@
 package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
-import de.gruppe2.agamoTTTo.security.Permission;
+import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
 import de.gruppe2.agamoTTTo.service.RecordLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -33,11 +31,10 @@ public class RecordLogController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/overview")
     public String getOverviewLogsPage(Model model){
 
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), true));
         model.addAttribute("filter", new PoolDateFilter());
 
         return "logs/overview";
@@ -50,12 +47,12 @@ public class RecordLogController {
      * @param model the Spring Model
      * @return path to template
      */
-    @PreAuthorize(Permission.VORGESETZTER)
-    @PostMapping("overview")
-    public String postOverviewLogsPage(@ModelAttribute PoolDateFilter filter, Model model){
+    @GetMapping("overview/filter")
+    public String getOverviewLogsFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
 
         model.addAttribute("filter", filter);
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), true));
+
         model.addAttribute("recordLogs", recordLogService.getAllRecordLogsByFilter(filter));
 
         return "logs/overview";

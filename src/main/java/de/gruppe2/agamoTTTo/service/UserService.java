@@ -2,13 +2,15 @@ package de.gruppe2.agamoTTTo.service;
 
 import java.util.*;
 import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
+import de.gruppe2.agamoTTTo.domain.entity.Role;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
-import de.gruppe2.agamoTTTo.repository.PoolRepository;
-import javassist.NotFoundException;
+import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
+import de.gruppe2.agamoTTTo.security.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +21,8 @@ import de.gruppe2.agamoTTTo.domain.entity.Pool;
 
 import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service which is used for dealing with the users of our application.
@@ -35,37 +39,12 @@ public class UserService implements UserDetailsService {
 
     private MessageSource messageSource;
 
-    private PoolRepository poolRepository;
-
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, MessageSource messageSource, PoolRepository poolRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, MessageSource messageSource) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.messageSource = messageSource;
-        this.poolRepository = poolRepository;
-
-    }
-
-    /**
-     * This method tries to find a user from the database based on the entered email.
-     * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
-     *
-     * @param email the email as entered in the login form
-     * @return user the newly created CustomSecurityUser object with "email" as username and "role" as granted authorities
-     * @throws UsernameNotFoundException if no user was found with the entered email
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-
-        if(user == null){
-            log.info("No such user found");
-            throw new UsernameNotFoundException(email);
-        }
-
-        return new CustomSecurityUser(user);
     }
 
     /**
@@ -75,10 +54,12 @@ public class UserService implements UserDetailsService {
      *
      * @param user the user as obtained from the controller
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
-        // Generate a random password and hash it.
+        // Generate a random password and hash it. Set default role.
         String randomPassword = generateRandomPassword();
         user.setEncryptedPassword(passwordEncoder.encode(randomPassword));
+        user.setRole(new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER));
 
         /* Try to save the user to the database before sending the mail.
            Reason: If email address is already registered an exception is
@@ -96,6 +77,68 @@ public class UserService implements UserDetailsService {
         Object[] parameters = {user.getLastName(), user.getEmail(), randomPassword};
         String text = messageSource.getMessage("employees.add.email.text", parameters, Locale.getDefault());
         emailService.sendHTMLEmail(user.getEmail(), subject, text);
+    }
+
+    /**
+     * This method tries to find a user from the database based on the entered email.
+     * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
+     *
+     * @param email the email as entered in the login form
+     * @return user the newly created CustomSecurityUser object with "email" as username and "role" as granted authorities
+     * @throws UsernameNotFoundException if no user was found with the entered email
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            log.info("No such user found");
+            throw new UsernameNotFoundException(email);
+        }
+
+        return new CustomSecurityUser(user);
+    }
+
+    /**
+     * This method uses the userRepository to find users according to the searchTerm.
+     *
+     * @param searchTerm the entered search term by the user
+     * @return a set of users, if users were found; otherwise: an empty set
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public Set<User> findUsersBySearchTerm(String searchTerm) {
+        return userRepository.searchForUserByFirstNameOrLastNameOrEmail(searchTerm);
+    }
+
+    /**
+     * This method uses the userRepository to find a certain user from the database.
+     * If no user was found, an empty optional object is returned.
+     *
+     * @param id the id of the user, which should be found
+     * @return the optional user
+     */
+    @PreAuthorize(Permission.ADMINISTRATOR)
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    /**
+     * This method uses the userRepository to try to update to the database.
+     *
+     * @param updatedUser the updated user as obtained from the controller
+     */
+    @PreAuthorize(Permission.ADMINISTRATOR)
+    public void updateUser(User updatedUser) {
+        // Use the getOne method, so that no more DB fetch has to be executed
+        User userToUpdate = userRepository.getOne(updatedUser.getId());
+
+        userToUpdate.setFirstName(updatedUser.getFirstName());
+        userToUpdate.setLastName(updatedUser.getLastName());
+        userToUpdate.setEmail(updatedUser.getEmail());
+        userToUpdate.setEnabled(updatedUser.getEnabled());
+        userToUpdate.setRole(updatedUser.getRole());
+        userRepository.save(userToUpdate);
     }
 
     /**
@@ -137,10 +180,5 @@ public class UserService implements UserDetailsService {
 
         return NotInPool;
     }
-
-
-
-
-
 
 }
