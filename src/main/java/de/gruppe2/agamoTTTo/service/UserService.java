@@ -142,6 +142,34 @@ public class UserService implements UserDetailsService {
         userRepository.save(userToUpdate);
     }
 
+
+    /**
+     * This method checks whether an entered password matches the password currently stored in the database
+     *
+     * @param user        the user whose password should be checked
+     * @param oldPassword the entered old password in plaintext
+     * @return true if the oldPassword matches the the password in the db, false if they do not match
+     */
+    @PreAuthorize(Permission.IS_AUTHENTICATED)
+    public boolean isOldPasswordCorrect(User user, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, user.getEncryptedPassword());
+    }
+
+    /**
+     * This method uses the userRepository to try to change the password of a user in the database.
+     *
+     * @param user        the user whose password should be changed
+     * @param newPassword the new password in plaintext
+     */
+    @PreAuthorize(Permission.IS_AUTHENTICATED)
+    public void changePassword(User user, String newPassword) {
+        user = userRepository.getOne(user.getId());
+        String encryptedPassword = passwordEncoder.encode(newPassword);
+        user.setEncryptedPassword(encryptedPassword);
+
+        userRepository.save(user);
+    }
+
     /**
      * Used for generating a random password for a newly registered user.
      *

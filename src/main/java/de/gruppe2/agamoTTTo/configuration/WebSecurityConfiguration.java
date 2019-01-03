@@ -51,7 +51,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
         // Setting Service to find User in the database.
-        // And Setting PassswordEncoder
+        // And setting PassswordEncoder
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
