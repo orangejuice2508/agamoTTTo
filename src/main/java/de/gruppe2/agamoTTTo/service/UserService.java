@@ -1,8 +1,11 @@
 package de.gruppe2.agamoTTTo.service;
 
+import java.util.*;
 import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.repository.PoolRepository;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -12,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import de.gruppe2.agamoTTTo.domain.entity.Pool;
 
 import java.security.SecureRandom;
 import java.util.Locale;
@@ -31,12 +35,16 @@ public class UserService implements UserDetailsService {
 
     private MessageSource messageSource;
 
+    private PoolRepository poolRepository;
+
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, MessageSource messageSource) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, MessageSource messageSource, PoolRepository poolRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.messageSource = messageSource;
+        this.poolRepository = poolRepository;
+
     }
 
     /**
@@ -109,6 +117,30 @@ public class UserService implements UserDetailsService {
 
         return randomPassword.toString();
     }
+
+    public List<User> getAllUsersNotInPool(Pool pool) {
+
+        Set<User> InPool = pool.getUsers();
+
+        List<User> AllUser = userRepository.findAll();
+
+        ArrayList<User> NotInPool = new ArrayList<User>();
+
+        for (User userall : AllUser) {
+            for (User userpool : InPool) {
+                if (userall.equals(userpool)) {
+                    NotInPool.add(userall);
+
+                }
+            }
+        }
+
+        return NotInPool;
+    }
+
+
+
+
 
 
 }

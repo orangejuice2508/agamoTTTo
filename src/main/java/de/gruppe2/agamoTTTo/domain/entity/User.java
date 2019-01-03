@@ -66,7 +66,7 @@ public class User {
         this.role = new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER);
     }
 
-    public User (User user){
+    public User (User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.firstName = user.getFirstName();

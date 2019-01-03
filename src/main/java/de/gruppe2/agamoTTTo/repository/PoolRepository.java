@@ -10,5 +10,7 @@ import java.util.List;
 @Repository
 public interface PoolRepository extends JpaRepository<Pool, Long> {
     List<Pool> findAllById(User id);
-    List<String> findByName(Pool id);
+    List<String> findByName(String id);
+
+
 }

@@ -4,8 +4,10 @@ import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -79,4 +81,22 @@ public class PoolService {
         return poolRepository.findById(id);
     }
 
+
+
+    /**
+     * This method uses the poolRepository to add a user to a pool
+     *
+     *
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public void addUserToPool (Pool pool, User user){
+
+        Set<User> Users = pool.getUsers();
+        Users.add(user);
+        pool.setUsers(Users);
+        poolRepository.save(pool);
+    }
 }
+
+
+

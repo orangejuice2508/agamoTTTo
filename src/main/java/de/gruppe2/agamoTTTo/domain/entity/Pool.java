@@ -35,4 +35,5 @@ public class Pool {
 
     @ManyToMany(mappedBy = "pools")
     private Set<User> users;
+
 }

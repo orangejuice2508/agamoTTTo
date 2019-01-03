@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{pools.pooluser.titile}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
+        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+        </div>
+    </div>
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 th:text="#{pools.pooluser.titile}" class="card-title"></h4>
+            <p th:text="#{pools.pooluser.titile}" class="card-subtitle text-muted"></p>
+        </div>
+        <div class="card-body" th:if="${pools.isEmpty()}">
+            <p th:text="#{pools.pooluser.titile}"></p>
+        </div>
+        <div class="card-body" th:unless="${pools.isEmpty()}">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col" th:text="#{pools.pooluser.table.header.name}"></th>
+                    <th scope="col" th:text="#{pools.pooluser.table.header.owner}"></th>
+                    <th scope="col" th:text="#{pools.pooluser.table.header.actions}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pool: ${pools}">
+                    <td th:text="${pool.name}"></td>
+                    <td th:text="${@displayNameBuilder.display(pool.owner)}"></td>
+                    <td>
+                        <a th:if="${pool.owner.id==userId || #authorization.expression('hasRole(''ROLE_ADMINISTRATOR'')')}"
+                           th:href="@{/pools/addpooluser/{id}(id=${pool.id})}">
+                            <i class="fas fa-edit"></i>
+                            <span th:text="#{pools.pooluser.table.data.actions.add}"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+</html>

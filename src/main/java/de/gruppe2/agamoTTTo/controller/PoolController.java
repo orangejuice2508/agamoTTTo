@@ -6,20 +6,24 @@ import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.Role;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
+import de.gruppe2.agamoTTTo.service.UserService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 @RequestMapping("pools")
@@ -29,10 +33,15 @@ public class PoolController extends BaseController {
 
     private MessageSource messageSource;
 
+    private UserService userService;
+
+
     @Autowired
     public PoolController(PoolService poolService, MessageSource messageSource) {
         this.poolService = poolService;
         this.messageSource = messageSource;
+        this.userService = userService;
+
     }
 
     /**
@@ -164,5 +173,79 @@ public class PoolController extends BaseController {
 
         // If the pool was updated successfully, redirect to the pools' overview page.
         return "redirect:/pools/overview/?successful=true";
+    }
+
+
+
+    /**
+     * Method for displaying the "pooluser" page.
+     *
+     * @param model the Spring Model
+     * @return path to template
+     */
+     @GetMapping("/pooluser")
+     public String getOverviewPoolUserPage(Model model){
+        // Get the logged in user to determine their role.
+        User authenticationUser = SecurityContext.getAuthenticationUser();
+
+        // The admin can see all pools, all others only the pools they're assigned to.
+        if(authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
+            model.addAttribute("pools", poolService.findAllPools());
+        }
+        else {
+            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+            /* In the view we need the id of the logged in user to determine whether he is
+            entitled to edit a pool. */
+            model.addAttribute("userId", authenticationUser.getId());
+        }
+
+        return "pools/pooluser";
+    }
+
+    /**
+     * Method for handling the submission of the "add pooluser" form.
+     *
+     * @param
+     * @param
+     * @return path to the template
+     */
+    @PutMapping("/addpooluser/{id}")
+    public String postEditPoolUserPage(@PathVariable Long id, Model model, BindingResult bindingResult) throws Exception {
+        /* If the form contains errors, the pool won't be updated and the form is displayed again with
+        corresponding error messages. */
+        if (bindingResult.hasErrors()) {
+            return "pools/pooluser";
+        }
+
+        Optional<Pool> optionalPool = poolService.findPoolById(id);
+
+
+        // Check whether a pool with the id could be found.
+        if (!optionalPool.isPresent()) {
+            throw new NotFoundException("No pool found with ID: " + id);
+        }
+
+        // Check whether the current user is allowed to edit this pool.
+        if (!optionalPool.get().getOwner().getId().equals(SecurityContext.getAuthenticationUser().getId())) {
+            throw new AccessDeniedException("The current user/editor and the pool owner are not identical.");
+
+        }
+
+        List<User> userList = userService.getAllUsersNotInPool(optionalPool.get());
+
+        if (userList.isEmpty()){
+            throw new NotFoundException("No user found to add to current pool.");
+        }
+
+        model.addAttribute("userList", userList);
+        model.addAttribute("pool", optionalPool);
+        return  "pools/addpooluser";
+    }
+
+    @PostMapping ("/addpooluser/{id}")
+    public String addUser(@PathVariable("user") User user, @PathVariable("pool") Pool pool){
+        poolService.addUserToPool(pool, user);
+        return "pools/addpooluser";
+
     }
 }
