@@ -2,6 +2,7 @@ package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.Role;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
@@ -13,7 +14,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 @Controller
 @RequestMapping("pools")
@@ -37,11 +36,10 @@ public class PoolController extends BaseController {
 
 
     @Autowired
-    public PoolController(PoolService poolService, MessageSource messageSource) {
+    public PoolController(PoolService poolService, MessageSource messageSource, UserService userService) {
         this.poolService = poolService;
         this.messageSource = messageSource;
         this.userService = userService;
-
     }
 
     /**
@@ -172,76 +170,61 @@ public class PoolController extends BaseController {
     }
 
 
-
     /**
      * Method for displaying the "pooluser" page.
      *
      * @param model the Spring Model
      * @return path to template
      */
-     @GetMapping("/pooluser")
+    @GetMapping("/assignments")
      public String getOverviewPoolUserPage(Model model){
         // Get the logged in user to determine their role.
         User authenticationUser = SecurityContext.getAuthenticationUser();
 
         // The admin can see all pools, all others only the pools they're assigned to.
-        if(authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
-            model.addAttribute("pools", poolService.findAllPools());
-        }
-        else {
-            model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-            /* In the view we need the id of the logged in user to determine whether he is
-            entitled to edit a pool. */
-            model.addAttribute("userId", authenticationUser.getId());
-        }
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(authenticationUser, true));
 
-        return "pools/pooluser";
+        return "pools/assignments";
     }
 
     /**
-     * Method for handling the submission of the "add pooluser" form.
+     * Method for displaying the form for adding users to a pool determined by its id
      *
-     * @param
-     * @param
+     * @param id the id of the pool which a user should be added to
+     * @param model the Spring model
      * @return path to the template
      */
-    @PutMapping("/addpooluser/{id}")
-    public String postEditPoolUserPage(@PathVariable Long id, Model model, BindingResult bindingResult) throws Exception {
-        /* If the form contains errors, the pool won't be updated and the form is displayed again with
-        corresponding error messages. */
-        if (bindingResult.hasErrors()) {
-            return "pools/pooluser";
-        }
+    @GetMapping("/addAssignment/{id}")
+    public String postEditPoolUserPage(@PathVariable Long id, Model model) throws Exception {
 
         Optional<Pool> optionalPool = poolService.findPoolById(id);
-
 
         // Check whether a pool with the id could be found.
         if (!optionalPool.isPresent()) {
             throw new NotFoundException("No pool found with ID: " + id);
         }
 
-        // Check whether the current user is allowed to edit this pool.
-        if (!optionalPool.get().getOwner().getId().equals(SecurityContext.getAuthenticationUser().getId())) {
-            throw new AccessDeniedException("The current user/editor and the pool owner are not identical.");
+        // Create a new UserPool entity with the previously selected pool
+        UserPool userPool = new UserPool();
+        userPool.setPool(optionalPool.get());
 
-        }
-
+        // Get all users that are currently NOT in the previously selected pool
         List<User> userList = userService.getAllUsersNotInPool(optionalPool.get());
 
-        if (userList.isEmpty()){
-            throw new NotFoundException("No user found to add to current pool.");
-        }
-
+        model.addAttribute("userPool", userPool);
         model.addAttribute("userList", userList);
-        model.addAttribute("pool", optionalPool);
-        return  "pools/addpooluser";
+        return "pools/add_assignment";
     }
 
-    @PostMapping ("/addpooluser/{id}")
-    public String addUser(@PathVariable("user") User user, @PathVariable("pool") Pool pool){
-        poolService.addUserToPool(pool, user);
-        return "pools/addpooluser";
-
+    /**
+     * Method for handling the submission of the "add employee to pool" form.
+     *
+     * @param userPool the new assignment of a user to a pool
+     * @return path to template
+     */
+    @PostMapping("/addAssignment")
+    public String addUser(@ModelAttribute UserPool userPool) {
+        poolService.addUserToPool(userPool);
+        return "redirect:/pools/assignments?successful=true&mode=add";
     }
 }

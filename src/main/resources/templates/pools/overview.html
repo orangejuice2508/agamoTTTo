@@ -18,7 +18,7 @@
             <p th:text="#{pools.overview.subtitle}" class="card-subtitle text-muted"></p>
         </div>
         <div class="card-body" th:if="${pools.isEmpty()}">
-            <p th:text="#{pools.overview.no_pools_found}"></p>
+            <p th:text="#{pools.error.not_found}"></p>
         </div>
         <div class="card-body" th:unless="${pools.isEmpty()}">
             <table class="table table-striped">

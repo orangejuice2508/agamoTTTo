@@ -50,12 +50,8 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_pool",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "pool_id")})
-    private Set<Pool> pools;
+    @OneToMany(mappedBy = "user")
+    private Set<UserPool> userPools;
 
     @OneToMany(mappedBy = "user")
     private Set<Record> records;

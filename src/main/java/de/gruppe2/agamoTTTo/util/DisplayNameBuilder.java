@@ -23,8 +23,8 @@ import java.time.format.DateTimeFormatter;
 public final class DisplayNameBuilder {
 
     public String display(User user) {
-        return user.getFirstName() + " " +
-                user.getLastName() + " (" +
+        return user.getLastName() + ", " +
+                user.getFirstName() + " (" +
                 user.getEmail() + ")";
     }
 

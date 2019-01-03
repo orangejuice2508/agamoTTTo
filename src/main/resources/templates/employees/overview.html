@@ -36,8 +36,8 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th scope="col" th:text="#{employees.first_name}"></th>
                         <th scope="col" th:text="#{employees.last_name}"></th>
+                        <th scope="col" th:text="#{employees.first_name}"></th>
                         <th scope="col" th:text="#{employees.email}"></th>
                         <th scope="col" th:text="#{employees.status}"></th>
                         <th scope="col" th:text="#{roles.name}"></th>
@@ -46,8 +46,8 @@
                     </thead>
                     <tbody>
                     <tr th:each="user: ${users}">
-                        <td th:text="${user.firstName}"></td>
                         <td th:text="${user.lastName}"></td>
+                        <td th:text="${user.firstName}"></td>
                         <td th:text="${user.email}"></td>
                         <td th:if="${user.enabled}">
                             <i class="fas fa-lock-open"></i>

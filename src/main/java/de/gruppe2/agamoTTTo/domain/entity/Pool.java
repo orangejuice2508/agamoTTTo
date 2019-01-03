@@ -33,7 +33,7 @@ public class Pool {
     @CreatedBy
     private User owner;
 
-    @ManyToMany(mappedBy = "pools")
-    private Set<User> users;
+    @OneToMany(mappedBy = "pool")
+    private Set<UserPool> userPools;
 
 }

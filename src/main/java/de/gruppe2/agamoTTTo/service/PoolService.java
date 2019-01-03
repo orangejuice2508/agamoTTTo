@@ -2,8 +2,9 @@ package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
-import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.repository.UserPoolRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service which is used for dealing with the pools("Arbeitsbereiche") of our application.
@@ -20,22 +22,34 @@ public class PoolService {
 
     private PoolRepository poolRepository;
 
-    private UserRepository userRepository;
+    private UserPoolRepository userPoolRepository;
 
     @Autowired
-    public PoolService(PoolRepository poolRepository, UserRepository userRepository) {
+    public PoolService(PoolRepository poolRepository, UserPoolRepository userPoolRepository) {
         this.poolRepository = poolRepository;
-        this.userRepository = userRepository;
+        this.userPoolRepository = userPoolRepository;
     }
 
     /**
      * This method uses the poolRepository to try to add a pool to the database.
+     * Furthermore the userPoolRepository is used to assign the owner to the newly created pool.
      *
      * @param pool the pool as obtained from the controller
      */
     @PreAuthorize(Permission.VORGESETZTER)
     public void addPool(Pool pool){
         poolRepository.save(pool);
+        userPoolRepository.save(new UserPool(pool.getOwner(), pool));
+    }
+
+    /**
+     * This method uses the UserPoolRepository to add a user to a pool.
+     *
+     * @param userPool the entity which combines a user and a pool
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public void addUserToPool(UserPool userPool) {
+        userPoolRepository.save(userPool);
     }
 
     /**
@@ -47,15 +61,15 @@ public class PoolService {
      */
     @PreAuthorize(Permission.MITARBEITER)
     public Set<Pool> findAllPoolsOfUser(User user, Boolean findAllExistingPools) {
-
         // If the user is an admin and all pools should found, then return all existing pools
         if (user.getRole().getRoleName().equals(Role.ADMINISTRATOR) && findAllExistingPools) {
             return new HashSet<>(poolRepository.findAll());
         }
 
-        Optional<User> optionalUser = userRepository.findById(user.getId());
-
-        return optionalUser.isPresent() ? new HashSet<>(optionalUser.get().getPools()) : Collections.emptySet();
+        return userPoolRepository.findAllByUser(user)
+                .stream()
+                .map(UserPool::getPool)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -82,19 +96,5 @@ public class PoolService {
 
         poolToUpdate.setName(updatedPool.getName());
         poolRepository.save(poolToUpdate);
-    }
-
-    /**
-     * This method uses the poolRepository to add a user to a pool
-     *
-     *
-     */
-    @PreAuthorize(Permission.VORGESETZTER)
-    public void addUserToPool (Pool pool, User user){
-
-        Set<User> Users = pool.getUsers();
-        Users.add(user);
-        pool.setUsers(Users);
-        poolRepository.save(pool);
     }
 }
