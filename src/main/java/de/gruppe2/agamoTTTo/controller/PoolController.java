@@ -178,11 +178,9 @@ public class PoolController extends BaseController {
      */
     @GetMapping("/assignments")
      public String getOverviewPoolUserPage(Model model){
-        // Get the logged in user to determine their role.
-        User authenticationUser = SecurityContext.getAuthenticationUser();
 
-        // The admin can see all pools, all others only the pools they're assigned to.
-        model.addAttribute("pools", poolService.findAllPoolsOfUser(authenticationUser, true));
+        // Get all pools of currently authenticated user
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), true));
 
         return "pools/assignments";
     }
@@ -198,15 +196,20 @@ public class PoolController extends BaseController {
     public String postEditPoolUserPage(@PathVariable Long id, Model model) throws Exception {
 
         Optional<Pool> optionalPool = poolService.findPoolById(id);
+        User authenticationUser = SecurityContext.getAuthenticationUser();
 
         // Check whether a pool with the id could be found.
         if (!optionalPool.isPresent()) {
             throw new NotFoundException("No pool found with ID: " + id);
         }
 
+        // Check whether the current user is allowed to add users to this pool. The admin is allowed to add users to every pool.
+        if (!authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR) && !poolService.isUserInPool(authenticationUser, optionalPool.get())) {
+            throw new AccessDeniedException("The current user/editor is not entitled to add users to this pool.");
+        }
+
         // Create a new UserPool entity with the previously selected pool
-        UserPool userPool = new UserPool();
-        userPool.setPool(optionalPool.get());
+        UserPool userPool = new UserPool(optionalPool.get());
 
         // Get all users that are currently NOT in the previously selected pool
         List<User> userList = userService.getAllUsersNotInPool(optionalPool.get());

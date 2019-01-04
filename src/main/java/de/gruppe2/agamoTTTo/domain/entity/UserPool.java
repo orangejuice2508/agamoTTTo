@@ -35,4 +35,8 @@ public class UserPool {
         this.user = user;
         this.pool = pool;
     }
+
+    public UserPool(Pool pool) {
+        this.pool = pool;
+    }
 }

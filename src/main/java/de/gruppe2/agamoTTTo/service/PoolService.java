@@ -60,16 +60,17 @@ public class PoolService {
      * @return pools which the logged in user is part of
      */
     @PreAuthorize(Permission.MITARBEITER)
-    public Set<Pool> findAllPoolsOfUser(User user, Boolean findAllExistingPools) {
+    public List<Pool> findAllPoolsOfUser(User user, Boolean findAllExistingPools) {
         // If the user is an admin and all pools should found, then return all existing pools
         if (user.getRole().getRoleName().equals(Role.ADMINISTRATOR) && findAllExistingPools) {
-            return new HashSet<>(poolRepository.findAll());
+            return poolRepository.findAllByOrderByNameAsc();
         }
 
         return userPoolRepository.findAllByUser(user)
                 .stream()
                 .map(UserPool::getPool)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparing(Pool::getName))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -82,6 +83,24 @@ public class PoolService {
     @PreAuthorize(Permission.VORGESETZTER)
     public Optional<Pool> findPoolById(Long id){
         return poolRepository.findById(id);
+    }
+
+    /**
+     * This method checks if the specified user is an ACTIVE member in the specified pool.
+     *
+     * @param user the user whose assignments should be checked
+     * @param pool the pool which should be checked for ACTIVE assignments of the user
+     * @return true, if user is an ACTIVE member of the pool, false if not.
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public Boolean isUserInPool(User user, Pool pool) {
+
+        return !pool.getUserPools()
+                .stream()
+                .filter(userPool -> userPool.getUser().getId().equals(user.getId()))
+                .filter(UserPool::getIsActive)
+                .collect(Collectors.toSet())
+                .isEmpty();
     }
 
     /**
