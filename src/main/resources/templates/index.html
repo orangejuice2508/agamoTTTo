@@ -23,7 +23,11 @@
         </div>
 
     <div th:if="${#request.getParameter('changePassword') == 'successful'}" class="card-body text-white bg-success">
-        <span th:text="#{index.logout.change_password_successful}"></span>
+        <span th:text="#{password.change.successful}"></span>
+    </div>
+
+    <div th:if="${#request.getParameter('updatePassword') == 'successful'}" class="card-body text-white bg-success">
+        <span th:text="#{password.change.successful}"></span>
     </div>
 
     <div class="card-body">
@@ -32,7 +36,10 @@
                 <input type="password" name="password" class="form-control mb-2" th:placeholder="#{index.login.label.password}" required="">
                 <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{index.login.label.submit}"></button>
             </form>
+        <div class="mt-2">
+            <a th:href="@{/forgotPassword}" th:text="#{index.forgot_password}"></a>
         </div>
+    </div>
 
         <div class="card-body" th:text="#{copyright}"></div>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
