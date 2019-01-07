@@ -26,7 +26,8 @@
                 <p th:text="#{employees.error.not_found}"></p>
             </div>
             <div th:unless="${userList.isEmpty()}">
-                <form action="#" th:action="@{/pools/addAssignment}" th:object="${userPool}" method="post">
+                <form action="#" th:action="@{/pools/addAssignment/(pool=${userPool.pool.id})}" th:object="${userPool}"
+                      method="post">
                     <div class="form-group drop-down">
                         <label th:text="#{pools.add_assignment.label.user}" for="user"></label>
                         <select th:field="*{user}" class="form-control" id="user" required>
@@ -35,7 +36,6 @@
                                     th:text="${@displayNameBuilder.display(user)}"></option>
                         </select>
                     </div>
-                    <input type="hidden" th:field="*{pool}" th:value="${userPool.pool.id}">
                     <p>
                         <button th:text="#{button.submit}" type="submit" class="btn btn-primary mr-1"></button>
                         <button th:text="#{button.reset}" type="reset" class="btn btn-secondary"></button>

@@ -133,7 +133,7 @@ public class EmployeeController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
-    @PutMapping("/edit/{id}")
+    @PutMapping("/edit")
     public String putEditEmployeePage(@Valid User updatedUser, BindingResult bindingResult, Model model) {
 
         /* If the form contains errors, the user won't be updated and the form is displayed again with

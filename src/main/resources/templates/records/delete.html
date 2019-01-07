@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="card-body">
-        <form action="#" th:action="@{/records/delete/{id}(id=${record.id})}" th:object="${record}" th:method="DELETE">
+        <form action="#" th:action="@{/records/delete/(id=${record.id})}" th:object="${record}" th:method="DELETE">
             <div class="form-group">
                 <label th:text="#{records.date}" for="date"></label>
                 <input readonly th:field="*{date}" type="date" class="form-control" id="date" required>

@@ -14,14 +14,14 @@
                         th:text="${pool.name}"></option>
             </select>
         </div>
-        <div class="input-group ml-2">
+        <div class="input-group ml-2" style="width: 115%">
             <div class="input-group-prepend">
                 <label class="input-group-text" for="date_from" th:text="#{pool_date_filter.label.date_from}"></label>
             </div>
             <input th:placeholder="#{date.format}" th:field="*{from}" type="date" max="9999-12-31" min="1000-01-01"
                    class="form-control" id="date_from">
         </div>
-        <div class="input-group ml-2">
+        <div class="input-group ml-2" style="width: 115%">
             <div class="input-group-prepend">
                 <label class="input-group-text" for="date_to" th:text="#{pool_date_filter.label.date_to}"></label>
             </div>

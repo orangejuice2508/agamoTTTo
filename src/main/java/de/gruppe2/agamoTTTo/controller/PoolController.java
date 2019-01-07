@@ -145,7 +145,7 @@ public class PoolController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
-    @PutMapping("/edit/{id}")
+    @PutMapping("/edit")
     public String putEditPoolPage(@Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */
@@ -176,8 +176,9 @@ public class PoolController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
+    @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/assignments")
-     public String getOverviewPoolUserPage(Model model){
+    public String getOverviewPoolUserPage(Model model) {
 
         // Get all pools of currently authenticated user
         model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), true));

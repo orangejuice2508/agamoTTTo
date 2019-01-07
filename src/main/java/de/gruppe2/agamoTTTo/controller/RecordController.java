@@ -173,7 +173,7 @@ public class RecordController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
-    @PutMapping("/edit/{id}")
+    @PutMapping("/edit")
     public String putEditRecordPage(@Valid Record updatedRecord, BindingResult bindingResult,
                                     Model model) {
 
@@ -225,7 +225,7 @@ public class RecordController extends BaseController {
      * @param record the record which should be deleted
      * @return path to the template
      */
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping("/delete")
     public String deleteRecordPage(@ModelAttribute Record record) {
         recordService.deleteRecord(record);
         return "redirect:/records/overview/?successful=true&mode=delete";

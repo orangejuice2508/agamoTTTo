@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form action="#" th:action="@{/pools/edit/{id}(id=${pool.id})}" th:object="${pool}" th:method="PUT">
+            <form action="#" th:action="@{/pools/edit/(id=${pool.id})}" th:object="${pool}" th:method="PUT">
                 <div class="form-group">
                     <label th:text="#{pools.name}" for="name"></label>
                     <input th:field="*{name}" th:errorclass="is-invalid" type="text" class="form-control" id="name" required>
