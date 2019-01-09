@@ -32,7 +32,7 @@
             <div th:if="${users != null && users.isEmpty()}">
                 <p th:text="#{nothing_found}"></p>
             </div>
-            <div th:if="${users != null && !users.isEmpty()}">
+            <div th:if="${users != null && !users.isEmpty()}" class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>

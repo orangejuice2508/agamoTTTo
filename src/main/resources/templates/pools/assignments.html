@@ -17,31 +17,33 @@
             <h4 th:text="#{pools.assignments.title}" class="card-title"></h4>
             <p th:text="#{pools.assignments.subtitle}" class="card-subtitle text-muted"></p>
         </div>
-        <div class="card-body" th:if="${pools.isEmpty()}">
-            <p th:text="#{pools.assignments.title}"></p>
-        </div>
-        <div class="card-body" th:unless="${pools.isEmpty()}">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th scope="col" th:text="#{pools.name}"></th>
-                    <th scope="col" th:text="#{pools.owner}"></th>
-                    <th scope="col" th:text="#{actions}"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="pool: ${pools}">
-                    <td th:text="${pool.name}"></td>
-                    <td th:text="${@displayNameBuilder.display(pool.owner)}"></td>
-                    <td>
-                        <a th:href="@{/pools/addAssignment/{id}(id=${pool.id})}">
-                            <i class="fas fa-user-plus"></i>
-                            <span th:text="#{pools.assignments.actions.add}"></span>
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="card-body">
+            <div th:if="${pools.isEmpty()}">
+                <p th:text="#{pools.assignments.title}"></p>
+            </div>
+            <div th:unless="${pools.isEmpty()}" class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" th:text="#{pools.name}"></th>
+                        <th scope="col" th:text="#{pools.owner}"></th>
+                        <th scope="col" th:text="#{actions}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pool: ${pools}">
+                        <td th:text="${pool.name}"></td>
+                        <td th:text="${@displayNameBuilder.display(pool.owner)}"></td>
+                        <td>
+                            <a th:href="@{/pools/addAssignment/{id}(id=${pool.id})}">
+                                <i class="fas fa-user-plus"></i>
+                                <span th:text="#{pools.assignments.actions.add}"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -85,18 +85,21 @@ public class RecordService{
         // Use the getOne method, so that no more DB fetch has to be executed
         Record recordToUpdate = recordRepository.getOne(updatedRecord.getId());
 
-        // Log the current record before updating it.
-        recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
+        // Check whether the record was really edited.
+        if (!recordToUpdate.equals(updatedRecord)) {
+            // Log the record before changing it.
+            recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
 
-        recordToUpdate.setDate(updatedRecord.getDate());
-        recordToUpdate.setStartTime(updatedRecord.getStartTime());
-        recordToUpdate.setEndTime(updatedRecord.getEndTime());
-        recordToUpdate.setDescription(updatedRecord.getDescription());
-        recordToUpdate.setPool(updatedRecord.getPool());
-        recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
-        recordToUpdate.setIsDeleted(updatedRecord.getIsDeleted());
+            recordToUpdate.setDate(updatedRecord.getDate());
+            recordToUpdate.setStartTime(updatedRecord.getStartTime());
+            recordToUpdate.setEndTime(updatedRecord.getEndTime());
+            recordToUpdate.setDescription(updatedRecord.getDescription());
+            recordToUpdate.setPool(updatedRecord.getPool());
+            recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
+            recordToUpdate.setIsDeleted(updatedRecord.getIsDeleted());
 
-        recordRepository.save(recordToUpdate);
+            recordRepository.save(recordToUpdate);
+        }
     }
 
     /**
