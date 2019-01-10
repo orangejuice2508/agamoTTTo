@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Optional;
@@ -168,10 +169,22 @@ public class PoolController extends BaseController {
         return "redirect:/pools/overview/?successful=true";
     }
 
+    @GetMapping("/analysis")
+    public String getAnalysePoolPage(Model model){
+
+        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+
+        return "pools/analysis";
+    }
+
     @GetMapping(params = "send", value = "/analysis/filter")
     public String postAnalysisPoolPage(@ModelAttribute PoolDateFilter filter, Model model){
 
-        HashMap<User, Long> result = recordService.test(filter);
+        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
+        model.addAttribute("filter", filter);
+
+        HashMap<User, Long> result = recordService.calculateTotalDurationPerUser(filter);
         model.addAttribute("result", result);
         Long totalDuration = result.values().stream().mapToLong(Long::longValue).sum();
         model.addAttribute("totalDuration", totalDuration);

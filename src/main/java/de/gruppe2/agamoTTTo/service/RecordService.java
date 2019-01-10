@@ -192,11 +192,11 @@ public class RecordService{
     /**
      * This method calculates the total sum of the lists of records for every member of a pool.
      *
-     * @param
+     * @param filter
      * @return the total sum in minutes for every member in an hashmap
      */
     @PreAuthorize(Permission.VORGESETZTER)
-    public HashMap<User, Long> test (PoolDateFilter filter){
+    public HashMap<User, Long> calculateTotalDurationPerUser (PoolDateFilter filter){
         Set<User> usersInPool = userRepository.findAllByPools(Collections.singleton(filter.getPool()));
         HashMap<User, Long> result = new HashMap<>();
 
