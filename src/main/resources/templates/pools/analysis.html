@@ -14,16 +14,16 @@
         </div>
         <div class="card-body">
             <form action="#" th:action="@{/pools/analysis/filter}" th:object="${filter}" method="get">
-                <div th:replace="fragments/filter/pool_filter :: pool_filter"></div>
+                <div th:replace="fragments/filter/pool_date_filter :: pool_date_filter"></div>
                 <button th:text="#{button.submit}" type="submit" name="send" value="true"
                         class="btn btn-primary ml-2"></button>
                 <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
             </form>
             <hr>
-            <div th:if="${records != null && records.isEmpty()}">
+            <div th:if="${result != null && result.isEmpty()}">
                 <p th:text="#{nothing_found}"></p>
             </div>
-            <div th:if="${records != null && !records.isEmpty()}">
+            <div th:if="${result != null && !result.isEmpty()}">
                 <table class="table table-striped">
                     <thead>
                     <tr>
