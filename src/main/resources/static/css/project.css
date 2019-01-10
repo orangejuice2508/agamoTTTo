@@ -12,3 +12,7 @@ body {
     background-size: cover;
     background-attachment: fixed;
 }
+
+.input-group-date {
+    min-width: 15rem
+}
