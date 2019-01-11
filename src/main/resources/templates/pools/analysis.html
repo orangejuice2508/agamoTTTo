@@ -21,7 +21,7 @@
             </form>
             <hr>
             <div th:if="${result != null && result.isEmpty()}">
-                <p th:text="#{nothing_found}"></p>
+                <p th:text="#{pools.analysis.no_pools_found}"></p>
             </div>
             <div th:if="${result != null && !result.isEmpty()}">
                 <table class="table table-striped">
