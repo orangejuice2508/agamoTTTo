@@ -52,7 +52,6 @@ public class RecordController extends BaseController {
     @GetMapping("/add")
     public String getAddRecordPage(Model model) {
 
-        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
         model.addAttribute("record", new Record());
         return "records/add";
     }
@@ -73,7 +72,6 @@ public class RecordController extends BaseController {
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
-            model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
             return "records/add";
         }
 
@@ -92,7 +90,6 @@ public class RecordController extends BaseController {
     public String getOverviewRecordPage(Model model) {
 
         model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
-        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
 
         return "records/overview";
     }
@@ -107,7 +104,6 @@ public class RecordController extends BaseController {
     @GetMapping(params = "send", value = "/overview/filter")
     public String postAnalyseRecordPage(@ModelAttribute PoolDateFilter filter,  Model model){
 
-        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
         model.addAttribute("filter", filter);
 
         List<Record> records = recordService.getAllRecordsByFilter(filter, SecurityContext.getAuthenticationUser());
@@ -160,7 +156,6 @@ public class RecordController extends BaseController {
         }
 
         model.addAttribute("record", optionalRecord.get());
-        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
 
         return "records/edit";
     }
@@ -182,7 +177,6 @@ public class RecordController extends BaseController {
         /* If the form contains errors, the record won't be edited and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
-            model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
             return "records/edit";
         }
 
@@ -228,6 +222,11 @@ public class RecordController extends BaseController {
     public String deleteRecordPage(@ModelAttribute Record record) {
         recordService.deleteRecord(record);
         return "redirect:/records/overview/?successful=true&mode=delete";
+    }
+
+    @ModelAttribute
+    public void addPoolsToModel(Model model) {
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), false));
     }
 
 
