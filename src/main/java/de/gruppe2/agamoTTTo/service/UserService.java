@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service which is used for dealing with the users of our application.
+ * Service which is used for dealing with the users ("Mitarbeiter"/"Benutzer") of our application.
  */
 @Service
 public class UserService implements UserDetailsService {
@@ -58,7 +58,7 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize(Permission.VORGESETZTER)
     public void addUser(User user){
-        // Generate a random password and hash it. Set default role.
+        // Generate a random password and hash it. Set the encrypted password and the default role.
         String randomPassword = generateRandomPassword();
         user.setEncryptedPassword(passwordEncoder.encode(randomPassword));
         user.setRole(new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER));
@@ -76,17 +76,16 @@ public class UserService implements UserDetailsService {
            we need to pass them to the messageSource.
          */
         String subject = messageSource.getMessage("employees.add.email.subject", null, Locale.getDefault());
-        Object[] parameters = {user.getLastName(), user.getEmail(), randomPassword};
+        Object[] parameters = {user.getEmail(), randomPassword};
         String text = messageSource.getMessage("employees.add.email.text", parameters, Locale.getDefault());
         emailService.sendHTMLEmail(user.getEmail(), subject, text);
     }
 
     /**
      * This method tries to find a user from the database based on the entered email.
-     * If the user was found, an authority is assigned to him, based on the role which is stored in the database.
      *
      * @param email the email as entered in the login form
-     * @return user the newly created CustomSecurityUser object with "email" as username and "role" as granted authorities
+     * @return CustomSecurityUser a newly created CustomSecurityUser object with "email" as username and "role" as granted authorities
      * @throws UsernameNotFoundException if no user was found with the entered email
      */
     @Override
@@ -107,7 +106,7 @@ public class UserService implements UserDetailsService {
      * @param searchTerm the entered search term by the user
      * @return a set of users, if users were found; otherwise: an empty set
      */
-    @PreAuthorize(Permission.VORGESETZTER)
+    @PreAuthorize(Permission.ADMINISTRATOR)
     public List<User> findUsersBySearchTerm(String searchTerm) {
         return userRepository.searchForUserByFirstNameOrLastNameOrEmail(searchTerm);
     }
@@ -131,14 +130,17 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize(Permission.ADMINISTRATOR)
     public void updateUser(User updatedUser) {
-        // Use the getOne method, so that no more DB fetch has to be executed
+        // Use the getOne method, so that no more DB fetch has to be executed.
         User userToUpdate = userRepository.getOne(updatedUser.getId());
 
+        // Manipulate the userToUpdate with the updated fields.
         userToUpdate.setFirstName(updatedUser.getFirstName());
         userToUpdate.setLastName(updatedUser.getLastName());
         userToUpdate.setEmail(updatedUser.getEmail());
         userToUpdate.setEnabled(updatedUser.getEnabled());
         userToUpdate.setRole(updatedUser.getRole());
+
+        // Save the user to the database.
         userRepository.save(userToUpdate);
     }
 
@@ -146,9 +148,9 @@ public class UserService implements UserDetailsService {
     /**
      * This method checks whether an entered password matches the password currently stored in the database
      *
-     * @param user        the user whose password should be checked
+     * @param user the user whose password should be checked
      * @param oldPassword the entered old password in plaintext
-     * @return true if the oldPassword matches the the password in the db, false if they do not match
+     * @return true, if the oldPassword matches the password in the db. false, if they do not match.
      */
     @PreAuthorize(Permission.IS_AUTHENTICATED)
     public boolean isOldPasswordCorrect(User user, String oldPassword) {
@@ -158,15 +160,21 @@ public class UserService implements UserDetailsService {
     /**
      * This method uses the userRepository to try to change the password of a user in the database.
      *
-     * @param user        the user whose password should be changed
+     * @param user the user whose password should be changed
      * @param newPassword the new password in plaintext
      */
     @PreAuthorize(Permission.IS_AUTHENTICATED)
     public void changePassword(User user, String newPassword) {
+        // Use the getOne method, so that no more DB fetch has to be executed.
         user = userRepository.getOne(user.getId());
+
+        // Encode the plain text
         String encryptedPassword = passwordEncoder.encode(newPassword);
+
+        // Set the encoded password
         user.setEncryptedPassword(encryptedPassword);
 
+        // Save the user to the database.
         userRepository.save(user);
     }
 
@@ -191,9 +199,9 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * This method returns all users which are currently NOT member of the specified pool.
+     * This method returns all users which are currently NOT assigned to the specified pool.
      *
-     * @param pool the pool which's NON-members should be found
+     * @param pool the pool of which the NON-members should be found
      * @return all users that are NOT member of the pool
      */
     @PreAuthorize(Permission.VORGESETZTER)
@@ -202,16 +210,23 @@ public class UserService implements UserDetailsService {
         List<User> result = userRepository.findAllByOrderByLastNameAscFirstNameAscEmailAsc();
 
         // Find all users who are currently ACTIVE in the specified pool.
-        List<User> currentUsersInPool = pool.getUserPools()
-                .stream()
-                .filter(UserPool::getIsActive)
-                .map(UserPool::getUser)
-                .collect(Collectors.toList());
+        List<User> currentUsersInPool = getAllUsersInPool(pool);
 
         // Remove all currently ACTIVE users in the specified pool from the result set
         result.removeAll(currentUsersInPool);
 
-        return result;
+        // Sort the result by the users' last names.
+        return result.stream().sorted(Comparator.comparing(User::getLastName)).collect(Collectors.toList());
+    }
+
+    private List<User> getAllUsersInPool(Pool pool) {
+        // Return all users of ACTIVE userPool assignments.
+        return pool.getUserPools()
+                .stream()
+                .filter(UserPool::getIsActive)
+                .map(UserPool::getUser)
+                .sorted(Comparator.comparing(User::getLastName))
+                .collect(Collectors.toList());
     }
 
 }

@@ -4,6 +4,9 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
+/**
+ * Every controller extends this class and therefore inherits all his functionality.
+ */
 public abstract class BaseController {
 
     /**

@@ -46,7 +46,7 @@
                         <th scope="col" th:text="#{records.time}"></th>
                         <th scope="col" th:text="#{records.description}"></th>
                         <th scope="col" th:text="#{records.duration}"></th>
-                        <th scope="col" th:text="#{actions}"></th>
+                        <th scope="col" colspan="2" th:text="#{actions}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -55,20 +55,27 @@
                         <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
                         <td th:text="${record.description}"></td>
                         <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
-                        <td>
-                            <a th:href="@{/records/edit/{id}(id=${record.id})}">
-                                <i class="fas fa-edit"></i>
-                                <span th:text="#{actions.edit}"></span>
-                            </a>
-                            <a th:href="@{/records/delete/{id}(id=${record.id})}">
-                                <i class="fas fa-trash-alt"></i>
-                                <span th:text="#{actions.delete}"></span>
-                            </a>
-                        </td>
+                        <th:block th:if="${activePools.contains(filter.pool)}">
+                            <td>
+                                <a th:href="@{/records/edit/{id}(id=${record.id})}">
+                                    <i class="fas fa-edit"></i>
+                                    <span th:text="#{actions.edit}"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{/records/delete/{id}(id=${record.id})}">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span th:text="#{actions.delete}"></span>
+                                </a>
+                            </td>
+                        </th:block>
+                        <th:block th:unless="${activePools.contains(filter.pool)}">
+                            <td colspan="2"></td>
+                        </th:block>
                     </tr>
                     <tr class="table-success">
                         <td colspan="3" th:text="#{records.sum}"></td>
-                        <td colspan="2"
+                        <td colspan="3"
                             th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>

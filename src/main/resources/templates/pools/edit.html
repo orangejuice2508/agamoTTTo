@@ -10,14 +10,14 @@
     <div class="card m-3">
         <div class="card-header">
             <div>
-                <a href="javascript:history.back()">
+                <a th:href="@{/pools/overview}">
                     <i class="fas fa-arrow-circle-left"></i>
                     <span th:text="#{back}"></span>
                 </a>
             </div>
             <hr>
             <div>
-                <h4 th:text="#{pools.edit.title}" class="card-title"></h4>
+                <h4 th:text="#{pools.edit.title} + ' (' + ${pool.name} + ')'" class="card-title"></h4>
                 <p th:text="#{pools.edit.subtitle}" class="card-subtitle text-muted"></p>
             </div>
         </div>

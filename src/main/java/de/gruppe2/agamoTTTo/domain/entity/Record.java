@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.domain.entity;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -14,6 +13,10 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * This class corresponds to the database table "record".
+ * Its columns correspond to the attributes of this class.
+ */
 @Entity
 @Setter
 @Getter

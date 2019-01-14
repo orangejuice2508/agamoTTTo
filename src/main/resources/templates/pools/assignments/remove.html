@@ -3,37 +3,36 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="fragments/layout">
 <head>
-    <title th:text="#{pools.add_assignment.title}"></title>
+    <title th:text="#{pools.assignments.remove.title}"></title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="card m-3">
         <div class="card-header">
             <div>
-                <a href="javascript:history.back()">
+                <a th:href="@{/pools/assignments/overview}">
                     <i class="fas fa-arrow-circle-left"></i>
                     <span th:text="#{back}"></span>
                 </a>
             </div>
             <hr>
             <div>
-                <h4 th:text="#{pools.add_assignment.title} + ' ' + ${userPool.pool.name}" class="card-title"></h4>
-                <p th:text="#{pools.add_assignment.subtitle}" class="card-subtitle text-muted"></p>
+                <h4 th:text="#{pools.assignments.remove.title} + ' (' + ${pool.name} + ')'" class="card-title"></h4>
+                <p th:text="#{pools.assignments.remove.subtitle}" class="card-subtitle text-muted"></p>
             </div>
         </div>
         <div class="card-body">
-            <div th:if="${userList.isEmpty()}">
+            <div th:if="${userPools.isEmpty()}">
                 <p th:text="#{employees.error.not_found}"></p>
             </div>
-            <div th:unless="${userList.isEmpty()}">
-                <form action="#" th:action="@{/pools/addAssignment/(pool=${userPool.pool.id})}" th:object="${userPool}"
-                      method="post">
+            <div th:unless="${userPools.isEmpty()}">
+                <form action="#" th:action="@{/pools/assignments/remove}" th:object="${userPoolToRemove}" method="post">
                     <div class="form-group drop-down">
-                        <label th:text="#{pools.add_assignment.label.user}" for="user"></label>
-                        <select th:field="*{user}" class="form-control" id="user" required>
-                            <option th:each="user: ${userList}"
-                                    th:value="${user.id}"
-                                    th:text="${@displayNameBuilder.display(user)}"></option>
+                        <label th:text="#{assignments.user}" for="userPool"></label>
+                        <select th:field="*{id}" class="form-control" id="userPool" required>
+                            <option th:each="userPool: ${userPools}"
+                                    th:value="${userPool.id}"
+                                    th:text="${@displayNameBuilder.display(userPool.user)}"></option>
                         </select>
                     </div>
                     <p>

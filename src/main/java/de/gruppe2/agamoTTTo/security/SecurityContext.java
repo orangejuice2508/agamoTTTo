@@ -16,8 +16,8 @@ public final class SecurityContext {
     }
 
     /**
-     * This method uses the static getAuthentication method from below to retrieve the current user,
-     * who is logged in. If no such authentication is found, the user is null and the null value is returned.
+     * This method uses the static getAuthentication method from below to retrieve the currently logged in user.
+     * If no such authentication is found, the user is null and the null value is returned.
      * Else:
      *
      * @return loggedInUser the user who is currently logged in

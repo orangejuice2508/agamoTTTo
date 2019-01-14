@@ -35,7 +35,7 @@
                         <td th:text="${pool.name}"></td>
                         <td th:text="${@displayNameBuilder.display(pool.owner)}"></td>
                         <td>
-                            <a th:if="${pool.owner.id==userId || #authorization.expression('hasRole(''ROLE_ADMINISTRATOR'')')}"
+                            <a th:if="${pool.owner.id==authenticationUserId || #authorization.expression('hasRole(''ROLE_ADMINISTRATOR'')')}"
                                th:href="@{/pools/edit/{id}(id=${pool.id})}">
                                 <i class="fas fa-edit"></i>
                                 <span th:text="#{actions.edit}"></span>

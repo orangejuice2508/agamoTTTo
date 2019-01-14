@@ -1,16 +1,17 @@
 package de.gruppe2.agamoTTTo.repository;
 
-import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
-import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
+/**
+ * This repository is used for crud operations (create/read/update/delete) on the table "agamottto_user" in the database.
+ * Note: The queries are constructed automatically by Spring JPA based on method naming conventions.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);

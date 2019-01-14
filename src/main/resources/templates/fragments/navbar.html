@@ -44,10 +44,10 @@
                         <i class="fas fa-search"></i>
                         <span th:text="#{navbar.dropdown.overview}"></span>
                     </a>
-                    <a class="dropdown-item" th:href="@{/pools/assignments}"
+                    <a class="dropdown-item" th:href="@{/pools/assignments/overview}"
                        sec:authorize="hasRole('ROLE_VORGESETZTER')">
                         <i class="fas fa-exchange-alt"></i>
-                        <span th:text="#{navbar.dropdown.pooluser}"></span>
+                        <span th:text="#{navbar.dropdown.assignments}"></span>
                     </a>
                 </div>
             </li>

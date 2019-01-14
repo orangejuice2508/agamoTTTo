@@ -17,6 +17,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * This class corresponds to the database table "record_log".
+ * Its columns correspond to the attributes of this class.
+ */
 @Entity
 @Setter
 @Getter

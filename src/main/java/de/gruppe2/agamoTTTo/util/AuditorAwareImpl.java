@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * Since we use @CreatedBy and @LastModifiedBy, those annotations need to become aware
- * about the current user, which modified or created an entity.
+ * Since we use @CreatedBy and @LastModifiedBy, those annotations need to get
+ * the currently logged in user, which modified or created an entity.
  */
 
 @Component(value = "auditorAware")

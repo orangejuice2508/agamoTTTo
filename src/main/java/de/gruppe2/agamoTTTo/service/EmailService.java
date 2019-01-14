@@ -11,6 +11,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+/**
+ * This service is used for sending emails.
+ */
 @Slf4j
 @Service
 public class EmailService {
@@ -31,20 +34,24 @@ public class EmailService {
      * @param subject the subject of the email
      * @param text the text of the email
      */
-
     @Async
     public void sendHTMLEmail(String to, String subject, String text){
         MimeMessage email = emailSender.createMimeMessage();
 
         // The creation of the email could throws a MessagingException which has to be caught.
         try{
+            // Setting up the email
             email.setSubject(subject);
             email.setRecipient(Message.RecipientType.TO, new InternetAddress(to, false));
             email.setContent(text, "text/html; charset=utf-8");
+
+            // Send the email
             emailSender.send(email);
+
+            // Log that the mail was sent successfully
             log.info("Mail was successfully created and sent!");
-        }
-        catch(MessagingException e){
+        } catch (MessagingException e) {
+            // Log that the mail was not sent successfully
             log.error("Mail could not be created or sent!");
         }
     }

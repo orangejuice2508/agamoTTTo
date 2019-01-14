@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{pools.assignments.overview.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <div>
+                <a th:href="@{/pools/assignments/overview}">
+                    <i class="fas fa-arrow-circle-left"></i>
+                    <span th:text="#{back}"></span>
+                </a>
+            </div>
+            <hr>
+            <h4 th:text="#{pools.assignments.show.title} + ' (' + ${pool.name} + ')'" class="card-title"></h4>
+            <p th:text="#{pools.assignments.show.subtitle}" class="card-subtitle text-muted"></p>
+        </div>
+        <div class="card-body">
+            <div th:if="${userPools.isEmpty()}">
+                <p th:text="#{employees.error.not_found}"></p>
+            </div>
+            <div th:unless="${userPools.isEmpty()}" class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" th:text="#{employees.last_name}"></th>
+                        <th scope="col" th:text="#{employees.first_name}"></th>
+                        <th scope="col" th:text="#{employees.email}"></th>
+                        <th scope="col" th:text="#{assignments.status}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="userPool : ${userPools}">
+                        <td th:text="${userPool.user.lastName}"></td>
+                        <td th:text="${userPool.user.firstName}"></td>
+                        <td th:text="${userPool.user.email}"></td>
+                        <td th:if="${userPool.isActive}">
+                            <i class="fas fa-check-circle"></i>
+                            <span th:text="#{assignments.status.active}"></span>
+                        </td>
+                        <td th:unless="${userPool.isActive}">
+                            <i class="fas fa-times-circle"></i>
+                            <span th:text="#{assignments.status.inactive}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

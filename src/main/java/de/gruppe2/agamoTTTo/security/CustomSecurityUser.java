@@ -9,6 +9,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This class implements the UserDetails interface of the Spring Framework.
+ * The reason behind creating an own SecurityUser is the following:
+ * We now get a real user object from the SecurityContext, which can be used for setting
+ * the creator/editor of an entity without querying the database again.
+ */
 public class CustomSecurityUser extends User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

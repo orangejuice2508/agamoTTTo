@@ -12,9 +12,9 @@
                                th:text="#{pool_date_filter.label.pool}"></label>
                     </div>
                     <select class="form-control" th:field="*{pool}" id="poolSelect" required>
-                        <option th:each="pool: ${pools}"
-                                th:value="${pool.id}"
-                                th:text="${pool.name}"></option>
+                        <option th:each="userPool : ${userPools}"
+                                th:value="${userPool.pool.id}"
+                                th:text="${@displayNameBuilder.display(userPool)}"></option>
                     </select>
                 </div>
                 <div class="input-group input-group-date col-xl">

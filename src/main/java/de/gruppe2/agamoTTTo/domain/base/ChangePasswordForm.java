@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+/**
+ * This class is used for changing a user's password
+ */
 @Getter
 @Setter
 public class ChangePasswordForm {

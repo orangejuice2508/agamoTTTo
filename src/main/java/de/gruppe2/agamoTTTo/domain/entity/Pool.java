@@ -11,6 +11,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+/**
+ * This class corresponds to the database table "pool".
+ * Its columns correspond to the attributes of this class.
+ */
 @Getter
 @Setter
 @Entity

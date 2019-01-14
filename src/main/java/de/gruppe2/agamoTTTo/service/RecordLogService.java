@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service which is used for dealing with the recordLogs("Logdateien") of our application.
+ */
 @Service
 public class RecordLogService {
 

@@ -9,6 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.security.Principal;
 
+/**
+ * This controller is used for mapping all requests to / to concrete HTML pages in resources/templates/
+ */
 @Controller
 public class MainController {
 
@@ -19,7 +22,7 @@ public class MainController {
      * @return path to template
      */
     @GetMapping("/")
-    public String indexPage(Principal principal) {
+    public String getIndexPage(Principal principal) {
         // If a user is logged in, then redirect them to the "home"-page.
         if(principal != null){
             return "redirect:/home";
@@ -37,7 +40,7 @@ public class MainController {
      */
     @PreAuthorize(Permission.IS_AUTHENTICATED)
     @GetMapping("/home")
-    public String userInfo(Model model, Principal principal) {
+    public String getHomePage(Model model, Principal principal) {
         // After user logged in successfully.
         String email = principal.getName();
 
@@ -59,7 +62,7 @@ public class MainController {
      * @return path to template
      */
     @GetMapping("/accessDenied")
-    public String accessDenied() {
-        return "access-denied";
+    public String getAccessDeniedPage() {
+        return "access_denied";
     }
 }

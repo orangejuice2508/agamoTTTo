@@ -18,6 +18,9 @@ import javax.validation.Valid;
 import java.util.Locale;
 import java.util.Optional;
 
+/**
+ * This controller is used for mapping all requests to /employees/ to concrete HTML pages in resources/templates/employees
+ */
 @Controller
 @RequestMapping("employees")
 public class EmployeeController extends BaseController {
@@ -44,7 +47,9 @@ public class EmployeeController extends BaseController {
     @PreAuthorize(Permission.VORGESETZTER)
     @GetMapping("/add")
     public String getAddEmployeesPage(Model model){
+        // Add a new user i.e. a new employee to the model
         model.addAttribute("user", new User());
+
         return "employees/add";
     }
 
@@ -57,13 +62,13 @@ public class EmployeeController extends BaseController {
      */
     @PostMapping("/add")
     public String postAddEmployeesPage(@ModelAttribute @Valid User user, BindingResult bindingResult){
-        /* If the form contains errors, the new employee won't be added and the form is displayed again with
+        /* If the form contains errors, the new employee/user won't be added and the form is displayed again with
            corresponding error messages. */
         if(bindingResult.hasErrors()){
             return "employees/add";
         }
 
-        /* Try to add the user to the database. If the email address is already registered, a DataIntegrityViolation
+        /* Try to add the employee/user to the database. If the email address is already registered, a DataIntegrityViolation
             will be thrown by the UserService/UserRepository. Then the form is shown again with a corresponding
             error message.
          */
@@ -74,7 +79,7 @@ public class EmployeeController extends BaseController {
             return "employees/add";
         }
 
-        // If the user was added successfully, reload the page with an empty form.
+        // If the user was added successfully, redirect to the "add page" with an empty form.
         return "redirect:/employees/add/?successful=true";
     }
 
@@ -92,34 +97,37 @@ public class EmployeeController extends BaseController {
     /**
      * Method for displaying the search results of the retrieved employees.
      *
-     * @param searchTerm the entered search, stored as a parameter in the url
-     * @param model      The Spring model
+     * @param searchTerm the entered search term, stored as a parameter in the url
+     * @param model the Spring model
      * @return path to template
      */
     @GetMapping(value = "/overview", params = "searchTerm")
     public String getOverviewEmployeesSearchResults(@RequestParam("searchTerm") String searchTerm, Model model) {
+        // Add the retrieved users/employees and the searchTerm to the model
         model.addAttribute("users", userService.findUsersBySearchTerm(searchTerm));
         model.addAttribute("serchTerm", searchTerm);
+
         return "employees/overview";
     }
 
     /**
      * Method for displaying the edit form of an employee determined by its id.
      *
-     * @param id    a user's id as specified in the path
+     * @param id a user's/employee's id as specified in the path
      * @param model The Spring model
      * @return path to the template
      */
     @GetMapping("/edit/{id}")
     public String getEditEmployeePage(@PathVariable("id") Long id, Model model) throws Exception {
-
+        // Try to get the user/employee specified by its id from the database.
         Optional<User> optionalUser = userService.findUserById(id);
 
-        // Check whether a record with the id could be found.
+        // Check whether a user/employee with the id could be found.
         if (!optionalUser.isPresent()) {
-            throw new NotFoundException("No record found with ID: " + id);
+            throw new NotFoundException("No employee found with ID: " + id);
         }
 
+        // Add the user/employee and new possible roles for this user/employee to the model.
         model.addAttribute("user", optionalUser.get());
         model.addAttribute("roles", roleService.findPossibleRoles(optionalUser.get()));
 
@@ -129,7 +137,7 @@ public class EmployeeController extends BaseController {
     /**
      * Method for handling the submission of the "edit employee" form.
      *
-     * @param updatedUser   the user with updated fields
+     * @param updatedUser the user/employee with updated fields
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
@@ -142,19 +150,20 @@ public class EmployeeController extends BaseController {
             return "employees/edit";
         }
 
-        /* Try to update the user in the database. If the email address is already registered, a DataIntegrityViolation
+        /* Try to update the user/employee in the database. If the email address is already registered, a DataIntegrityViolation
         will be thrown by the UserService/UserRepository. Then the form is shown again with a corresponding
         error message.
         */
         try {
             userService.updateUser(updatedUser);
         } catch (DataIntegrityViolationException e) {
+            // Add new possible roles for this user/employee to the model.
             model.addAttribute("roles", roleService.findPossibleRoles(updatedUser));
             bindingResult.rejectValue("email", "error.user", messageSource.getMessage("employees.error.email_not_unique", null, Locale.getDefault()));
             return "employees/edit";
         }
 
-        // If the user was edited successfully, reload the overview page.
+        // If the user was edited successfully, redirect to the overview page.
         return "redirect:/employees/overview/?successful=true";
     }
 }

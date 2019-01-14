@@ -10,6 +10,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+/**
+ * This class corresponds to the database table "agamottto_user".
+ * Its columns correspond to the attributes of this class.
+ */
 @Getter
 @Setter
 @Entity

@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Locale;
 
+/**
+ * This controller is used for mapping all requests to /settings/ to concrete HTML pages in resources/templates/settings
+ */
 @Controller
 @RequestMapping("settings")
 public class SettingsController {
@@ -43,7 +46,7 @@ public class SettingsController {
     @GetMapping("/changePassword")
     @PreAuthorize(Permission.IS_AUTHENTICATED)
     public String getSettingsPage(Model model) {
-
+        // Add an empty changePasswordForm to the model.
         model.addAttribute("changePasswordForm", new ChangePasswordForm());
 
         return "settings/change_password";
@@ -59,19 +62,25 @@ public class SettingsController {
      */
     @PostMapping("/changePassword")
     public String postSettingsPage(@Valid ChangePasswordForm changePasswordForm, BindingResult bindingResult, HttpServletRequest request) {
-
+        // Get the currently logged in user.
         User authenticationUser = SecurityContext.getAuthenticationUser();
 
+        // Check the filled in changePasswordForm for its validity.
         checkEnteredPasswords(authenticationUser, changePasswordForm, bindingResult);
 
+        /* If the form contains errors, the password won't be changed and the form is displayed again with
+           corresponding error messages. */
         if (bindingResult.hasErrors()) {
             return "settings/change_password";
         }
 
+        // Change the password in the database
         userService.changePassword(authenticationUser, changePasswordForm.getNewPassword());
 
         // Logout the current user and prompt them to log in again.
         new SecurityContextLogoutHandler().logout(request, null, null);
+
+        // If the password was changed successfully, redirect to the login page.
         return "redirect:/?changePassword=successful";
     }
 
@@ -92,7 +101,7 @@ public class SettingsController {
             bindingResult.rejectValue("confirmationPassword", "error.changePasswordForm", errorMessage);
         }
 
-        // The entered old password must equal the old password in the database
+        // The entered old password must be equal to the old password in the database
         if (!userService.isOldPasswordCorrect(user, changePasswordForm.getOldPassword())) {
             String errorMessage = messageSource.getMessage("settings.error.old_password_incorrect", null, Locale.getDefault());
             bindingResult.rejectValue("oldPassword", "error.changePasswordForm", errorMessage);

@@ -10,6 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This repository is used for crud operations (create/read/update/delete) on the table "record" in the database.
+ * Note: The queries are constructed automatically by Spring JPA based on method naming conventions.
+ */
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long>{
     Set<Record> findAllByUserAndDateAndIsDeletedIsFalse(User user, LocalDate date);

@@ -46,9 +46,9 @@
             <div class="form-group drop-down">
                 <label th:text="#{records.pool}" for="pool"></label>
                 <select class="form-control" th:field="*{pool}" id="pool" required>
-                    <option th:each="pool: ${pools}"
-                            th:value="${pool.id}"
-                            th:text="${pool.name}"></option>
+                    <option th:each="userPool : ${userPools}"
+                            th:value="${userPool.pool.id}"
+                            th:text="${userPool.pool.name}"></option>
                 </select>
             </div>
             <p>
