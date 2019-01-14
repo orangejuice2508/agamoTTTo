@@ -34,7 +34,7 @@ public class RecordLog {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "record_id")
+    @JoinColumn(name = "record_id", nullable = false)
     private Record record;
 
     @NotNull

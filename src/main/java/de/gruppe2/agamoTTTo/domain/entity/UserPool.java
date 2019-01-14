@@ -23,11 +23,11 @@ public class UserPool {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "pool_id")
+    @JoinColumn(name = "pool_id", nullable = false)
     private Pool pool;
 
     @Column(name = "is_active")

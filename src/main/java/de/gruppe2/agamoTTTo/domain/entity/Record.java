@@ -44,16 +44,17 @@ public class Record {
     @Column(name = "end_time")
     private LocalTime endTime;
 
+    @NotNull
     @Column(name = "duration_in_minutes")
-    private Long duration;
+    private Long duration = 0L;
 
     @NotEmpty
     @Size(max = 250)
     @Column(name = "description")
     private String description;
 
-    @Column(name = "version")
     @Version
+    @Column(name = "version")
     private Long version;
 
     @ManyToOne

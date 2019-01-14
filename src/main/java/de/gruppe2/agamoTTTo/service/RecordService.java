@@ -48,7 +48,7 @@ public class RecordService{
         record.setDuration(calculateDuration(record.getStartTime(), record.getEndTime()));
 
         // Save the record to the database.
-        recordRepository.save(record);
+        record = recordRepository.save(record);
 
         // Log the record after saving it.
         recordLogRepository.save(new RecordLog(record, ChangeType.created));
