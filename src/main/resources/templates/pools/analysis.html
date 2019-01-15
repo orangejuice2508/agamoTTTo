@@ -20,10 +20,10 @@
                 <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
             </form>
             <hr>
-            <div th:if="${result != null && result.isEmpty()}">
+            <div th:if="${results != null && results.isEmpty()}">
                 <p th:text="#{pools.analysis.no_pools_found}"></p>
             </div>
-            <div th:if="${result != null && !result.isEmpty()}">
+            <div th:if="${results != null && !results.isEmpty()}">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -32,9 +32,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="result: ${result}">
-                        <td th:text="${result.getKey()}"></td>
-                        <td th:text="${result.getValue()}"></td>
+                    <tr th:each="result: ${results}">
+                        <td th:text="${@displayNameBuilder.display(result.getKey())}"></td>
+                        <td th:text="${#temporals.format(result.getValue(), 'HH:mm')}"></td>
                     </tr>
                     </tbody>
                 </table>
