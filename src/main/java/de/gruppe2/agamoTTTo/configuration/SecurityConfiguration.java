@@ -9,6 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
+/**
+ * This class is used to define beans which are used for security measures.
+ */
 @Configuration
 public class SecurityConfiguration {
 

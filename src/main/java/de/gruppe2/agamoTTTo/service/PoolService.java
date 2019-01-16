@@ -1,11 +1,10 @@
 package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
-import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.repository.PoolRepository;
-import de.gruppe2.agamoTTTo.repository.UserRepository;
+import de.gruppe2.agamoTTTo.repository.UserPoolRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
-import de.gruppe2.agamoTTTo.security.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,44 +19,37 @@ public class PoolService {
 
     private PoolRepository poolRepository;
 
-    private UserRepository userRepository;
+    private UserPoolRepository userPoolRepository;
 
     @Autowired
-    public PoolService(PoolRepository poolRepository, UserRepository userRepository) {
+    public PoolService(PoolRepository poolRepository, UserPoolRepository userPoolRepository) {
         this.poolRepository = poolRepository;
-        this.userRepository = userRepository;
+        this.userPoolRepository = userPoolRepository;
     }
 
     /**
      * This method uses the poolRepository to try to add a pool to the database.
+     * Furthermore the userPoolRepository is used to assign the owner to the newly created pool.
      *
      * @param pool the pool as obtained from the controller
      */
     @PreAuthorize(Permission.VORGESETZTER)
     public void addPool(Pool pool){
+        // Save the pool to the database.
         poolRepository.save(pool);
+
+        // Assign the owner of the pool to the newly created pool
+        userPoolRepository.save(new UserPool(pool.getOwner(), pool));
     }
 
     /**
-     * This method uses the poolRepository to find all pools from the database.
+     * This method uses the userPoolRepository to find all pools.
      *
-     * @return all pools in the database
+     * @return all pools of the database
      */
     @PreAuthorize(Permission.ADMINISTRATOR)
-    public Set<Pool> findAllPools() {
-        return new HashSet<>(poolRepository.findAll());
-    }
-
-    /**
-     * This method uses the userRepository to find all pools which the logged in user is part of.
-     *
-     * @return pools which the logged in user is part of
-     */
-    @PreAuthorize(Permission.MITARBEITER)
-    public Set<Pool> findAllPoolsOfAuthenticationUser(){
-        Optional<User> optionalUser = userRepository.findById(SecurityContext.getAuthenticationUser().getId());
-
-        return optionalUser.isPresent() ? new HashSet<>(optionalUser.get().getPools()) : Collections.emptySet();
+    public List<Pool> findAllPools() {
+        return poolRepository.findAllByOrderByNameAsc();
     }
 
     /**
@@ -72,6 +64,7 @@ public class PoolService {
         return poolRepository.findById(id);
     }
 
+
     /**
      * This method uses the poolRepository to try to update to the database.
      *
@@ -82,8 +75,10 @@ public class PoolService {
         // Use the getOne method, so that no more DB fetch has to be executed
         Pool poolToUpdate = poolRepository.getOne(updatedPool.getId());
 
+        // Manipulate the poolToUpdate with the updated with fields
         poolToUpdate.setName(updatedPool.getName());
+
+        // Save the pool to the database.
         poolRepository.save(poolToUpdate);
     }
-
 }

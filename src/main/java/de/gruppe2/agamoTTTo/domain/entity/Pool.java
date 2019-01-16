@@ -11,6 +11,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+/**
+ * This class corresponds to the database table "pool".
+ * Its columns correspond to the attributes of this class.
+ */
 @Getter
 @Setter
 @Entity
@@ -23,8 +27,8 @@ public class Pool {
     @Column(name = "pool_id")
     private Long id;
 
-    @Size(max = 100)
     @NotEmpty
+    @Size(max = 100)
     @Column(name = "pool_name", unique = true)
     private String name;
 
@@ -33,6 +37,7 @@ public class Pool {
     @CreatedBy
     private User owner;
 
-    @ManyToMany(mappedBy = "pools")
-    private Set<User> users;
+    @OneToMany(mappedBy = "pool")
+    private Set<UserPool> userPools;
+
 }

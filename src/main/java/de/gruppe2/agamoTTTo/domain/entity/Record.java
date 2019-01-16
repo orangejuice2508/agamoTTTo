@@ -13,6 +13,10 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * This class corresponds to the database table "record".
+ * Its columns correspond to the attributes of this class.
+ */
 @Entity
 @Setter
 @Getter
@@ -37,19 +41,20 @@ public class Record {
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private LocalTime endTime;
 
+    @NotNull
     @Column(name = "duration_in_minutes")
-    private Long duration;
+    private Long duration = 0L;
 
-    @Size(max = 250)
     @NotEmpty
-    @Column(name = "description", nullable = false)
+    @Size(max = 250)
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "version")
     @Version
+    @Column(name = "version")
     private Long version;
 
     @ManyToOne
@@ -60,4 +65,14 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
     private Pool pool;
+
+    @NotNull
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = Boolean.FALSE;
+
+    public boolean equals(Record anotherRecord) {
+        return id.equals(anotherRecord.getId()) && date.equals(anotherRecord.getDate())
+                && startTime.equals(anotherRecord.getStartTime()) && description.equals(anotherRecord.getDescription())
+                && pool.equals(anotherRecord.getPool()) && isDeleted.equals(anotherRecord.getIsDeleted());
+    }
 }

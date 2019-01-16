@@ -10,12 +10,11 @@
     <div class="card text-center m-3">
         <div class="card-header"><img class="img-fluid" th:src="@{/images/agamoTTTo_logo_transparent.png}"/></div>
         <div class="card-body">
-            <h5 class="card-title">Herzlich Willkommen.</h5>
-            <p class="card-text">Deine E-Mail: <span th:text="${email}"></span></p>
-            <p class="card-text">Deine Berechtigung: <span th:text="${authority}"></span> </p>
+            <h5 class="card-title" th:text="#{home.card.body.title}"></h5>
+            <p class="card-text" th:text="#{home.card.body.text}"></p>
         </div>
         <div class="card-footer">
-            <h6>Danke für Ihren Besuch!</h6>
+            <h6 th:text="#{home.card.footer}"></h6>
         </div>
     </div>
 </div>

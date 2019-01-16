@@ -2,6 +2,7 @@ package de.gruppe2.agamoTTTo.domain.entity;
 
 import de.gruppe2.agamoTTTo.domain.base.ChangeType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,9 +17,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * This class corresponds to the database table "record_log".
+ * Its columns correspond to the attributes of this class.
+ */
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "record_log")
 public class RecordLog {
@@ -28,7 +34,7 @@ public class RecordLog {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "record_id")
+    @JoinColumn(name = "record_id", nullable = false)
     private Record record;
 
     @NotNull
@@ -50,8 +56,8 @@ public class RecordLog {
     @Column(name = "duration_in_minutes")
     private Long duration;
 
-    @Size(max = 250)
     @NotEmpty
+    @Size(max = 250)
     @Column(name = "description")
     private String description;
 
@@ -95,7 +101,4 @@ public class RecordLog {
         this.user = originalRecord.getUser();
         this.pool = originalRecord.getPool();
     }
-
-    // No args constructor required by JpaRepository
-    public RecordLog(){}
 }

@@ -18,8 +18,8 @@ import org.springframework.security.web.FilterInvocation;
 import java.util.Optional;
 
 /**
- * Configure and enable Spring Security for our application.
- * And enable security based on method annotations.
+ * This class is used for enabling Spring Security for our application and setting up its configuration.
+ * Plus: Security based on method annotations (@PreAuthorize/@PostAuthorize) is enabled.
  */
 @Configuration
 @EnableWebSecurity
@@ -41,22 +41,22 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /**
      * Set the service which is responsible for finding the user in the database
-     * and set the necessary passwortEncoder for comparing the entered with the
+     * and set the necessary passwordEncoder for comparing the entered with the
      * saved password.
      *
-     * @param auth SecurityBuilder for JDB based authentication used to create an AuthenticationManager.
+     * @param auth SecurityBuilder for JDBC based authentication used to create an AuthenticationManager.
      * @throws Exception If an error occurs while adding the UserDetailsService.
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-        // Setting Service to find User in the database.
-        // And Setting PassswordEncoder
+
+        // Set the service which finds a user in the database and set the passwordEncoder
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     /**
-     * Finally configure the Security Configuration for this application.
+     * Finally configure the whole Security Configuration for this application.
      *
      * @param http Used to configure specific HTTP requests.
      * @throws Exception If any request can't be configured properly.

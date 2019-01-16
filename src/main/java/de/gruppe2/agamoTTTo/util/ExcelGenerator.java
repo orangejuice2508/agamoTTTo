@@ -3,12 +3,14 @@ package de.gruppe2.agamoTTTo.util;
 import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.service.RecordService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -17,6 +19,9 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * This class creates the excel sheet for exporting records.
+ */
 @Component
 public class ExcelGenerator {
 
@@ -27,6 +32,7 @@ public class ExcelGenerator {
         this.recordService = recordService;
     }
 
+    @PreAuthorize(Permission.MITARBEITER)
     public ByteArrayInputStream createExcelSheet(PoolDateFilter filter, User user) {
 
         List<Record> records = recordService.getAllRecordsByFilter(filter, user);
@@ -98,7 +104,7 @@ public class ExcelGenerator {
         int rowIndex = 4;
         Long totalDuration = 0L;
 
-        //creating and filling a row for each record
+        // Creating and filling a row for each record
         for (Record record : records) {
             Row row = sheet.createRow(rowIndex++);
 
@@ -113,7 +119,7 @@ public class ExcelGenerator {
             totalDuration = totalDuration + record.getDuration();
         }
 
-        //Creating the last row of the sheet
+        // Creating the last row of the sheet
         Row duration = sheet.createRow(rowIndex);
         Cell firstDurationCell = duration.createCell(0);
         firstDurationCell.setCellValue("Zwischensumme(Dezimal)");
@@ -125,8 +131,7 @@ public class ExcelGenerator {
         duration.createCell(6).setCellValue(durationAsDecimal(totalDuration));
         sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, 5));
 
-
-
+        // Set cell style fot each row in the sheet.
         for (Row row : sheet) {
             for(Cell cell : row) {
                 cell.setCellStyle(style);
@@ -144,7 +149,7 @@ public class ExcelGenerator {
     }
 
     /**
-     * Method to convert the duration from minutes to form h:mm
+     * Method to convert the duration from minutes to form hh:mm
      * @param duration the duration that should be converted
      * @return the converted duration as String
      */
@@ -155,7 +160,6 @@ public class ExcelGenerator {
         if (minutes < 10) {
             calculatedMinutes = 0 + calculatedMinutes;
         }
-        String result = hour + ":" + calculatedMinutes;
-        return result;
+        return hour + ":" + calculatedMinutes;
     }
 }

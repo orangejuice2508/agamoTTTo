@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="fragments/layout">
+<head>
+    <title th:text="#{pools.assignments.remove.title}"></title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card m-3">
+        <div class="card-header">
+            <div>
+                <a th:href="@{/pools/assignments/overview}">
+                    <i class="fas fa-arrow-circle-left"></i>
+                    <span th:text="#{back}"></span>
+                </a>
+            </div>
+            <hr>
+            <div>
+                <h4 th:text="#{pools.assignments.remove.title} + ' (' + ${pool.name} + ')'" class="card-title"></h4>
+                <p th:text="#{pools.assignments.remove.subtitle}" class="card-subtitle text-muted"></p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div th:if="${userPools.isEmpty()}">
+                <p th:text="#{employees.error.not_found}"></p>
+            </div>
+            <div th:unless="${userPools.isEmpty()}">
+                <form action="#" th:action="@{/pools/assignments/remove}" th:object="${userPoolToRemove}" method="post">
+                    <div class="form-group drop-down">
+                        <label th:text="#{assignments.user}" for="userPool"></label>
+                        <select th:field="*{id}" class="form-control" id="userPool" required>
+                            <option th:each="userPool: ${userPools}"
+                                    th:value="${userPool.id}"
+                                    th:text="${@displayNameBuilder.display(userPool.user)}"></option>
+                        </select>
+                    </div>
+                    <p>
+                        <button th:text="#{button.submit}" type="submit" class="btn btn-primary mr-1"></button>
+                        <button th:text="#{button.reset}" type="reset" class="btn btn-secondary"></button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

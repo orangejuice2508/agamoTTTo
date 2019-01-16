@@ -19,6 +19,9 @@ import java.util.*;
 
 import static java.time.Duration.between;
 
+/**
+ * Service which is used for dealing with the records("Einträge") of our application.
+ */
 @Service
 public class RecordService{
 
@@ -43,9 +46,13 @@ public class RecordService{
      */
     @PreAuthorize(Permission.MITARBEITER)
     public void addRecord(Record record) {
-
+        // Calculate and set the duration of the record.
         record.setDuration(calculateDuration(record.getStartTime(), record.getEndTime()));
-        recordRepository.save(record);
+
+        // Save the record to the database.
+        record = recordRepository.save(record);
+
+        // Log the record after saving it.
         recordLogRepository.save(new RecordLog(record, ChangeType.created));
     }
 
@@ -65,7 +72,7 @@ public class RecordService{
      * This method returns all records of a user which match the criteria of the filter.
      *
      * @param filter contains the criteria set by the user
-     * @param user   the user whose records should be found
+     * @param user the user whose records should be found
      * @return an ordered list with Records which match the criteria of the filter
      */
     @PreAuthorize(Permission.MITARBEITER)
@@ -73,11 +80,12 @@ public class RecordService{
         // Update filter so that empty dates are filled with default values
         filter = new PoolDateFilter(filter);
 
-        return recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
+        return recordRepository.findAllByUserAndPoolAndDateBetweenAndIsDeletedIsFalseOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
     }
 
     /**
-     * This method uses the recordRepository to try to update to the database.
+     * This method uses the recordRepository to try to update the record in the database.
+     *  Furthermore the unchanged record is logged in the database.
      *
      * @param updatedRecord the updated record as obtained from the controller
      */
@@ -87,18 +95,46 @@ public class RecordService{
         // Use the getOne method, so that no more DB fetch has to be executed
         Record recordToUpdate = recordRepository.getOne(updatedRecord.getId());
 
-        // Log the current record before updating it.
-        recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
+        // Check whether the record was really edited.
+        if (!recordToUpdate.equals(updatedRecord)) {
+            // Log the record before changing it.
+            recordLogRepository.save(new RecordLog(recordToUpdate, ChangeType.modified));
 
-        recordToUpdate.setDate(updatedRecord.getDate());
-        recordToUpdate.setStartTime(updatedRecord.getStartTime());
-        recordToUpdate.setEndTime(updatedRecord.getEndTime());
-        recordToUpdate.setDescription(updatedRecord.getDescription());
-        recordToUpdate.setPool(updatedRecord.getPool());
-        recordToUpdate.setVersion(recordToUpdate.getVersion() + 1);
-        recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
+            // Manipulate the recordToUpdate with the updated fields
+            recordToUpdate.setDate(updatedRecord.getDate());
+            recordToUpdate.setStartTime(updatedRecord.getStartTime());
+            recordToUpdate.setEndTime(updatedRecord.getEndTime());
+            recordToUpdate.setDescription(updatedRecord.getDescription());
+            recordToUpdate.setPool(updatedRecord.getPool());
+            recordToUpdate.setDuration(calculateDuration(updatedRecord.getStartTime(), updatedRecord.getEndTime()));
+            recordToUpdate.setIsDeleted(updatedRecord.getIsDeleted());
 
-        recordRepository.save(recordToUpdate);
+            // Save the record to the database.
+            recordRepository.save(recordToUpdate);
+        }
+    }
+
+    /**
+     * This method uses the recordRepository to try to "delete" the record from the database.
+     * Furthermore the "deleted" record is logged in the database.
+     * Note: The record is not deleted, but flagged as "deleted" in the database.
+     *
+     * @param record the record that should be "deleted"
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    public void deleteRecord(Record record) {
+
+        // Use the getOne method, so that no more DB fetch has to be executed.
+        Record recordToDelete = recordRepository.getOne(record.getId());
+
+        // Log the current record before "deleting" it.
+        recordLogRepository.save(new RecordLog(recordToDelete, ChangeType.deleted));
+
+        // "Delete" the record by setting the isDeleted field to true.
+        recordToDelete.setIsDeleted(Boolean.TRUE);
+
+        // Save the record to the database.
+        recordRepository.save(recordToDelete);
     }
 
     /**
@@ -129,7 +165,7 @@ public class RecordService{
         Long newId = newRecord.getId();
 
         // Get a user's current records of the specific day when he wants to add his new record
-        Set<Record> currentUserRecords = recordRepository.findAllByUserAndDate(user, newDate);
+        Set<Record> currentUserRecords = recordRepository.findAllByUserAndDateAndIsDeletedIsFalse(user, newDate);
 
         if (!currentUserRecords.isEmpty()) {
             for (Record currentRecord : currentUserRecords) {
@@ -166,7 +202,7 @@ public class RecordService{
                         return false;
                     }
 
-                    // Check if the new record starts or and at the start or end of a current record.
+                    // Check if the new record starts or ends at the start or end of a current record.
                     if (newStartTime.equals(currentStartTime) || newEndTime.equals(currentEndTime)) {
                         return false;
                     }
@@ -179,7 +215,19 @@ public class RecordService{
     }
 
     /**
-     * This method calculates the total duration of the lists of records.
+     * This method calculates the duration of time (in minutes).
+     *
+     * @param startTime the start time of the record
+     * @param endTime the end time of the record
+     * @return the duration as the time between endTime and startTime in minutes
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    private Long calculateDuration(LocalTime startTime, LocalTime endTime) {
+        return between(startTime, endTime).toMinutes();
+    }
+
+    /**
+     * This method calculates the total duration of a lists of records.
      *
      * @param records the list with the records of which the total duration should be calculated
      * @return the total duration in minutes

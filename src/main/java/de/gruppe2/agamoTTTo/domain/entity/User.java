@@ -10,6 +10,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+/**
+ * This class corresponds to the database table "agamottto_user".
+ * Its columns correspond to the attributes of this class.
+ */
 @Getter
 @Setter
 @Entity
@@ -21,24 +25,24 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Size(max = 60)
     @NotEmpty
+    @Size(max = 60)
     @Column(name = "e_mail", unique = true)
     @Email
     private String email;
 
-    @Size(min=1, max = 60)
     @NotEmpty
+    @Size(min = 1, max = 60)
     @Column(name = "first_name")
     private String firstName;
 
-    @Size(min=1, max = 60)
     @NotEmpty
+    @Size(min = 1, max = 60)
     @Column(name = "last_name")
     private String lastName;
 
-    @Size(max = 120)
     @NotNull
+    @Size(max = 120)
     @Column(name = "encrypted_password")
     private String encryptedPassword;
 
@@ -50,12 +54,8 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_pool",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "pool_id")})
-    private Set<Pool> pools;
+    @OneToMany(mappedBy = "user")
+    private Set<UserPool> userPools;
 
     @OneToMany(mappedBy = "user")
     private Set<Record> records;
@@ -63,10 +63,9 @@ public class User {
     public User() {
         this.encryptedPassword = "";
         this.enabled = Boolean.TRUE;
-        this.role = new Role(3L, de.gruppe2.agamoTTTo.security.Role.MITARBEITER);
     }
 
-    public User (User user){
+    public User (User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.firstName = user.getFirstName();
