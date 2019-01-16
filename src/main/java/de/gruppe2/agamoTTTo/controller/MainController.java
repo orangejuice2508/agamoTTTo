@@ -61,8 +61,6 @@ public class MainController {
     /**
      * Method for displaying the "home" page.
      *
-     * @param model the Spring Model
-     * @param principal the currently logged in user, null if he is not logged in
      * @return path to template
      */
     @PreAuthorize(Permission.IS_AUTHENTICATED)

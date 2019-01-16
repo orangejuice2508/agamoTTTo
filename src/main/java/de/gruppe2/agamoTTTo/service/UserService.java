@@ -204,7 +204,7 @@ public class UserService implements UserDetailsService {
            we need to pass them to the messageSource.
          */
         String subject = messageSource.getMessage("forgot_password.email.subject", null, Locale.getDefault());
-        Object[] parameters = {user.getLastName(), "https://132.231.36.203/checkToken?" + "userId=" + user.getId() + "&token=" + token};
+        Object[] parameters = {"https://132.231.36.203/checkToken?" + "userId=" + user.getId() + "&token=" + token};
         String text = messageSource.getMessage("forgot_password.email.text", parameters, Locale.getDefault());
         emailService.sendHTMLEmail(user.getEmail(), subject, text);
     }

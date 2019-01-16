@@ -23,11 +23,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -335,7 +332,7 @@ public class PoolController extends BaseController {
         return "pools/analysis";
     }
 
-    @GetMapping(params = "send", value = "/analysis/filter")
+    @GetMapping("/analysis/filter")
     public String postAnalysisPoolPage(@ModelAttribute PoolDateFilter filter, Model model) {
         // Map all pools of a user to UserPool objects, since the HTML fragment of the filter requires that.
         List<UserPool> userPools = getAllPoolsOfUser(SecurityContext.getAuthenticationUser())
