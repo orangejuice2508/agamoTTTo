@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.domain.base.filter;
+package de.gruppe2.agamoTTTo.domain.bo.filter;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Optional;
 
 /**
  * Used for filtering entities which contain pools and dates (e.g. Records, RecordLogs)

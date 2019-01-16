@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.domain.base.forms;
+package de.gruppe2.agamoTTTo.domain.bo.forms;
 
 import lombok.Getter;
 import lombok.Setter;

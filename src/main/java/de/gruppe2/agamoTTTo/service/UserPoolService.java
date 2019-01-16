@@ -55,7 +55,7 @@ public class UserPoolService {
     /**
      * This method uses the UserPoolRepository to find all userPool assignments of the specified pool.
      *
-     * @param pool                the pool of which the userPool assignments should be found.
+     * @param pool the pool of which the userPool assignments should be found.
      * @param onlyActiveUserPools if true, then only ACTIVE assignments are returned. if false, also INACTIVE assignments are returned.
      * @return userPools userPool assignments of the pool, either only active ones or all.
      */
@@ -78,7 +78,7 @@ public class UserPoolService {
     /**
      * This method uses the UserPoolRepository to find all userPool assignments of the specified user.
      *
-     * @param user                the user of which the userPool assignments should be found.
+     * @param user the user of which the userPool assignments should be found.
      * @param onlyActiveUserPools if true, then only ACTIVE assignments are returned. if false, also INACTIVE assignments are returned.
      * @return userPools userPool assignments of the user, either only active ones or all.
      */

@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.service;
 
-import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.bo.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.security.Permission;

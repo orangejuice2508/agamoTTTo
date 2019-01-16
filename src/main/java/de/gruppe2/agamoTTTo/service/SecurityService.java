@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 
 @Service
@@ -30,7 +29,7 @@ public class SecurityService {
      * AND it must not be expired.
      *
      * @param userId the user id which should be checked
-     * @param token  the token which should be checked
+     * @param token the token which should be checked
      * @return true if the PasswordResetToken is valid, false if it is not valid
      */
     public Boolean isPasswordResetTokenValid(Long userId, String token) {

@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.controller;
 
-import de.gruppe2.agamoTTTo.domain.base.forms.NewPasswordForm;
+import de.gruppe2.agamoTTTo.domain.bo.forms.NewPasswordForm;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
@@ -89,7 +89,9 @@ public class MainController {
      */
     @GetMapping("/forgotPassword")
     public String getForgotPasswordPage(Model model) {
+        // Add an empty string for the password to the model
         model.addAttribute("email", "");
+
         return "forgot_password";
     }
 
@@ -154,20 +156,24 @@ public class MainController {
      * Method for handling the submission of the "update password" form.
      *
      * @param newPasswordForm contains the new password in plain text
-     * @param bindingResult   contains possible form errors
-     * @param request         provides request information for HTTP servlets
+     * @param bindingResult contains possible form errors
+     * @param request provides request information for HTTP servlets
      * @return path to template
      */
     @PreAuthorize("hasAuthority('UPDATE_PASSWORD_PRIVILEGE')")
     @PostMapping("/updatePassword")
     public String postSettingsPage(@Valid NewPasswordForm newPasswordForm, BindingResult bindingResult, HttpServletRequest request) {
 
+        // Check the entered passwords for validity
         checkEnteredPasswords(newPasswordForm, bindingResult);
 
+        /* If the form contains errors, the passwords won't be changed and the form is displayed again with
+        corresponding error messages. */
         if (bindingResult.hasErrors()) {
             return "update_password";
         }
 
+        // Try to change the password in the database
         userService.changePassword(SecurityContext.getAuthenticationUser(), newPasswordForm.getNewPassword());
 
         // Logout the current user and prompt them to log in again.
@@ -185,7 +191,7 @@ public class MainController {
      */
     private void checkEnteredPasswords(NewPasswordForm newPasswordForm, BindingResult bindingResult) {
 
-        // The new password must equal the confirmation password
+        // The new password must match the confirmation password
         if (!newPasswordForm.getNewPassword().equals(newPasswordForm.getConfirmationPassword())) {
             String errorMessage = messageSource.getMessage("settings.error.password_mismatch", null, Locale.getDefault());
             bindingResult.rejectValue("newPassword", "error.changePasswordForm", errorMessage);

@@ -1,13 +1,13 @@
 package de.gruppe2.agamoTTTo.service;
 
-import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.bo.ChangeType;
+import de.gruppe2.agamoTTTo.domain.bo.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
-import de.gruppe2.agamoTTTo.domain.base.ChangeType;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.time.Duration.between;
 

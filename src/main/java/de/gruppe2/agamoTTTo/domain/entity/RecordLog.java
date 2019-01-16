@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.domain.entity;
 
-import de.gruppe2.agamoTTTo.domain.base.ChangeType;
+import de.gruppe2.agamoTTTo.domain.bo.ChangeType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
