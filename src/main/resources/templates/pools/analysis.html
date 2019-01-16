@@ -20,10 +20,10 @@
                 <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
             </form>
             <hr>
-            <div th:if="${results != null && results.isEmpty()}">
+            <div th:if="${durationPerUser != null && durationPerUser.isEmpty()}">
                 <p th:text="#{pools.analysis.no_pools_found}"></p>
             </div>
-            <div th:if="${results != null && !results.isEmpty()}">
+            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -32,9 +32,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="result: ${results}">
-                        <td th:text="${@displayNameBuilder.display(result.getKey())}"></td>
-                        <td th:text="${#temporals.format(result.getValue(), 'HH:mm')}"></td>
+                    <tr th:each="durationPerUser : ${durationPerUser}">
+                        <td th:text="${@displayNameBuilder.display(durationPerUser.getKey())}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td th:text="#{records.analysis.table.row.sum}"></td>
+                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>
                 </table>

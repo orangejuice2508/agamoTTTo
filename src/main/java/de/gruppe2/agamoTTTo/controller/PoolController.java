@@ -184,9 +184,9 @@ public class PoolController extends BaseController {
         model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
         model.addAttribute("filter", filter);
 
-        HashMap<User, Long> results = recordService.calculateTotalDurationPerUser(filter);
-        model.addAttribute("results", results);
-        Long totalDuration = results.values().stream().mapToLong(Long::longValue).sum();
+        HashMap<User, Long> durationPerUser = recordService.calculateTotalDurationPerUser(filter);
+        model.addAttribute("durationPerUser", durationPerUser);
+        Long totalDuration = durationPerUser.values().stream().mapToLong(Long::longValue).sum();
         model.addAttribute("totalDuration", totalDuration);
 
         return "pools/analysis";
