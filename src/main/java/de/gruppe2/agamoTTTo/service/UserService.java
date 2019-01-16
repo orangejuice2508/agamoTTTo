@@ -1,11 +1,13 @@
 package de.gruppe2.agamoTTTo.service;
 
+import de.gruppe2.agamoTTTo.domain.entity.PasswordResetToken;
 import java.util.*;
 
 import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.domain.entity.Role;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.repository.PasswordResetTokenRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +34,8 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
+
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -42,11 +47,13 @@ public class UserService implements UserDetailsService {
     public UserService(UserRepository userRepository,
                        BCryptPasswordEncoder passwordEncoder,
                        EmailService emailService,
-                       MessageSource messageSource) {
+                       MessageSource messageSource,
+                       PasswordResetTokenRepository passwordResetTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.messageSource = messageSource;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     /**
@@ -176,6 +183,41 @@ public class UserService implements UserDetailsService {
 
         // Save the user to the database.
         userRepository.save(user);
+    }
+
+    /**
+     * This method creates a PasswordResetToken for the user based on a random String.
+     * After that an email is sent to the users' email address with the link for updating his password
+     *
+     * @param user the user as obtained from the controller
+     */
+    public void sendPasswordResetEmail(User user) {
+        // Create a random String
+        String token = UUID.randomUUID().toString();
+
+        // Create new PasswordResetToken for user
+        createPasswordResetTokenForUser(token, user);
+
+        /* If the passwordToken was added successfully the email can be sent.
+           Note: We obtain the subject and text of the email from "messages.properties" by using the messageSource.
+           Since the text of the email contains parameters (name, link),
+           we need to pass them to the messageSource.
+         */
+        String subject = messageSource.getMessage("forgot_password.email.subject", null, Locale.getDefault());
+        Object[] parameters = {user.getLastName(), "https://132.231.36.203/checkToken?" + "userId=" + user.getId() + "&token=" + token};
+        String text = messageSource.getMessage("forgot_password.email.text", parameters, Locale.getDefault());
+        emailService.sendHTMLEmail(user.getEmail(), subject, text);
+    }
+
+    /**
+     * This method creates a PasswordResetToken for a user and tries to save it to the database.
+     *
+     * @param token the randomly created token
+     * @param user  the user which should the token should be associated to
+     */
+    private void createPasswordResetTokenForUser(String token, User user) {
+        PasswordResetToken passwordResetToken = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(passwordResetToken);
     }
 
     /**

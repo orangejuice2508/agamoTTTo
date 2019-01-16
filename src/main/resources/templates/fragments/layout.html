@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<nav th:replace="fragments/navbar :: navbar" sec:authorize="isFullyAuthenticated()"></nav>
+<nav th:replace="fragments/navbar :: navbar" sec:authorize="hasRole('ROLE_MITARBEITER')"></nav>
 
 <main id="agamoTTTo">
     <div layout:fragment="content"></div>

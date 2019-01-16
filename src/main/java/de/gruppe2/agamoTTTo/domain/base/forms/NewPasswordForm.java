@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.domain.base;
+package de.gruppe2.agamoTTTo.domain.base.forms;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,12 +11,7 @@ import javax.validation.constraints.Size;
  */
 @Getter
 @Setter
-public class ChangePasswordForm {
-
-    @NotEmpty
-    @Size(min = 10, max = 20)
-    private String oldPassword;
-
+public class NewPasswordForm {
     @NotEmpty
     @Size(min = 10, max = 20)
     private String newPassword;
@@ -24,5 +19,4 @@ public class ChangePasswordForm {
     @NotEmpty
     @Size(min = 10, max = 20)
     private String confirmationPassword;
-
 }
