@@ -1,6 +1,6 @@
 package de.gruppe2.agamoTTTo.util;
 
-import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
+import de.gruppe2.agamoTTTo.domain.bo.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
@@ -150,6 +150,7 @@ public class ExcelGenerator {
 
     /**
      * Method to convert the duration from minutes to form hh:mm
+     *
      * @param duration the duration that should be converted
      * @return the converted duration as String
      */
