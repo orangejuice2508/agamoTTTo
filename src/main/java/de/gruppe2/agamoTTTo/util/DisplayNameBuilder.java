@@ -51,8 +51,14 @@ public final class DisplayNameBuilder {
     }
 
     // Display a userPool assignment.
-    public String display(UserPool userPool) {
-        String userPoolWithStatus = userPool.getPool().getName();
+    public String display(UserPool userPool, Boolean displayPool) {
+        String userPoolWithStatus;
+
+        if (displayPool) {
+            userPoolWithStatus = userPool.getPool().getName();
+        } else {
+            userPoolWithStatus = display(userPool.getUser());
+        }
 
         if (!userPool.getIsActive()) {
             userPoolWithStatus = userPoolWithStatus.concat(" [INAKTIV]");

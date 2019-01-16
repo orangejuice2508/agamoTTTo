@@ -135,7 +135,7 @@ public class RecordController extends BaseController {
         model.addAttribute("activePools", activePools);
         model.addAttribute("filter", filter);
         model.addAttribute("records", records);
-        model.addAttribute("totalDuration", recordService.calculateTotalDuration(records));
+        model.addAttribute("totalDuration", recordService.calculateDuration(records));
 
         return "records/overview";
     }

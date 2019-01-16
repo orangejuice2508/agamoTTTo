@@ -14,7 +14,7 @@
                     <select class="form-control" th:field="*{pool}" id="poolSelect" required>
                         <option th:each="userPool : ${userPools}"
                                 th:value="${userPool.pool.id}"
-                                th:text="${@displayNameBuilder.display(userPool)}"></option>
+                                th:text="${@displayNameBuilder.display(userPool, true)}"></option>
                     </select>
                 </div>
                 <div class="input-group input-group-date col-xl">

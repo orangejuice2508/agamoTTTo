@@ -72,7 +72,8 @@ public class Record {
 
     public boolean equals(Record anotherRecord) {
         return id.equals(anotherRecord.getId()) && date.equals(anotherRecord.getDate())
-                && startTime.equals(anotherRecord.getStartTime()) && description.equals(anotherRecord.getDescription())
-                && pool.equals(anotherRecord.getPool()) && isDeleted.equals(anotherRecord.getIsDeleted());
+                && startTime.equals(anotherRecord.getStartTime()) && endTime.equals(anotherRecord.endTime)
+                && description.equals(anotherRecord.getDescription()) && pool.equals(anotherRecord.getPool())
+                && isDeleted.equals(anotherRecord.getIsDeleted());
     }
 }

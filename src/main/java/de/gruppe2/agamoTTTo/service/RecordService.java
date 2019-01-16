@@ -4,6 +4,7 @@ import de.gruppe2.agamoTTTo.domain.base.filter.PoolDateFilter;
 import de.gruppe2.agamoTTTo.domain.entity.Record;
 import de.gruppe2.agamoTTTo.domain.entity.RecordLog;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.repository.RecordLogRepository;
 import de.gruppe2.agamoTTTo.repository.RecordRepository;
 import de.gruppe2.agamoTTTo.domain.base.ChangeType;
@@ -29,13 +30,16 @@ public class RecordService{
 
     private RecordLogRepository recordLogRepository;
 
-    private UserRepository userRepository;
+    private UserPoolService userPoolService;
 
     @Autowired
-    public RecordService(RecordRepository recordRepository, RecordLogRepository recordLogRepository, UserRepository userRepository) {
+    public RecordService(RecordRepository recordRepository,
+                         RecordLogRepository recordLogRepository,
+                         UserRepository userRepository,
+                         UserPoolService userPoolService) {
         this.recordRepository = recordRepository;
         this.recordLogRepository = recordLogRepository;
-        this.userRepository = userRepository;
+        this.userPoolService = userPoolService;
     }
 
     /**
@@ -215,6 +219,45 @@ public class RecordService{
     }
 
     /**
+     * This method calculates the total duration of a lists of records (in minutes)
+     *
+     * @param records the list with the records of which the total duration should be calculated
+     * @return the total duration in minutes
+     */
+    @PreAuthorize(Permission.MITARBEITER)
+    public Long calculateDuration(List<Record> records) {
+        return records.stream().mapToLong(Record::getDuration).sum();
+    }
+
+    /**
+     * This method is used for analysing the records of every ACTIVE and INACTIVE user of
+     * a pool of a a certain time frame.
+     *
+     * @param filter contains the criteria set by the user
+     * @return a hash map with userPool assignments as keys and the total durations of records according to
+     * the PoolDateFilter as values
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public HashMap<UserPool, Long> analyseRecords(PoolDateFilter filter) {
+        // Get all users that are or used to be assigned to the previously selected pool.
+        List<UserPool> userPools = userPoolService.findAllUserPools(filter.getPool(), false);
+
+        HashMap<UserPool, Long> result = new HashMap<>();
+
+        // For every userPool assignment...
+        for (UserPool userPool : userPools) {
+            // ... get the records accoring to the PoolDateFilter ...
+            List<Record> records = recordRepository.findAllByUserAndPoolAndDateBetweenAndIsDeletedIsFalseOrderByDateAscStartTimeAsc(userPool.getUser(), filter.getPool(), filter.getFrom(), filter.getTo());
+            // .. calculate the total duration of those records ...
+            Long duration = calculateDuration(records);
+            // ... and add the combination of assignment and duration to the hash map
+            result.put(userPool, duration);
+        }
+
+        return result;
+    }
+
+    /**
      * This method calculates the duration of time (in minutes).
      *
      * @param startTime the start time of the record
@@ -223,50 +266,6 @@ public class RecordService{
      */
     @PreAuthorize(Permission.MITARBEITER)
     private Long calculateDuration(LocalTime startTime, LocalTime endTime) {
-        return between(startTime, endTime).toMinutes();
-    }
-
-    /**
-     * This method calculates the total duration of a lists of records.
-     *
-     * @param records the list with the records of which the total duration should be calculated
-     * @return the total duration in minutes
-     */
-    @PreAuthorize(Permission.MITARBEITER)
-    public Long calculateTotalDuration(List<Record> records) {
-        return records.stream().mapToLong(Record::getDuration).sum();
-    }
-
-    /**
-     * This method calculates the total sum of the lists of records for every member of a pool.
-     *
-     * @param filter
-     * @return the total sum in minutes for every member in an hashmap
-     */
-    @PreAuthorize(Permission.VORGESETZTER)
-    public HashMap<User, Long> calculateTotalDurationPerUser (PoolDateFilter filter){
-        Set<User> usersInPool = userRepository.findAllByPools(Collections.singleton(filter.getPool()));
-        HashMap<User, Long> result = new HashMap<>();
-
-        for (User currentUser : usersInPool){
-            List<Record> records = recordRepository.findAllByUserAndPoolAndDateBetweenOrderByDateAscStartTimeAsc(currentUser, filter.getPool(), filter.getFrom(), filter.getTo());
-            Long totalDurationInPeriod = calculateTotalDuration(records);
-            result.put(currentUser, totalDurationInPeriod);
-        }
-
-        return result;
-    }
-
-    /**
-     * This method calculates the duration of time a user worked.
-     *
-     * @param startTime The start time of the task
-     * @param endTime the end time of the task
-     * @return the duration as the time between endTime and startTime
-     */
-    @PreAuthorize(Permission.MITARBEITER)
-    private Long calculateDuration(LocalTime startTime, LocalTime endTime) {
-
         return between(startTime, endTime).toMinutes();
     }
 }

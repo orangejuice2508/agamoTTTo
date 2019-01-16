@@ -216,11 +216,12 @@ public class PoolController extends BaseController {
         // Check poolId + permission and get pool object.
         Pool pool = getPool(id, SecurityContext.getAuthenticationUser());
 
-        List<UserPool> allActiveUserPools = userPoolService.findAllUserPools(pool, false);
+        // Get all users that are or used to be assigned to the previously selected pool.
+        List<UserPool> userPools = userPoolService.findAllUserPools(pool, false);
 
-        // Add the pool and allActiveUserPools
+        // Add the pool and all userPool assignments
         model.addAttribute("pool", pool);
-        model.addAttribute("userPools", allActiveUserPools);
+        model.addAttribute("userPools", userPools);
 
         return "pools/assignments/show";
     }
@@ -314,6 +315,71 @@ public class PoolController extends BaseController {
     }
 
     /**
+     * Method for displaying the analysis page of the pools.
+     *
+     * @param model the Spring model
+     * @return path to the template
+     */
+    @GetMapping("/analysis")
+    public String getAnalysePoolPage(Model model) {
+        // Map all pools of a user to UserPool objects, since the HTML fragment of the filter requires that.
+        List<UserPool> userPools = getAllPoolsOfUser(SecurityContext.getAuthenticationUser())
+                .stream()
+                .map(UserPool::new)
+                .collect(Collectors.toList());
+
+        // Add the userPool assignments and the filter to the model.
+        model.addAttribute("userPools", userPools);
+        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
+
+        return "pools/analysis";
+    }
+
+    @GetMapping(params = "send", value = "/analysis/filter")
+    public String postAnalysisPoolPage(@ModelAttribute PoolDateFilter filter, Model model) {
+        // Map all pools of a user to UserPool objects, since the HTML fragment of the filter requires that.
+        List<UserPool> userPools = getAllPoolsOfUser(SecurityContext.getAuthenticationUser())
+                .stream()
+                .map(UserPool::new)
+                .collect(Collectors.toList());
+
+        // Get the hash map consisting of userPool assignments and durations
+        HashMap<UserPool, Long> durationPerUser = recordService.analyseRecords(filter);
+
+        // Calculate the total duration of the retrieved records.
+        Long totalDuration = durationPerUser.values().stream().mapToLong(Long::longValue).sum();
+
+        // Add the userPool assignments, the filter, the duration of every user and the total duration to the model.
+        model.addAttribute("userPools", userPools);
+        model.addAttribute("filter", filter);
+        model.addAttribute("durationPerUser", durationPerUser);
+        model.addAttribute("totalDuration", totalDuration);
+
+        return "pools/analysis";
+    }
+
+    /**
+     * This method takes the user to determine the pools of which they are entitled to
+     * edit the assignments. An admin can edit the assignments of all pools,
+     * supervisors only those which they are assigned to.
+     *
+     * @param user the user whose entitlement should be checked
+     * @return the pools of which the assignments can be edited by the user
+     */
+    private List<Pool> getAllPoolsOfUser(User user) {
+        // The admin can see all pools, all others only the pools they're assigned to.
+        if (user.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
+            // Return all existing pools
+            return poolService.findAllPools();
+        } else {
+            // Return only those pools which the user is currently assigned to
+            return userPoolService.findAllUserPools(user, true).stream()
+                    .map(UserPool::getPool)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    /**
      * This method uses the id of a pool and a user object to check whether
      * the pool id exists and whether the user is assigned to the pool.
      * If both is true, a plain pool object is returned.
@@ -339,49 +405,5 @@ public class PoolController extends BaseController {
         }
 
         return optionalPool.get();
-    }
-
-    /**
-     * This method takes the user to determine the pools of which they are entitled to
-     * edit the assignments. An admin can edit the assignments of all pools,
-     * supervisors only those which they are assigned to.
-     *
-     * @param user the user whose entitlement should be checked
-     * @return the pools of which the assignments can be edited by the user
-     */
-    private List<Pool> getAllPoolsOfUser(User user) {
-        // The admin can see all pools, all others only the pools they're assigned to.
-        if (user.getRole().getRoleName().equals(Role.ADMINISTRATOR)) {
-            // Return all existing pools
-            return poolService.findAllPools();
-        } else {
-            // Return only those pools which the user is currently assigned to
-            return userPoolService.findAllUserPools(user, true).stream()
-                    .map(UserPool::getPool)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    @GetMapping("/analysis")
-    public String getAnalysePoolPage(Model model){
-
-        model.addAttribute("filter", new PoolDateFilter(LocalDate.now()));
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-
-        return "pools/analysis";
-    }
-
-    @GetMapping(params = "send", value = "/analysis/filter")
-    public String postAnalysisPoolPage(@ModelAttribute PoolDateFilter filter, Model model){
-
-        model.addAttribute("pools", poolService.findAllPoolsOfAuthenticationUser());
-        model.addAttribute("filter", filter);
-
-        HashMap<User, Long> durationPerUser = recordService.calculateTotalDurationPerUser(filter);
-        model.addAttribute("durationPerUser", durationPerUser);
-        Long totalDuration = durationPerUser.values().stream().mapToLong(Long::longValue).sum();
-        model.addAttribute("totalDuration", totalDuration);
-
-        return "pools/analysis";
     }
 }
