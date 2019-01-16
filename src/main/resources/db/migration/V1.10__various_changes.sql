@@ -1,9 +1,8 @@
-ALTER TABLE agamoTTTo_db.record_log
-  DROP FOREIGN KEY record_log_fk4;
-ALTER TABLE agamoTTTo_db.record_log
-  CHANGE COLUMN record_id record_id BIGINT(20) NOT NULL,
-  CHANGE COLUMN version version BIGINT(20) NOT NULL;
-ALTER TABLE agamoTTTo_db.record_log
-  ADD CONSTRAINT record_log_fk4
-FOREIGN KEY (record_id)
-REFERENCES agamoTTTo_db.record (record_id);
+CREATE TABLE password_reset_token
+(password_reset_token_id BIGINT AUTO_INCREMENT primary key,
+  token  VARCHAR (45) NOT NULL,
+  user_id                 BIGINT      NOT NULL,
+  expiry_date             TIMESTAMP NOT NULL,
+  CONSTRAINT password_reset_token_fk1
+  FOREIGN KEY (user_id) REFERENCES agamoTTTo_user (user_id));
+

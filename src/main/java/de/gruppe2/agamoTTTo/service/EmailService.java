@@ -50,9 +50,10 @@ public class EmailService {
 
             // Log that the mail was sent successfully
             log.info("Mail was successfully created and sent!");
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             // Log that the mail was not sent successfully
             log.error("Mail could not be created or sent!");
+            e.printStackTrace();
         }
     }
 }
