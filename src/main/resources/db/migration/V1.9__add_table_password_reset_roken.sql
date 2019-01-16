@@ -4,5 +4,5 @@ CREATE TABLE password_reset_token
   user_id                 BIGINT      NOT NULL,
   expiry_date             TIMESTAMP NOT NULL,
   CONSTRAINT password_reset_token_fk1
-  FOREIGN KEY (user_id) REFERENCES agamoTTTo_user (user_id));
+  FOREIGN KEY (user_id) REFERENCES agamottto_user (user_id));
 
