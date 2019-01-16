@@ -21,9 +21,9 @@
             </form>
             <hr>
             <div th:if="${durationPerUser != null && durationPerUser.isEmpty()}">
-                <p th:text="#{pools.analysis.no_pools_found}"></p>
+                <p th:text="#{employees.error.not_found}"></p>
             </div>
-            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}">
+            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}" class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
