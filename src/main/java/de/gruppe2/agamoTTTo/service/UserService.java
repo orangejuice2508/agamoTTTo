@@ -1,13 +1,15 @@
 package de.gruppe2.agamoTTTo.service;
 
 import de.gruppe2.agamoTTTo.domain.entity.PasswordResetToken;
+import java.util.*;
+
+import de.gruppe2.agamoTTTo.domain.entity.UserPool;
+import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.domain.entity.Role;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.repository.PasswordResetTokenRepository;
 import de.gruppe2.agamoTTTo.repository.UserRepository;
-import de.gruppe2.agamoTTTo.security.CustomSecurityUser;
 import de.gruppe2.agamoTTTo.security.Permission;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,17 +19,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import de.gruppe2.agamoTTTo.domain.entity.Pool;
 
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service which is used for dealing with the users of our application.
  */
-@Slf4j
 @Service
 public class UserService implements UserDetailsService {
 
@@ -100,7 +103,6 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
-            log.info("No such user found");
             throw new UsernameNotFoundException(email);
         }
 
@@ -114,7 +116,7 @@ public class UserService implements UserDetailsService {
      * @return a set of users, if users were found; otherwise: an empty set
      */
     @PreAuthorize(Permission.VORGESETZTER)
-    public Set<User> findUsersBySearchTerm(String searchTerm) {
+    public List<User> findUsersBySearchTerm(String searchTerm) {
         return userRepository.searchForUserByFirstNameOrLastNameOrEmail(searchTerm);
     }
 
@@ -230,4 +232,29 @@ public class UserService implements UserDetailsService {
 
         return randomPassword.toString();
     }
+
+    /**
+     * This method returns all users which are currently NOT member of the specified pool.
+     *
+     * @param pool the pool which's NON-members should be found
+     * @return all users that are NOT member of the pool
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    public List<User> getAllUsersNotInPool(Pool pool) {
+        // Find all users.
+        List<User> result = userRepository.findAllByOrderByLastNameAscFirstNameAscEmailAsc();
+
+        // Find all users who are currently ACTIVE in the specified pool.
+        List<User> currentUsersInPool = pool.getUserPools()
+                .stream()
+                .filter(UserPool::getIsActive)
+                .map(UserPool::getUser)
+                .collect(Collectors.toList());
+
+        // Remove all currently ACTIVE users in the specified pool from the result set
+        result.removeAll(currentUsersInPool);
+
+        return result;
+    }
+
 }

@@ -2,10 +2,12 @@ package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.entity.Pool;
 import de.gruppe2.agamoTTTo.domain.entity.User;
+import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.Role;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.PoolService;
+import de.gruppe2.agamoTTTo.service.UserService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -18,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -29,10 +32,14 @@ public class PoolController extends BaseController {
 
     private MessageSource messageSource;
 
+    private UserService userService;
+
+
     @Autowired
-    public PoolController(PoolService poolService, MessageSource messageSource) {
+    public PoolController(PoolService poolService, MessageSource messageSource, UserService userService) {
         this.poolService = poolService;
         this.messageSource = messageSource;
+        this.userService = userService;
     }
 
     /**
@@ -138,7 +145,7 @@ public class PoolController extends BaseController {
      * @param bindingResult contains possible form errors
      * @return path to the template
      */
-    @PutMapping("/edit/{id}")
+    @PutMapping("/edit")
     public String putEditPoolPage(@Valid Pool updatedPool, BindingResult bindingResult) {
         /* If the form contains errors, the pool won't be updated and the form is displayed again with
         corresponding error messages. */
@@ -160,5 +167,68 @@ public class PoolController extends BaseController {
 
         // If the pool was updated successfully, redirect to the pools' overview page.
         return "redirect:/pools/overview/?successful=true";
+    }
+
+
+    /**
+     * Method for displaying the "pooluser" page.
+     *
+     * @param model the Spring Model
+     * @return path to template
+     */
+    @PreAuthorize(Permission.VORGESETZTER)
+    @GetMapping("/assignments")
+    public String getOverviewPoolUserPage(Model model) {
+
+        // Get all pools of currently authenticated user
+        model.addAttribute("pools", poolService.findAllPoolsOfUser(SecurityContext.getAuthenticationUser(), true));
+
+        return "pools/assignments";
+    }
+
+    /**
+     * Method for displaying the form for adding users to a pool determined by its id
+     *
+     * @param id the id of the pool which a user should be added to
+     * @param model the Spring model
+     * @return path to the template
+     */
+    @GetMapping("/addAssignment/{id}")
+    public String postEditPoolUserPage(@PathVariable Long id, Model model) throws Exception {
+
+        Optional<Pool> optionalPool = poolService.findPoolById(id);
+        User authenticationUser = SecurityContext.getAuthenticationUser();
+
+        // Check whether a pool with the id could be found.
+        if (!optionalPool.isPresent()) {
+            throw new NotFoundException("No pool found with ID: " + id);
+        }
+
+        // Check whether the current user is allowed to add users to this pool. The admin is allowed to add users to every pool.
+        if (!authenticationUser.getRole().getRoleName().equals(Role.ADMINISTRATOR) && !poolService.isUserInPool(authenticationUser, optionalPool.get())) {
+            throw new AccessDeniedException("The current user/editor is not entitled to add users to this pool.");
+        }
+
+        // Create a new UserPool entity with the previously selected pool
+        UserPool userPool = new UserPool(optionalPool.get());
+
+        // Get all users that are currently NOT in the previously selected pool
+        List<User> userList = userService.getAllUsersNotInPool(optionalPool.get());
+
+        model.addAttribute("userPool", userPool);
+        model.addAttribute("userList", userList);
+        return "pools/add_assignment";
+    }
+
+    /**
+     * Method for handling the submission of the "add employee to pool" form.
+     *
+     * @param userPool the new assignment of a user to a pool
+     * @return path to template
+     */
+    @PostMapping("/addAssignment")
+    public String addUser(@ModelAttribute UserPool userPool) {
+        poolService.addUserToPool(userPool);
+        return "redirect:/pools/assignments?successful=true&mode=add";
     }
 }

@@ -20,7 +20,7 @@
             <p th:text="#{employees.edit.subtitle}" class="card-subtitle text-muted"></p>
         </div>
         <div class="card-body">
-            <form action="#" th:action="@{/employees/edit/{id}(id=${user.id})}" th:object="${user}" th:method="PUT">
+            <form action="#" th:action="@{/employees/edit/(id=${user.id})}" th:object="${user}" th:method="PUT">
                 <div class="form-group">
                     <label th:text="#{employees.first_name}" for="first_name"></label>
                     <input th:placeholder="#{employees.first_name}" th:errorclass="is-invalid" th:field="*{firstName}"

@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form action="#" th:action="@{/records/edit/{id}(id=${record.id})}" th:object="${record}" th:method="PUT">
+            <form action="#" th:action="@{/records/edit/(id=${record.id})}" th:object="${record}" th:method="PUT">
                 <div class="form-group">
                     <label th:text="#{records.date}" for="date"></label>
                     <input th:errorclass="is-invalid" th:field="*{date}" type="date" max="9999-12-31" min="1000-01-01" class="form-control" id="date" required>

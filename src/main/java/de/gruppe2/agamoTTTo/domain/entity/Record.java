@@ -1,5 +1,6 @@
 package de.gruppe2.agamoTTTo.domain.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -64,4 +65,10 @@ public class Record {
     @NotNull
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;
+
+    public boolean equals(Record anotherRecord) {
+        return id.equals(anotherRecord.getId()) && date.equals(anotherRecord.getDate())
+                && startTime.equals(anotherRecord.getStartTime()) && description.equals(anotherRecord.getDescription())
+                && pool.equals(anotherRecord.getPool()) && isDeleted.equals(anotherRecord.getIsDeleted());
+    }
 }

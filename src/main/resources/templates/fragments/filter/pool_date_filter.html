@@ -4,29 +4,38 @@
 <body>
 <th:block th:fragment="pool_date_filter">
     <div class="form-check form-check-inline">
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <label class="input-group-text" for="poolSelect" th:text="#{pool_date_filter.label.pool}"></label>
+        <div class="col-xl">
+            <div class="row">
+                <div class="input-group col-xl">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="poolSelect"
+                               th:text="#{pool_date_filter.label.pool}"></label>
+                    </div>
+                    <select class="form-control" th:field="*{pool}" id="poolSelect" required>
+                        <option th:each="pool: ${pools}"
+                                th:value="${pool.id}"
+                                th:text="${pool.name}"></option>
+                    </select>
+                </div>
+                <div class="input-group input-group-date col-xl">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="date_from"
+                               th:text="#{pool_date_filter.label.date_from}"></label>
+                    </div>
+                    <input th:placeholder="#{date.format}" th:field="*{from}" type="date" max="9999-12-31"
+                           min="1000-01-01"
+                           class="form-control" id="date_from">
+                </div>
+                <div class="input-group input-group-date col-xl">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="date_to"
+                               th:text="#{pool_date_filter.label.date_to}"></label>
+                    </div>
+                    <input th:placeholder="#{date.format}" th:field="*{to}" type="date" max="9999-12-31"
+                           min="1000-01-01"
+                           class="form-control" id="date_to">
+                </div>
             </div>
-            <select class="form-control" th:field="*{pool}" id="poolSelect" required>
-                <option th:each="pool: ${pools}"
-                        th:value="${pool.id}"
-                        th:text="${pool.name}"></option>
-            </select>
-        </div>
-        <div class="input-group ml-2">
-            <div class="input-group-prepend">
-                <label class="input-group-text" for="date_from" th:text="#{pool_date_filter.label.date_from}"></label>
-            </div>
-            <input th:placeholder="#{date.format}" th:field="*{from}" type="date" max="9999-12-31" min="1000-01-01"
-                   class="form-control" id="date_from">
-        </div>
-        <div class="input-group ml-2">
-            <div class="input-group-prepend">
-                <label class="input-group-text" for="date_to" th:text="#{pool_date_filter.label.date_to}"></label>
-            </div>
-            <input th:placeholder="#{date.format}" th:field="*{to}" type="date" max="9999-12-31" min="1000-01-01"
-                   class="form-control" id="date_to">
         </div>
     </div>
 </th:block>
