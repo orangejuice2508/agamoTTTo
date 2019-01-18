@@ -19,13 +19,21 @@
         </div>
         <div class="card-body">
             <form action="#" th:action="@{/employees/overview}" method="get">
-                <div class="form-check form-check-inline">
-                    <div class="input-group">
-                        <input th:placeholder="#{employees.overview.search}" type="text" th:value="${serchTerm}"
-                               name="searchTerm"/>
+                <div class="row">
+                    <div class="form-check form-check-inline">
+                        <div class="input-group col-xl">
+                            <input th:placeholder="#{employees.overview.search}" type="text" th:value="${serchTerm}"
+                                   name="searchTerm"/>
+                        </div>
                     </div>
-                    <button th:text="#{button.submit}" type="submit" class="btn btn-primary ml-2"></button>
-                    <button th:text="#{button.reset}" type="reset" class="btn btn-secondary ml-1"></button>
+                    <div class="col-xl d-xl-none mt-1"></div>
+                    <div class="col-xl-3">
+                        <button th:text="#{button.submit}" type="submit" name="type" value="search"
+                                class="btn btn-primary"></button>
+                        <button th:text="#{button.reset}" type="reset" class="btn btn-secondary"></button>
+                        <button th:text="#{button.show_all}" type="submit" name="type" value="showAll"
+                                class="btn btn-success"></button>
+                    </div>
                 </div>
             </form>
             <hr>

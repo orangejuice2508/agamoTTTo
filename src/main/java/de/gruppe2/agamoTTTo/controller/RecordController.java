@@ -112,7 +112,7 @@ public class RecordController extends BaseController {
      * @param model the Spring Model
      * @return path to template
      */
-    @GetMapping(params = "send", value = "/overview/filter")
+    @GetMapping(value = "/overview/filter", params = "send")
     public String getFilterRecordsPage(@ModelAttribute PoolDateFilter filter, Model model) {
         // Find all active AND inactive assignments of the currently logged in user
         List<UserPool> userPools = userPoolService.findAllUserPools(SecurityContext.getAuthenticationUser(), false);
@@ -146,7 +146,7 @@ public class RecordController extends BaseController {
      * @param filter contains criteria set by the user on the overview page.
      * @return path to template
      */
-    @GetMapping(params = "export", value = "/overview/filter")
+    @GetMapping(value = "/overview/filter", params = "export")
     public ResponseEntity<InputStreamResource> getExcelRecordsReport(@ModelAttribute PoolDateFilter filter) {
         // Create an excel sheet according to the filter and the currently logged in user
         ByteArrayInputStream in = excelGenerator.createExcelSheet(filter, SecurityContext.getAuthenticationUser());
