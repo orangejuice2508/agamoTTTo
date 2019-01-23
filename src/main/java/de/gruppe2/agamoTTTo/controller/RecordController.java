@@ -75,6 +75,9 @@ public class RecordController extends BaseController {
         // Check whether the record is valid
         checkRecord(record, bindingResult);
 
+        // Add the active assignments to the model.
+        model.addAttribute("userPools", userPoolService.findAllUserPools(SecurityContext.getAuthenticationUser(), true));
+
         /* If the form contains errors, the new record won't be added and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
@@ -83,8 +86,6 @@ public class RecordController extends BaseController {
 
         // Add the record to the database
         recordService.addRecord(record);
-        // Add the active assignments to the model.
-        model.addAttribute("userPools", userPoolService.findAllUserPools(SecurityContext.getAuthenticationUser(), true));
 
         // If the record was added successfully, redirect to an empty "add record" form
         return "redirect:/records/add/?successful=true";
