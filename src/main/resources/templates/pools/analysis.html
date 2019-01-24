@@ -37,11 +37,13 @@
                     <tbody>
                     <tr th:each="durationPerUser : ${durationPerUser}">
                         <td th:text="${@displayNameBuilder.display(durationPerUser.getKey(), false)}"></td>
-                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
+                        <td class="duration"
+                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
                     </tr>
                     <tr class="table-success">
                         <td th:text="#{records.sum}"></td>
-                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
+                        <td class="duration"
+                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>
                 </table>

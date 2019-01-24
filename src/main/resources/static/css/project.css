@@ -16,3 +16,7 @@ body {
 .input-group-date {
     min-width: 15rem
 }
+
+.duration {
+    min-width: 6rem;
+}

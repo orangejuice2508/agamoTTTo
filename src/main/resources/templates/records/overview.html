@@ -53,7 +53,8 @@
                         <td th:text="${#temporals.format(record.date, 'dd.MM.yyyy')}"></td>
                         <td th:text="${#temporals.format(record.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(record.endTime, 'HH:mm')}"></td>
                         <td th:text="${record.description}"></td>
-                        <td th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
+                        <td class="duration"
+                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(record.duration)}"></td>
                         <th:block th:if="${activePools.contains(filter.pool)}">
                             <td>
                                 <a th:href="@{/records/edit/{id}(id=${record.id})}">
@@ -74,7 +75,7 @@
                     </tr>
                     <tr class="table-success">
                         <td colspan="3" th:text="#{records.sum}"></td>
-                        <td colspan="3"
+                        <td colspan="3" class="duration"
                             th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
                     </tr>
                     </tbody>
