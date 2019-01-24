@@ -193,13 +193,14 @@ public class RecordController extends BaseController {
      * @return path to the template
      */
     @PutMapping("/edit")
-    public String putEditRecordPage(@Valid Record updatedRecord, BindingResult bindingResult) {
+    public String putEditRecordPage(@Valid Record updatedRecord, BindingResult bindingResult, Model model) {
         // Check whether the record is valid
         checkRecord(updatedRecord, bindingResult);
 
         /* If the form contains errors, the record won't be edited and the form is displayed again with
            corresponding error messages. */
         if (bindingResult.hasErrors()) {
+            model.addAttribute("userPools", userPoolService.findAllUserPools(SecurityContext.getAuthenticationUser(), true));
             return "records/edit";
         }
 
