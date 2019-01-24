@@ -149,6 +149,9 @@ public class RecordController extends BaseController {
      */
     @GetMapping(params = "export", value = "/overview/filter")
     public ResponseEntity<InputStreamResource> getExcelRecordsReport(@ModelAttribute PoolDateFilter filter) {
+        // Update filter so that empty dates are filled with default values
+        filter = new PoolDateFilter(filter);
+
         // Create an excel sheet according to the filter and the currently logged in user
         ByteArrayInputStream in = excelGenerator.createExcelSheet(filter, SecurityContext.getAuthenticationUser());
 
