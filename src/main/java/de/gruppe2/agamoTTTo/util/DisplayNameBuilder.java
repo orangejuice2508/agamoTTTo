@@ -69,6 +69,6 @@ public final class DisplayNameBuilder {
 
     // Convert minutes (e.g. 300) to hours and minutes (300min = 5:00h).
     public String convertMinutesToHoursAndMinutes(Long minutes){
-        return LocalTime.MIN.plus(Duration.ofMinutes(minutes)).toString() + " h";
+        return String.format("%d:%02d", minutes / 60, minutes % 60) + " h";
     }
 }
