@@ -34,10 +34,7 @@
                 </div>
             </form>
             <hr>
-            <div th:if="${records != null && records.isEmpty()}">
-                <p th:text="#{nothing_found}"></p>
-            </div>
-            <div th:if="${records != null && !records.isEmpty()}" class="table-responsive">
+            <div th:if="${records != null}" class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -72,6 +69,9 @@
                         <th:block th:unless="${activePools.contains(filter.pool)}">
                             <td colspan="2"></td>
                         </th:block>
+                    </tr>
+                    <tr th:if="${records.isEmpty()}">
+                        <td colspan="5"></td>
                     </tr>
                     <tr class="table-success">
                         <td colspan="3" th:text="#{records.sum}"></td>
