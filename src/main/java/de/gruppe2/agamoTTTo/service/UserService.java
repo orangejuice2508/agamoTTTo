@@ -110,8 +110,18 @@ public class UserService implements UserDetailsService {
     /**
      * This method uses the userRepository to find users according to the searchTerm.
      *
+     * @return a list of users, if users were found; otherwise: an empty list
+     */
+    @PreAuthorize(Permission.ADMINISTRATOR)
+    public List<User> findAllUsers() {
+        return userRepository.findAllByOrderByLastNameAscFirstNameAscEmailAsc();
+    }
+
+    /**
+     * This method uses the userRepository to find users according to the searchTerm.
+     *
      * @param searchTerm the entered search term by the user
-     * @return a set of users, if users were found; otherwise: an empty set
+     * @return a list of users, if users were found; otherwise: an empty list
      */
     @PreAuthorize(Permission.ADMINISTRATOR)
     public List<User> findUsersBySearchTerm(String searchTerm) {

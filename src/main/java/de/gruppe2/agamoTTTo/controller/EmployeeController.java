@@ -15,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -95,16 +97,35 @@ public class EmployeeController extends BaseController {
     }
 
     /**
-     * Method for displaying the search results of the retrieved employees.
+     * Method for displaying the results of the retrieved employees.
+     * Either all employees or only those according to a search term are returned.
      *
+     * @param type the type of action chosen by the user: either "show all" employees or "search" employees, stored as a parameter in the url
      * @param searchTerm the entered search term, stored as a parameter in the url
      * @param model the Spring model
      * @return path to template
      */
-    @GetMapping(value = "/overview", params = "searchTerm")
-    public String getOverviewEmployeesSearchResults(@RequestParam("searchTerm") String searchTerm, Model model) {
+    @GetMapping(value = "/overview", params = {"type", "searchTerm"})
+    public String getOverviewEmployeesSearchResults(
+            @RequestParam(value = "type") String type,
+            @RequestParam("searchTerm") String searchTerm,
+            Model model) {
+
+        // Initialize empty list
+        List<User> users = Collections.emptyList();
+
+        // Determine type of action chosen by the user
+        if (type.equals("showAll")) {
+            // Find all users and empty the search term.
+            users = userService.findAllUsers();
+            searchTerm = "";
+        } else if (type.equals("search")) {
+            // Find users according to search term
+            users = userService.findUsersBySearchTerm(searchTerm);
+        }
+
         // Add the retrieved users/employees and the searchTerm to the model
-        model.addAttribute("users", userService.findUsersBySearchTerm(searchTerm));
+        model.addAttribute("users", users);
         model.addAttribute("serchTerm", searchTerm);
 
         return "employees/overview";
