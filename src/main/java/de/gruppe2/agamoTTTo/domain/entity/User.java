@@ -74,4 +74,10 @@ public class User {
         this.enabled = user.getEnabled();
         this.role = user.getRole();
     }
+
+    public boolean equals(User anotherUser) {
+        return email.equals(anotherUser.getEmail()) && lastName.equals(anotherUser.getLastName())
+                && firstName.equals(anotherUser.getFirstName()) && enabled.equals(anotherUser.getEnabled())
+                && role.equals(anotherUser.getRole());
+    }
 }
