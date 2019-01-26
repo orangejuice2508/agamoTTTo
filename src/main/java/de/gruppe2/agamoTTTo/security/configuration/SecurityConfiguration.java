@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.configuration;
+package de.gruppe2.agamoTTTo.security.configuration;
 
 import de.gruppe2.agamoTTTo.security.Role;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +8,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * This class is used to define beans which are used for security measures.
@@ -47,5 +48,10 @@ public class SecurityConfiguration {
         DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
         defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
         return defaultWebSecurityExpressionHandler;
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }
