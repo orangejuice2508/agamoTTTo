@@ -26,27 +26,47 @@
             <div th:if="${durationPerUser != null && durationPerUser.isEmpty()}">
                 <p th:text="#{employees.error.not_found}"></p>
             </div>
-            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}" class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col" th:text="#{pools.analysis.table.header.user}"></th>
-                        <th scope="col" th:text="#{pools.analysis.table.header.duration}"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="durationPerUser : ${durationPerUser}">
-                        <td th:text="${@displayNameBuilder.display(durationPerUser.getKey(), false)}"></td>
-                        <td class="duration"
-                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
-                    </tr>
-                    <tr class="table-success">
-                        <td th:text="#{records.sum}"></td>
-                        <td class="duration"
-                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}">
+                <div class="table-responsive" id="table">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col" th:text="#{pools.analysis.table.header.user}"></th>
+                            <th scope="col" th:text="#{pools.analysis.table.header.duration}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="durationPerUser : ${durationPerUser}">
+                            <td th:text="${@displayNameBuilder.display(durationPerUser.getKey(), false)}"></td>
+                            <td class="duration"
+                                th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
+                        </tr>
+                        <tr class="table-success">
+                            <td th:text="#{records.sum}"></td>
+                            <td class="duration"
+                                th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <a class="btn" href="#" onclick="showAndHide('chart')"
+                                   th:classappend="${totalDuration==0} ? disabled">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span th:text="#{pools.analysis.graph}"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="chart"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
