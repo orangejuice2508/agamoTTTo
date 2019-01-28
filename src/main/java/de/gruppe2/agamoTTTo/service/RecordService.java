@@ -84,9 +84,6 @@ public class RecordService{
      */
     @PreAuthorize(Permission.MITARBEITER)
     public List<Record> getAllRecordsByFilter(PoolDateFilter filter, User user) {
-        // Update filter so that empty dates are filled with default values
-        filter = new PoolDateFilter(filter);
-
         return recordRepository.findAllByUserAndPoolAndDateBetweenAndIsDeletedIsFalseOrderByDateAscStartTimeAsc(user, filter.getPool(), filter.getFrom(), filter.getTo());
     }
 

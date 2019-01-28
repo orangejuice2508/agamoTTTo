@@ -31,11 +31,25 @@ public class PoolDateFilter {
         this.to = oneMonthAgo.withDayOfMonth(oneMonthAgo.lengthOfMonth());
     }
 
+    /**
+     * This method is for constructing a new filter based on a filter handed over as parameter.
+     * So for example default dates are created or wrong dates are exchanged.
+     *
+     * @param filter the filter on which the new filter should be based
+     */
     public PoolDateFilter(PoolDateFilter filter) {
-        // If no date is set, set it to a default date. Reason: Date is optional in the filter.
+        // If one or both dates is NOT set, set it to default values. Reason: Date is optional in the filter.
         this.from = filter.getFrom() != null ? filter.getFrom() : LocalDate.of(1000, 1, 1);
         this.to = filter.getTo() != null ? filter.getTo() : LocalDate.of(9999, 12, 31);
 
+        // If the toDate is before the fromDate, then exchange both values.
+        if (this.to.isBefore(this.from)) {
+            LocalDate fromDate = this.from;
+            this.from = this.to;
+            this.to = fromDate;
+        }
+
+        // The pool remains the same
         this.pool = filter.getPool();
     }
 }

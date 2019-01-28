@@ -114,14 +114,15 @@ public class RecordController extends BaseController {
      * @return path to template
      */
     @GetMapping(value = "/overview/filter", params = "send")
-    public String getFilterRecordsPage(@ModelAttribute PoolDateFilter filter, Model model) {
+    public String getFilterRecordsPage(@ModelAttribute PoolDateFilter filter, Model model, BindingResult bindingResult) {
+        // Update filter so that potentially wrong dates are corrected
+        filter = new PoolDateFilter(filter);
+
         // Find all active AND inactive assignments of the currently logged in user
         List<UserPool> userPools = userPoolService.findAllUserPools(SecurityContext.getAuthenticationUser(), false);
 
-        /*
-            In the view we need the pools, which the user is ACTIVELY assigned to,
-            in order to check whether he can edit/delete the records or not.
-         */
+        /* In the view we need the pools, which the user is ACTIVELY assigned to,
+            in order to check whether he can edit/delete the records or not. */
         List<Pool> activePools = userPools
                 .stream()
                 .filter(UserPool::getIsActive)

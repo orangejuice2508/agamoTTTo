@@ -337,6 +337,9 @@ public class PoolController extends BaseController {
 
     @GetMapping("/analysis/filter")
     public String postAnalysisPoolPage(@ModelAttribute PoolDateFilter filter, Model model) {
+        // Update filter so that potentially wrong dates are corrected
+        filter = new PoolDateFilter(filter);
+
         // Map all pools of a user to UserPool objects, since the HTML fragment of the filter requires that.
         List<UserPool> userPools = getAllPoolsOfUser(SecurityContext.getAuthenticationUser())
                 .stream()
