@@ -44,11 +44,6 @@
                         <i class="fas fa-search"></i>
                         <span th:text="#{navbar.dropdown.overview}"></span>
                     </a>
-                    <a class="dropdown-item" th:href="@{/pools/assignments/overview}"
-                       sec:authorize="hasRole('ROLE_VORGESETZTER')">
-                        <i class="fas fa-exchange-alt"></i>
-                        <span th:text="#{navbar.dropdown.assignments}"></span>
-                    </a>
                     <a class="dropdown-item" th:href="@{/pools/analysis}" sec:authorize="hasRole('ROLE_VORGESETZTER')">
                         <i class="fas fa-chart-line"></i>
                         <span th:text="#{navbar.dropdown.analysis}"></span>

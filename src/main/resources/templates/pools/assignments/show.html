@@ -3,14 +3,14 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="fragments/layout">
 <head>
-    <title th:text="#{pools.assignments.overview.title}"></title>
+    <title th:text="#{pools.assignments.show.title}"></title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="card m-3">
         <div class="card-header">
             <div>
-                <a th:href="@{/pools/assignments/overview}">
+                <a th:href="@{/pools/overview}">
                     <i class="fas fa-arrow-circle-left"></i>
                     <span th:text="#{back}"></span>
                 </a>

@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="fragments/layout">
 <head>
     <title th:text="#{pools.overview.title}"></title>
@@ -8,8 +9,14 @@
 <body>
 <div layout:fragment="content">
     <div th:if="${#request.getParameter('successful') != null}" class="card m-3">
-        <div th:if="${#request.getParameter('successful') == 'true'}" class="card-body text-white bg-success">
+        <div th:if="${#request.getParameter('mode') == 'editPool'}" class="card-body text-white bg-success">
             <span th:text="#{pools.edit.info.successful}"></span>
+        </div>
+        <div th:if="${#request.getParameter('mode') == 'addAssignment'}" class="card-body text-white bg-success">
+            <span th:text="#{pools.assignments.add.info.successful}"></span>
+        </div>
+        <div th:if="${#request.getParameter('mode') == 'removeAssignment'}" class="card-body text-white bg-success">
+            <span th:text="#{pools.assignments.remove.info.successful}"></span>
         </div>
     </div>
     <div class="card m-3">
@@ -27,7 +34,10 @@
                     <tr>
                         <th scope="col" th:text="#{pools.name}"></th>
                         <th scope="col" th:text="#{pools.owner}"></th>
-                        <th scope="col" th:text="#{actions}"></th>
+                        <th:block sec:authorize="hasRole('ROLE_VORGESETZTER')">
+                            <th scope="col" th:text="#{actions}"></th>
+                            <th scope="col" th:text="#{pools.assignments}"></th>
+                        </th:block>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,6 +51,26 @@
                                 <span th:text="#{actions.edit}"></span>
                             </a>
                         </td>
+                        <th:block sec:authorize="hasRole('ROLE_VORGESETZTER')">
+                            <td>
+                                <a th:href="@{/pools/assignments/show/{id}(id=${pool.id})}">
+                                    <i class="fas fa-search"></i>
+                                    <span th:text="#{pools.assignments.overview}"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{/pools/assignments/add/{id}(id=${pool.id})}">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span th:text="#{pools.assignments.add}"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{/pools/assignments/remove/{id}(id=${pool.id})}">
+                                    <i class="fas fa-user-minus"></i>
+                                    <span th:text="#{pools.assignments.remove}"></span>
+                                </a>
+                            </td>
+                        </th:block>
                     </tr>
                     </tbody>
                 </table>

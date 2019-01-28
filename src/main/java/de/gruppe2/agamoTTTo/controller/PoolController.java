@@ -184,23 +184,7 @@ public class PoolController extends BaseController {
         }
 
         // If the pool was updated successfully, redirect to the pools' overview page.
-        return "redirect:/pools/overview/?successful=true";
-    }
-
-
-    /**
-     * Method for displaying the "assignments overview" page.
-     *
-     * @param model the Spring Model
-     * @return path to template
-     */
-    @PreAuthorize(Permission.VORGESETZTER)
-    @GetMapping("/assignments/overview")
-    public String getOverviewAssignmentsPage(Model model) {
-        // Add the pools to the model
-        model.addAttribute("pools", getAllPoolsOfUser(SecurityContext.getAuthenticationUser()));
-
-        return "pools/assignments/overview";
+        return "redirect:/pools/overview/?successful=true&mode=editPool";
     }
 
     /**
@@ -264,7 +248,7 @@ public class PoolController extends BaseController {
         userPoolService.addUserPool(userPool);
 
         // If the assignment was added successfully, redirect to the assignments' overview page.
-        return "redirect:/pools/assignments/overview?successful=true&mode=add";
+        return "redirect:/pools/overview?successful=true&mode=addAssignment";
     }
 
     /**
@@ -311,7 +295,7 @@ public class PoolController extends BaseController {
         userPoolService.deleteUserPool(userPoolToRemove);
 
         // If the assignment was added successfully, redirect to the assignments' overview page.
-        return "redirect:/pools/assignments/overview?successful=true&mode=remove";
+        return "redirect:/pools/overview?successful=true&mode=removeAssignment";
     }
 
     /**
