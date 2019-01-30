@@ -80,11 +80,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .usernameParameter("email") // Define the entered e-mail as the username parameter
                 .passwordParameter("password") // Define the entered password as the password parameter
                 .and().logout()// Configuration for logout:
+                .invalidateHttpSession(true) // The session is invalidated when logged out (per default)
                 .logoutUrl("/logout") // Page for logout (provided by Spring Security).
                 .logoutSuccessUrl("/?logout=true"); // Redirect to this page, when logout was successful.
 
         // Configuration of the session
-        http.sessionManagement() // Session creation (if required) and protection from session fixation is enabled by default
+        http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // New session is created, when necessary (default)
+                .sessionFixation().migrateSession() // Protection from session fixation (default)
                 .maximumSessions(1) // Limit maximum number of sessions to 1
                 .maxSessionsPreventsLogin(false) // If the user wants to log in a second time, the old session is invalidated
                 .expiredUrl("/?session=expired") // Page if session expired (default: 30 Min after inactivity)
