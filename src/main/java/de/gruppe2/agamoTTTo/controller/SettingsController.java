@@ -5,10 +5,10 @@ import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.service.UserService;
+import de.gruppe2.agamoTTTo.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,11 +30,14 @@ public class SettingsController {
     private UserService userService;
 
     private MessageSource messageSource;
+    
+    private SessionUtils sessionUtils;
 
     @Autowired
-    public SettingsController(MessageSource messageSource, UserService userService) {
+    public SettingsController(MessageSource messageSource, UserService userService, SessionUtils sessionUtils) {
         this.messageSource = messageSource;
         this.userService = userService;
+        this.sessionUtils = sessionUtils;
     }
 
     /**
@@ -78,7 +81,8 @@ public class SettingsController {
         userService.changePassword(authenticationUser, changePasswordForm.getNewPassword());
 
         // Logout the current user and prompt them to log in again.
-        new SecurityContextLogoutHandler().logout(request, null, null);
+        //new SecurityContextLogoutHandler().logout(request, null, null);
+        sessionUtils.expireUserSessions(authenticationUser.getEmail());
 
         // If the password was changed successfully, redirect to the login page.
         return "redirect:/?changePassword=successful";

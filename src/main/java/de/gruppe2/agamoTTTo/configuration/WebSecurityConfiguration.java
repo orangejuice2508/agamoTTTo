@@ -1,6 +1,5 @@
 package de.gruppe2.agamoTTTo.configuration;
 
-import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -10,12 +9,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
-
-import java.util.Optional;
 
 /**
  * This class is used for enabling Spring Security for our application and setting up its configuration.
@@ -32,11 +28,17 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private SecurityExpressionHandler<FilterInvocation> webExpressionHandler;
 
+    private SessionRegistry sessionRegistry;
+
     @Autowired
-    public WebSecurityConfiguration(UserService userDetailsService, BCryptPasswordEncoder passwordEncoder, SecurityExpressionHandler<FilterInvocation> webExpressionHandler) {
+    public WebSecurityConfiguration(UserService userDetailsService,
+                                    BCryptPasswordEncoder passwordEncoder,
+                                    SecurityExpressionHandler<FilterInvocation> webExpressionHandler,
+                                    SessionRegistry sessionRegistry) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.webExpressionHandler = webExpressionHandler;
+        this.sessionRegistry = sessionRegistry;
     }
 
     /**
@@ -74,6 +76,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         // but wants to access a page that requires ROLE_Y,
         // AccessDeniedException will be thrown.
         http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/accessDenied");
+
+        http.sessionManagement()
+                .maximumSessions(100)
+                .expiredUrl("/")
+                .maxSessionsPreventsLogin(false)
+                .sessionRegistry(sessionRegistry);
 
         // Configuration for login and logout
         http.authorizeRequests().and().formLogin()//
