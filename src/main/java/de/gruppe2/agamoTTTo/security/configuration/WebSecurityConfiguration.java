@@ -47,6 +47,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+
+
         // Set the service which finds a user in the database and set the passwordEncoder
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
@@ -79,7 +81,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .failureUrl("/?loginError=true") // Redirect to this page, when login failed.
                 .usernameParameter("email") // Define the entered e-mail as the username parameter
                 .passwordParameter("password") // Define the entered password as the password parameter
-                .and().logout()// Configuration for logout:
+                .and().logout()// Configuration for logout
                 .invalidateHttpSession(true) // The session is invalidated when logged out
                 .logoutUrl("/logout") // Page for logout (provided by Spring Security).
                 .logoutSuccessUrl("/?logout=true"); // Redirect to this page, when logout was successful.
