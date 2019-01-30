@@ -14,11 +14,10 @@
         </a>
     </div>
 
-    <!-- Inform the user about successful/failed actions -->
     <div th:if="${#request.getParameter('loginError') == 'true'}" class="card-body text-white bg-danger">
         <span th:text="#{index.login.error.login_failed}"></span>
     </div>
-    <div th:if="${#request.getParameter('logout') == 'true'}" class="card-body text-white bg-info">
+    <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
         <span th:text="#{index.logout.logout_successful}"></span>
     </div>
     <div th:if="${#request.getParameter('changePassword') == 'successful'}" class="card-body text-white bg-success">
@@ -26,9 +25,6 @@
     </div>
     <div th:if="${#request.getParameter('updatePassword') == 'successful'}" class="card-body text-white bg-success">
         <span th:text="#{password.change.successful}"></span>
-    </div>
-    <div th:if="${#request.getParameter('session') == 'expired'}" class="card-body text-white bg-danger">
-        <span th:text="#{index.session.expired}"></span>
     </div>
 
     <div class="card-body">

@@ -1,5 +1,6 @@
-package de.gruppe2.agamoTTTo.security.configuration;
+package de.gruppe2.agamoTTTo.configuration;
 
+import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 
@@ -81,18 +83,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .failureUrl("/?loginError=true") // Redirect to this page, when login failed.
                 .usernameParameter("email") // Define the entered e-mail as the username parameter
                 .passwordParameter("password") // Define the entered password as the password parameter
-                .and().logout()// Configuration for logout
-                .invalidateHttpSession(true) // The session is invalidated when logged out
+                .and().logout() // Configuration for logout
                 .logoutUrl("/logout") // Page for logout (provided by Spring Security).
-                .logoutSuccessUrl("/?logout=true"); // Redirect to this page, when logout was successful.
-
-        // Configuration of the session
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // New session is created, when necessary (default)
-                .sessionFixation().migrateSession() // Protection from session fixation (default)
-                .maximumSessions(1) // Limit maximum number of sessions to 1
-                .maxSessionsPreventsLogin(false) // If the user wants to log in a second time, the old session is invalidated
-                .expiredUrl("/?session=expired") // Page if session expired (default: 30 Min after inactivity)
-                .and().invalidSessionUrl("/?logout=true"); // Page if session is invalid --> user is automatically logged out
+                .logoutSuccessUrl("/?logout=successful"); // Redirect to this page, when logout was successful.
     }
 }

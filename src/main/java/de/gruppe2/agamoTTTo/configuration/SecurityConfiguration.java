@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.security.configuration;
+package de.gruppe2.agamoTTTo.configuration;
 
 import de.gruppe2.agamoTTTo.security.Role;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +8,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * This class is used to define beans which are used for security measures.
@@ -39,7 +38,7 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Create web expression handler to pass created hierarchy to it.
+     *  Create web expression handler to pass created hierarchy to it.
      *
      * @return SecurityExpressionHandler evaluates expressions based on the roleHierarchy
      */
@@ -48,15 +47,5 @@ public class SecurityConfiguration {
         DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
         defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
         return defaultWebSecurityExpressionHandler;
-    }
-
-    /**
-     * Bean for receiving notification events about session lifecycle changes.
-     *
-     * @return httpSessionEventPublisher which receives notifications if a session was created or destroyed
-     */
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
     }
 }

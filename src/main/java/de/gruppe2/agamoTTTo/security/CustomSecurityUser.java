@@ -16,7 +16,6 @@ import java.util.Set;
  * the creator/editor of an entity without querying the database again.
  */
 public class CustomSecurityUser extends User implements UserDetails {
-    // Create a SecurityUser based on a user entity
     public CustomSecurityUser(User user) {
         super(user);
     }
@@ -51,26 +50,11 @@ public class CustomSecurityUser extends User implements UserDetails {
         return super.getEnabled();
     }
 
-    // Override methods of UserDetails with our specific values
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(super.getRole().getRoleName());
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         grantedAuthorities.add(authority);
         return grantedAuthorities;
-    }
-
-    // We need the following two methods, so that Spring Security can check, whether a user is logged in twice.
-    @Override
-    public int hashCode() {
-        return getUsername() != null ? getUsername().hashCode() : 0;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof User) {
-            return getUsername().equals(((CustomSecurityUser) obj).getUsername());
-        }
-        return false;
     }
 }
