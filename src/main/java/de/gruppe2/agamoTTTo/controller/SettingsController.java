@@ -4,8 +4,8 @@ import de.gruppe2.agamoTTTo.domain.bo.forms.ChangePasswordForm;
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
 import de.gruppe2.agamoTTTo.security.SecurityContext;
+import de.gruppe2.agamoTTTo.security.SessionUtils;
 import de.gruppe2.agamoTTTo.service.UserService;
-import de.gruppe2.agamoTTTo.util.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Locale;
 
@@ -60,11 +59,10 @@ public class SettingsController {
      *
      * @param changePasswordForm contains the old and new password in plain text
      * @param bindingResult      contains possible form errors
-     * @param request            provides request information for HTTP servlets
      * @return path to template
      */
     @PostMapping("/changePassword")
-    public String postSettingsPage(@Valid ChangePasswordForm changePasswordForm, BindingResult bindingResult, HttpServletRequest request) {
+    public String postSettingsPage(@Valid ChangePasswordForm changePasswordForm, BindingResult bindingResult) {
         // Get the currently logged in user.
         User authenticationUser = SecurityContext.getAuthenticationUser();
 
@@ -80,12 +78,11 @@ public class SettingsController {
         // Change the password in the database
         userService.changePassword(authenticationUser, changePasswordForm.getNewPassword());
 
-        // Logout the current user and prompt them to log in again.
-        //new SecurityContextLogoutHandler().logout(request, null, null);
+        // Expire all user session of this user so that he has to log in again
         sessionUtils.expireUserSessions(authenticationUser.getEmail());
 
         // If the password was changed successfully, redirect to the login page.
-        return "redirect:/?changePassword=successful";
+        return "redirect:/?logout=invoked";
     }
 
     /**

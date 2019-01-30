@@ -1,4 +1,4 @@
-package de.gruppe2.agamoTTTo.configuration;
+package de.gruppe2.agamoTTTo.security.configuration;
 
 import de.gruppe2.agamoTTTo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,14 +77,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         // AccessDeniedException will be thrown.
         http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/accessDenied");
 
+        // Configuration of the session
         http.sessionManagement()
-                .maximumSessions(100)
-                .expiredUrl("/")
-                .maxSessionsPreventsLogin(false)
-                .sessionRegistry(sessionRegistry);
+                .maximumSessions(100) // Limit maximum session to a high number, so that a user can be logged on various devices
+                .expiredUrl("/?logout=invoked") // Set the URL if the session has expired
+                .maxSessionsPreventsLogin(false) // Don't prevent the user from logging in, if the maximum number of session is reached
+                .sessionRegistry(sessionRegistry); // Necessary to access sessions stored on the server
 
         // Configuration for login and logout
-        http.authorizeRequests().and().formLogin()//
+        http.authorizeRequests().and().formLogin()
                 .loginPage("/") // Page with the login form
                 .loginProcessingUrl("/j_spring_security_check") // Submit URL of login form (provided by Spring Security).
                 .defaultSuccessUrl("/home") // Redirect to this page, when login was successful.

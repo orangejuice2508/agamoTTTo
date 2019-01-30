@@ -20,8 +20,8 @@
     <div th:if="${#request.getParameter('logout') == 'successful'}" class="card-body text-white bg-success">
         <span th:text="#{index.logout.logout_successful}"></span>
     </div>
-    <div th:if="${#request.getParameter('changePassword') == 'successful'}" class="card-body text-white bg-success">
-        <span th:text="#{password.change.successful}"></span>
+    <div th:if="${#request.getParameter('logout') == 'invoked'}" class="card-body text-white bg-info">
+        <span th:text="#{index.logout.logout_invoked}"></span>
     </div>
     <div th:if="${#request.getParameter('updatePassword') == 'successful'}" class="card-body text-white bg-success">
         <span th:text="#{password.change.successful}"></span>
