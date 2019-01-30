@@ -336,10 +336,11 @@ public class PoolController extends BaseController {
         // Calculate the total duration of the retrieved records.
         Long totalDuration = durationPerUser.values().stream().mapToLong(Long::longValue).sum();
 
-        // Add the userPool assignments, the filter, the duration of every user and the total duration to the model.
+        // Add the userPool assignments, the filter, the duration of every user, the array for the chart and the total duration to the model.
         model.addAttribute("userPools", userPools);
         model.addAttribute("filter", filter);
         model.addAttribute("durationPerUser", durationPerUser);
+        model.addAttribute("chartData", getChartData(durationPerUser));
         model.addAttribute("totalDuration", totalDuration);
 
         return "pools/analysis";
@@ -392,5 +393,26 @@ public class PoolController extends BaseController {
         }
 
         return optionalPool.get();
+    }
+
+    /**
+     * This method turns a hashMap into a an array so that it can be used for creating charts.
+     *
+     * @param durationPerUser a hashmap with userPool objects as keys and duration in minutes as values
+     * @return an array with two columns and as many rows as the size of the hashMap
+     */
+    private Object[][] getChartData(HashMap<UserPool, Long> durationPerUser) {
+        int rowCount = durationPerUser.keySet().size();
+        Object[][] chartData = new Object[rowCount][2];
+
+        int i = 0;
+        for (UserPool userPool : durationPerUser.keySet()) {
+            User currentUser = userPool.getUser();
+            chartData[i][0] = currentUser.getLastName() + ", " + currentUser.getFirstName();
+            chartData[i][1] = durationPerUser.get(userPool);
+            i++;
+        }
+
+        return chartData;
     }
 }

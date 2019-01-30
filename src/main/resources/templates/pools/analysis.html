@@ -4,6 +4,57 @@
       layout:decorate="fragments/layout">
 <head>
     <title th:text="#{pools.analysis.title}"></title>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+        /**
+         This method shows/hides an element specified by its.
+         */
+        function showAndHide(id) {
+            var element = document.getElementById(id);
+            if (element.style.display === "none") {
+                element.style.display = "block";
+            } else {
+                element.style.display = "none";
+            }
+        }
+
+        // Load the Visualization API and the corechart package.
+        google.charts.load('current', {'packages': ['corechart']});
+
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawChart);
+
+        // Callback that creates and populates a data table,
+        // instantiates the pie chart, passes in the data and
+        // draws it.
+        function drawChart() {
+            // Create the data table from the model attribute by accessing thymeleaf
+            /*<![CDATA[*/
+
+            var d = /*[[${chartData}]]*/ 'default';
+
+            /*]]>*/
+            var data = google.visualization.arrayToDataTable(d, true);
+
+            // Set chart options
+            var options = {
+                'title': 'Verteilung der Arbeitszeiten im gewählten Zeitraum',
+                'width': 600,
+                'height': 400,
+                'enableInteractivity': false
+            };
+
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.PieChart(document.getElementById('chart'));
+            chart.draw(data, options);
+
+            // Hide the chart after the page is rendered
+            chart = document.getElementById('chart');
+            chart.style.display = "none";
+        }
+    </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -26,27 +77,47 @@
             <div th:if="${durationPerUser != null && durationPerUser.isEmpty()}">
                 <p th:text="#{employees.error.not_found}"></p>
             </div>
-            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}" class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col" th:text="#{pools.analysis.table.header.user}"></th>
-                        <th scope="col" th:text="#{pools.analysis.table.header.duration}"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="durationPerUser : ${durationPerUser}">
-                        <td th:text="${@displayNameBuilder.display(durationPerUser.getKey(), false)}"></td>
-                        <td class="duration"
-                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
-                    </tr>
-                    <tr class="table-success">
-                        <td th:text="#{records.sum}"></td>
-                        <td class="duration"
-                            th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div th:if="${durationPerUser != null && !durationPerUser.isEmpty()}">
+                <div class="table-responsive" id="table">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col" th:text="#{pools.analysis.table.header.user}"></th>
+                            <th scope="col" th:text="#{pools.analysis.table.header.duration}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="durationPerUser : ${durationPerUser}">
+                            <td th:text="${@displayNameBuilder.display(durationPerUser.getKey(), false)}"></td>
+                            <td class="duration"
+                                th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(durationPerUser.getValue())}"></td>
+                        </tr>
+                        <tr class="table-success">
+                            <td th:text="#{records.sum}"></td>
+                            <td class="duration"
+                                th:text="${@displayNameBuilder.convertMinutesToHoursAndMinutes(totalDuration)}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <a class="btn" href="#" onclick="showAndHide('chart')"
+                                   th:classappend="${totalDuration==0} ? disabled">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span th:text="#{pools.analysis.graph}"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="chart"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
