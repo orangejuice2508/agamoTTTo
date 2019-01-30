@@ -6,11 +6,13 @@ import de.gruppe2.agamoTTTo.domain.entity.UserPool;
 import de.gruppe2.agamoTTTo.repository.UserPoolRepository;
 import de.gruppe2.agamoTTTo.security.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,15 @@ public class UserPoolService {
 
     private UserPoolRepository userPoolRepository;
 
+    private EmailService emailService;
+
+    private MessageSource messageSource;
+
     @Autowired
-    public UserPoolService(UserPoolRepository userPoolRepository) {
+    public UserPoolService(UserPoolRepository userPoolRepository, EmailService emailService, MessageSource messageSource) {
         this.userPoolRepository = userPoolRepository;
+        this.emailService = emailService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -47,8 +55,19 @@ public class UserPoolService {
             optionalUserPool = Optional.of(userPool);
         }
 
+        userPool = optionalUserPool.get();
+
         // Save the userPool assignment to the database.
-        userPoolRepository.save(optionalUserPool.get());
+        userPoolRepository.save(userPool);
+
+        /* If the user was added successfully to the pool the email can be sent.
+           Note: We obtain the subject and text of the email from "messages.properties" by using the messageSource.
+           Since the text of the email contains parameters (pool name) we need to pass them to the messageSource.
+         */
+        String subject = messageSource.getMessage("pools.assignments.add.email.subject", null, Locale.getDefault());
+        Object[] parameters = {userPool.getPool().getName()};
+        String text = messageSource.getMessage("pools.assignments.add.email.text", parameters, Locale.getDefault());
+        emailService.sendHTMLEmail(userPool.getUser().getEmail(), subject, text);
     }
 
 
@@ -117,19 +136,29 @@ public class UserPoolService {
     }
 
     /**
-     * This method uses the UserPool repository to "delete" a userPool assignment from the database.
-     * Note: The assignment is not deleted but set inactive.
+     * This method uses the UserPool repository to "remove" a userPool assignment from the database.
+     * Note: The assignment is not removed but set inactive.
      *
      * @param userPool the assignment of a user to a pool that should be removed
      */
     @PreAuthorize(Permission.VORGESETZTER)
-    public void deleteUserPool(UserPool userPool) {
+    public void removeUserPool(UserPool userPool) {
         // Use the getOne method, so that no more DB fetch has to be executed.
         userPool = userPoolRepository.getOne(userPool.getId());
 
-        // "Delete" the record by setting the isActive field to false.
+        // "Remove" the record by setting the isActive field to false.
         userPool.setIsActive(Boolean.FALSE);
 
+        // Save the updated assignment to the database
         userPoolRepository.save(userPool);
+
+        /* If the user was "removed" successfully to the pool the email can be sent.
+           Note: We obtain the subject and text of the email from "messages.properties" by using the messageSource.
+           Since the text of the email contains parameters (pool name) we need to pass them to the messageSource.
+         */
+        String subject = messageSource.getMessage("pools.assignments.remove.email.subject", null, Locale.getDefault());
+        Object[] parameters = {userPool.getPool().getName()};
+        String text = messageSource.getMessage("pools.assignments.remove.email.text", parameters, Locale.getDefault());
+        emailService.sendHTMLEmail(userPool.getUser().getEmail(), subject, text);
     }
 }

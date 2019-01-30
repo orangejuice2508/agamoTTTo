@@ -292,7 +292,7 @@ public class PoolController extends BaseController {
     @PostMapping("/assignments/remove")
     public String postRemoveAssignmentPage(@ModelAttribute UserPool userPoolToRemove) {
         // Set the assignment of a user to a pool inactive.
-        userPoolService.deleteUserPool(userPoolToRemove);
+        userPoolService.removeUserPool(userPoolToRemove);
 
         // If the assignment was added successfully, redirect to the assignments' overview page.
         return "redirect:/pools/overview?successful=true&mode=removeAssignment";
