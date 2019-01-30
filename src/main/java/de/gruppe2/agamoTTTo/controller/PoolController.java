@@ -340,7 +340,6 @@ public class PoolController extends BaseController {
         model.addAttribute("userPools", userPools);
         model.addAttribute("filter", filter);
         model.addAttribute("durationPerUser", durationPerUser);
-        model.addAttribute("chartData", getChartData(durationPerUser));
         model.addAttribute("totalDuration", totalDuration);
 
         return "pools/analysis";
