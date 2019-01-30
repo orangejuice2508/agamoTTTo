@@ -8,11 +8,16 @@ import de.gruppe2.agamoTTTo.service.SecurityService;
 import de.gruppe2.agamoTTTo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.security.Principal;
 import java.util.Locale;
 
@@ -181,6 +189,37 @@ public class MainController {
 
         return "redirect:/?updatePassword=successful";
     }
+
+    /**
+     * This method returns the user manual dependent on the role of the authentication user.
+     *
+     * @return a responseEntity with the user manual in the body
+     * @throws FileNotFoundException if no file could be found
+     */
+    @GetMapping(value = "/help", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> getHelpPDF() throws FileNotFoundException {
+        // Get the currently authenticated user
+        User authenticationUser = SecurityContext.getAuthenticationUser();
+
+        // Get the file from the resource folder based on the role name of the authenticated user
+        File file = ResourceUtils.getFile("classpath:static/manual/" + authenticationUser.getRole().getRoleName() + ".pdf");
+
+        // Generate an InputStreamResource of the FileInputStream of the file
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        // Create a httpHeader
+        HttpHeaders headers = new HttpHeaders();
+        // Open the pdf in the browser and set the file name
+        headers.add("Content-Disposition", "inline;filename=Benutzerhandbuch.pdf");
+
+        return ResponseEntity // Configure the ResponseEntity ...
+                .ok()  // ... with HTTP Status code 200 ("Ok") ...
+                .headers(headers) // ... set the previously created header ...
+                .contentType(MediaType.APPLICATION_PDF) // ... set the content type to pdf ...
+                .body(resource); // ... and add the pdf file to the body.
+    }
+
+
 
     /**
      * This method checks the newPasswordForm if it contains valid passwords. If it's not valid, the BindingResult will
