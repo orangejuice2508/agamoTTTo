@@ -2,6 +2,7 @@ package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
+import de.gruppe2.agamoTTTo.security.SessionUtils;
 import de.gruppe2.agamoTTTo.service.RoleService;
 import de.gruppe2.agamoTTTo.service.UserService;
 import javassist.NotFoundException;
@@ -33,11 +34,17 @@ public class EmployeeController extends BaseController {
 
     private RoleService roleService;
 
+    private SessionUtils sessionUtils;
+
     @Autowired
-    public EmployeeController(UserService userService, MessageSource messageSource, RoleService roleService) {
+    public EmployeeController(UserService userService,
+                              MessageSource messageSource,
+                              RoleService roleService,
+                              SessionUtils sessionUtils) {
         this.userService = userService;
         this.messageSource = messageSource;
         this.roleService = roleService;
+        this.sessionUtils = sessionUtils;
     }
 
     /**
@@ -177,6 +184,8 @@ public class EmployeeController extends BaseController {
         */
         try {
             userService.updateUser(updatedUser);
+            // If the user was updated successfully, expire all his sessions so that he has to log in again.
+            sessionUtils.expireUserSessions(updatedUser.getId());
         } catch (DataIntegrityViolationException e) {
             // Add new possible roles for this user/employee to the model.
             model.addAttribute("roles", roleService.findPossibleRoles(updatedUser));

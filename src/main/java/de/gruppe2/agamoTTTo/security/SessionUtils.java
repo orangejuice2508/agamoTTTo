@@ -21,12 +21,11 @@ public class SessionUtils {
 
     /**
      * This method asks for all user sessions in the registry of the server and
-     * if the email is equal to the email stored in a session, this specific session
-     * gets expired.
+     * if the parameter id is equal to the id stored in a session, this specific session gets expired.
      *
-     * @param email the mail of a user of which all session should get expired.
+     * @param id the id of a user of which all session should get expired.
      */
-    public void expireUserSessions(String email) {
+    public void expireUserSessions(Long id) {
         // For each object in the session registry.
         for (Object principal : sessionRegistry.getAllPrincipals()) {
             // ... If it is a User object...
@@ -34,7 +33,7 @@ public class SessionUtils {
                 // ... then cast it to a User object.
                 User user = (User) principal;
                 // If the emails are equal...
-                if (user.getEmail().equals(email)) {
+                if (user.getId().equals(id)) {
                     // ... then get all sessions of this User ...
                     for (SessionInformation information : sessionRegistry.getAllSessions(user, true)) {
                         // ...  and expire them.

@@ -79,7 +79,7 @@ public class SettingsController {
         userService.changePassword(authenticationUser, changePasswordForm.getNewPassword());
 
         // Expire all user session of this user so that he has to log in again
-        sessionUtils.expireUserSessions(authenticationUser.getEmail());
+        sessionUtils.expireUserSessions(authenticationUser.getId());
 
         // If the password was changed successfully, redirect to the login page.
         return "redirect:/?logout=invoked";
