@@ -142,6 +142,7 @@ public class UserService implements UserDetailsService {
 
     /**
      * This method uses the userRepository to try to update to the database.
+     * In certain circumstances the user will be notified by mail about major changes of the account.
      *
      * @param updatedUser the updated user as obtained from the controller
      */
@@ -150,15 +151,28 @@ public class UserService implements UserDetailsService {
         // Use the getOne method, so that no more DB fetch has to be executed.
         User userToUpdate = userRepository.getOne(updatedUser.getId());
 
-        // Manipulate the userToUpdate with the updated fields.
-        userToUpdate.setFirstName(updatedUser.getFirstName());
-        userToUpdate.setLastName(updatedUser.getLastName());
-        userToUpdate.setEmail(updatedUser.getEmail());
-        userToUpdate.setEnabled(updatedUser.getEnabled());
-        userToUpdate.setRole(updatedUser.getRole());
+        // Check whether the user was really edited.
+        if (!userToUpdate.equals(updatedUser)) {
+            // We need an old user object, to inform them about major changes.
+            User oldUser = new User(userToUpdate);
 
-        // Save the user to the database.
-        userRepository.save(userToUpdate);
+            // Manipulate the userToUpdate with the updated fields.
+            userToUpdate.setFirstName(updatedUser.getFirstName());
+            userToUpdate.setLastName(updatedUser.getLastName());
+            userToUpdate.setEmail(updatedUser.getEmail());
+            userToUpdate.setEnabled(updatedUser.getEnabled());
+            userToUpdate.setRole(updatedUser.getRole());
+
+            /* Try to save the user to the database before sending the mail.
+            Reason: If email address is already registered an exception is
+            thrown by the repository message. Then the mail doesn't have to
+            be and won't be sent.
+            */
+            updatedUser = userRepository.save(userToUpdate);
+
+            // Notify the user if major changes were made to his account.
+            sendAfterUpdateEmail(updatedUser, oldUser);
+        }
     }
 
 
@@ -271,6 +285,12 @@ public class UserService implements UserDetailsService {
         return result.stream().sorted(Comparator.comparing(User::getLastName)).collect(Collectors.toList());
     }
 
+    /**
+     * This method returns all Users who are currently actively assigned to a pool.
+     *
+     * @param pool the pool which actively assigned users should be found
+     * @return a list of users who are currently actively assigned to a pool.
+     */
     private List<User> getAllUsersInPool(Pool pool) {
         // Return all users of ACTIVE userPool assignments.
         return pool.getUserPools()
@@ -281,4 +301,51 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+
+    /**
+     * This method checks whether the mail, the role or the enabled/disabled status of a user was changed.
+     * If so, then at least one mail is sent.
+     * Note: We obtain the subject and text of the email from "messages.properties" by using the messageSource.
+     *
+     * @param updatedUser the updated user
+     * @param oldUser     the "old" user which should be notified
+     */
+    private void sendAfterUpdateEmail(User updatedUser, User oldUser) {
+        // Initialize subject and text strings for the mail
+        String subject;
+        String text;
+
+        // If the mail of the user was changed, then a mail is sent to the OLD mail address.
+        if (!updatedUser.getEmail().equals(oldUser.getEmail())) {
+            // Since the text of the email contains a parameter (the new mail address) we need to pass them to the messageSource.
+            Object[] parameters = {updatedUser.getEmail()};
+            subject = messageSource.getMessage("employees.changed.email.subject", null, Locale.getDefault());
+            text = messageSource.getMessage("employees.changed_email.email.text", parameters, Locale.getDefault());
+            emailService.sendHTMLEmail(oldUser.getEmail(), subject, text);
+        }
+
+        // If the role of the user was changed, then a mail to the NEW mail address is sent (which can be equal to the old one)
+        if (!updatedUser.getRole().equals(oldUser.getRole())) {
+            // Since the text of the email contains a parameter (the new role) we need to pass them to the messageSource.
+            Object[] parameters = {updatedUser.getRole().getRoleName().substring(5)};
+            subject = messageSource.getMessage("employees.changed.email.subject", null, Locale.getDefault());
+            text = messageSource.getMessage("employees.changed_role.email.text", parameters, Locale.getDefault());
+            emailService.sendHTMLEmail(updatedUser.getEmail(), subject, text);
+        }
+
+        // If the enabled/disabled status was changed, then a mail to the NEW mail address is sent (which can be equal to the old one)
+        if (!updatedUser.getEnabled().equals(oldUser.getEnabled())) {
+            // If the user was enabled...
+            if (updatedUser.getEnabled()) {
+                subject = messageSource.getMessage("employees.changed.email.subject", null, Locale.getDefault());
+                text = messageSource.getMessage("employees.enabled.email.text", null, Locale.getDefault());
+            }
+            // If the user was disabled...
+            else {
+                subject = messageSource.getMessage("employees.changed.email.subject", null, Locale.getDefault());
+                text = messageSource.getMessage("employees.disabled.email.text", null, Locale.getDefault());
+            }
+            emailService.sendHTMLEmail(updatedUser.getEmail(), subject, text);
+        }
+    }
 }
