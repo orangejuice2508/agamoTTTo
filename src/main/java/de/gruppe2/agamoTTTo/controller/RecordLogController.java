@@ -64,6 +64,9 @@ public class RecordLogController {
      */
     @GetMapping("overview/filter")
     public String getOverviewLogsFilterResults(@ModelAttribute PoolDateFilter filter, Model model) {
+        // Update filter so that potentially wrong dates are corrected
+        filter = new PoolDateFilter(filter);
+
         // Add the poolDateFilter and the recordLogs according to this filter to the model
         model.addAttribute("filter", filter);
         model.addAttribute("recordLogs", recordLogService.getAllRecordLogsByFilter(filter));

@@ -2,6 +2,7 @@ package de.gruppe2.agamoTTTo.controller;
 
 import de.gruppe2.agamoTTTo.domain.entity.User;
 import de.gruppe2.agamoTTTo.security.Permission;
+import de.gruppe2.agamoTTTo.security.SecurityContext;
 import de.gruppe2.agamoTTTo.security.SessionUtils;
 import de.gruppe2.agamoTTTo.service.RoleService;
 import de.gruppe2.agamoTTTo.service.UserService;
@@ -155,8 +156,16 @@ public class EmployeeController extends BaseController {
             throw new NotFoundException("No employee found with ID: " + id);
         }
 
+        // Unwrap the user that should be edited
+        User editUser = optionalUser.get();
+
+        /* Since the authenticated user should not be able to disable their own user account, we need to determine
+        whether the authenticated user tries to edit their own user account. */
+        Boolean editUserIsAuthenticationUser = editUser.getId().equals(SecurityContext.getAuthenticationUser().getId());
+        model.addAttribute("editUserIsAuthenticationUser", editUserIsAuthenticationUser);
+
         // Add the user/employee and new possible roles for this user/employee to the model.
-        model.addAttribute("user", optionalUser.get());
+        model.addAttribute("user", editUser);
         model.addAttribute("roles", roleService.findPossibleRoles(optionalUser.get()));
 
         return "employees/edit";

@@ -55,6 +55,7 @@ public class UserPoolService {
             optionalUserPool = Optional.of(userPool);
         }
 
+        // Unwrap the userPool object.
         userPool = optionalUserPool.get();
 
         // Save the userPool assignment to the database.

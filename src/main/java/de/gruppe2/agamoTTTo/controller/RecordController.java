@@ -114,7 +114,7 @@ public class RecordController extends BaseController {
      * @return path to template
      */
     @GetMapping(value = "/overview/filter", params = "send")
-    public String getFilterRecordsPage(@ModelAttribute PoolDateFilter filter, Model model, BindingResult bindingResult) {
+    public String getFilterRecordsPage(@ModelAttribute PoolDateFilter filter, Model model) {
         // Update filter so that potentially wrong dates are corrected
         filter = new PoolDateFilter(filter);
 

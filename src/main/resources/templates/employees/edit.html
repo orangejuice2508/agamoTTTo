@@ -43,13 +43,15 @@
                 </div>
                 <label th:text="#{employees.status}" for="status"></label>
                 <div class="form-group" id="status">
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input class="custom-control-input" type="radio" th:field="*{enabled}" th:value="true">
+                    <div class="custom-control custom-radio custom-control-inline ">
+                        <input class="custom-control-input" th:disabled="${editUserIsAuthenticationUser}" type="radio"
+                               th:field="*{enabled}" th:value="true">
                         <label class="custom-control-label" th:for="${#ids.prev('enabled')}"
                                th:text="#{employees.status.enabled}"></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input class="custom-control-input" type="radio" th:field="*{enabled}" th:value="false">
+                        <input class="custom-control-input" th:disabled="${editUserIsAuthenticationUser}" type="radio"
+                               th:field="*{enabled}" th:value="false">
                         <label class="custom-control-label" th:for="${#ids.prev('enabled')}"
                                th:text="#{employees.status.disabled}"></label>
                     </div>
