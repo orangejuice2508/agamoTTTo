@@ -196,6 +196,7 @@ public class MainController {
      * @return a responseEntity with the user manual in the body
      * @throws FileNotFoundException if no file could be found
      */
+    @PreAuthorize(Permission.IS_AUTHENTICATED)
     @GetMapping(value = "/help", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> getHelpPDF() throws FileNotFoundException {
         // Get the currently authenticated user
